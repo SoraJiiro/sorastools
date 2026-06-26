@@ -49,7 +49,10 @@
         <div class="regex-controls">
           <label class="field regex-pattern-field">
             <span>Expression régulière</span>
-            <input type="text" data-regex-pattern placeholder="ex: \b[a-z]+\b" value="\btool\w*\b">
+            <div class="regex-pattern-row">
+              <input type="text" data-regex-pattern placeholder="ex: \b[a-z]+\b" value="\btool\w*\b">
+              <button type="button" data-regex-copy>Copier</button>
+            </div>
           </label>
 
           <div class="regex-flags" aria-label="Options Regex">
