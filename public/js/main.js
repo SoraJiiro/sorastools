@@ -17,14 +17,15 @@ async function displayTools() {
         const linkLabel = isReady
           ? `Ouvrir l'outil ${tool.name}`
           : `Outil ${tool.name} bientôt disponible`;
+        const optionalHrefClass = isReady ? "" : "href--soon";
 
         return `
           <article class="tool-card ${isReady ? "" : "tool-card--soon"}">
+            <div class="tool-card__icon">${tool.icon || ""}</div>
             <span class="tool-card__category">${tool.category}</span>
             <h3>${tool.name}</h3>
             <p>${tool.description}</p>
-            <span class="tool-card__status">${statusText}</span>
-            <a class="tool-card__link" href="${href}" data-label="${linkLabel}">${isReady ? "Ouvrir" : "À venir"}</a>
+            <a class="internal-link ${optionalHrefClass}" href="${href}" data-label="${linkLabel}">${isReady ? "Ouvrir" : "À venir"}</a>
           </article>
         `;
       })

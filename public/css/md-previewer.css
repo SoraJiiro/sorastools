@@ -32,9 +32,9 @@
   box-shadow: var(--orange-glow);
   padding: 12px 16px;
   transition:
-    transform 0.2s ease,
-    filter 0.2s ease,
-    box-shadow 0.2s ease;
+    transform var(--transition),
+    filter var(--transition),
+    box-shadow var(--transition);
 }
 
 .md-toolbar button:hover {

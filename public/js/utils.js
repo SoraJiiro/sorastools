@@ -8,8 +8,8 @@ export function escapeHtml(value) {
 }
 
 export function applyActionsLabels(selector = "[data-label]") {
+  if (!selector) return;
   const elements = document.querySelectorAll(selector);
-  let appliedCount = 0;
 
   elements.forEach((element) => {
     const label = element.dataset.label?.trim();
@@ -18,10 +18,7 @@ export function applyActionsLabels(selector = "[data-label]") {
 
     element.setAttribute("aria-label", label);
     element.setAttribute("title", label);
-    appliedCount += 1;
   });
-
-  return appliedCount;
 }
 
 export function clampNumber(value, min, max) {
@@ -271,4 +268,15 @@ export function setupTextareaTabHandlers(selector = "textarea") {
       textAreaTabHandler(event, textarea),
     );
   });
+}
+
+export function initFaKit() {
+  const faKitLink = "https://kit.fontawesome.com/9a6b0f1631.js";
+
+  const kitScript = document.createElement("script");
+  kitScript.src = faKitLink;
+  kitScript.crossOrigin = "anonymous";
+  document.head.appendChild(kitScript);
+
+  return kitScript;
 }

@@ -89,9 +89,9 @@
   box-shadow: var(--orange-glow);
   padding: 0 16px;
   transition:
-    transform 0.2s ease,
-    filter 0.2s ease,
-    box-shadow 0.2s ease;
+    transform var(--transition),
+    filter var(--transition),
+    box-shadow var(--transition);
 }
 
 .regex-pattern-row button:hover {

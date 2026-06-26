@@ -52,7 +52,9 @@ input[type="color"] {
   padding: 14px;
   font-size: 1rem;
   outline: none;
-  transition: border-color 0.2s ease, box-shadow 0.2s ease;
+  transition:
+    border-color var(--transition),
+    box-shadow var(--transition);
 }
 
 .copy-row input:focus {
@@ -77,9 +79,9 @@ input[type="color"] {
   box-shadow: var(--orange-glow);
   padding: 0 16px;
   transition:
-    transform 0.2s ease,
-    filter 0.2s ease,
-    box-shadow 0.2s ease;
+    transform var(--transition),
+    filter var(--transition),
+    box-shadow var(--transition);
 }
 
 .copy-row button:hover {

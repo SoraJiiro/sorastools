@@ -1,8 +1,4 @@
-import {
-  copyToClipboard,
-  setStatus,
-  setupTextareaTabHandlers,
-} from "../utils.js";
+import { copyToClipboard, setStatus } from "../utils.js";
 
 const jsonInput = document.querySelector("[data-json-input]");
 const jsonOutput = document.querySelector("[data-json-output]");
