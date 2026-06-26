@@ -108,6 +108,20 @@ export async function copyToClipboard(text) {
   await navigator.clipboard.writeText(text);
 }
 
+export function downloadTextFile(content, filename, mimeType = "text/plain") {
+  const blob = new Blob([content], { type: `${mimeType};charset=utf-8` });
+  const url = URL.createObjectURL(blob);
+  const link = document.createElement("a");
+
+  link.href = url;
+  link.download = filename;
+  document.body.appendChild(link);
+  link.click();
+  link.remove();
+
+  URL.revokeObjectURL(url);
+}
+
 export function temporarilyChangeText(element, text, delay = 1000) {
   if (!element) return;
 
