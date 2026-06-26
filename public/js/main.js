@@ -9,6 +9,21 @@ const jsonInput = document.querySelector("[data-json-input]");
 const jsonOutput = document.querySelector("[data-json-output]");
 const jsonStatus = document.querySelector("[data-json-status]");
 
+const regexPattern = document.querySelector("[data-regex-pattern]");
+const regexText = document.querySelector("[data-regex-text]");
+const regexPreview = document.querySelector("[data-regex-preview]");
+const regexStatus = document.querySelector("[data-regex-status]");
+const regexMatches = document.querySelector("[data-regex-matches]");
+
+function escapeHtml(value) {
+  return value
+    .replaceAll("&", "&amp;")
+    .replaceAll("<", "&lt;")
+    .replaceAll(">", "&gt;")
+    .replaceAll('"', "&quot;")
+    .replaceAll("'", "&#039;");
+}
+
 function hexToRgb(hex) {
   const cleanHex = hex.replace("#", "");
   const value = parseInt(cleanHex, 16);
@@ -201,6 +216,83 @@ function setupJsonFormatter() {
   });
 }
 
+function getRegexFlags() {
+  return Array.from(document.querySelectorAll("[data-regex-flag]:checked"))
+    .map((checkbox) => checkbox.value)
+    .join("");
+}
+
+function setRegexStatus(message, type = "default") {
+  if (!regexStatus) return;
+
+  regexStatus.textContent = message;
+  regexStatus.dataset.type = type;
+}
+
+function updateRegexTester() {
+  if (!regexPattern || !regexText || !regexPreview || !regexMatches) return;
+
+  const pattern = regexPattern.value;
+  const text = regexText.value;
+  const flags = getRegexFlags();
+
+  regexMatches.innerHTML = "";
+
+  if (!pattern.trim()) {
+    regexPreview.textContent = text;
+    setRegexStatus("Entre une expression régulière.", "warning");
+    return;
+  }
+
+  try {
+    const regex = new RegExp(pattern, flags);
+    const matches = Array.from(text.matchAll(flags.includes("g") ? regex : new RegExp(pattern, `${flags}g`)));
+
+    if (matches.length === 0) {
+      regexPreview.textContent = text;
+      setRegexStatus("Aucune correspondance trouvée.", "warning");
+      return;
+    }
+
+    let cursor = 0;
+    let highlighted = "";
+
+    matches.forEach((match, index) => {
+      const value = match[0];
+      const start = match.index ?? 0;
+      const end = start + value.length;
+
+      highlighted += escapeHtml(text.slice(cursor, start));
+      highlighted += `<mark>${escapeHtml(value || "")}</mark>`;
+      cursor = end;
+
+      const item = document.createElement("li");
+      item.textContent = `#${index + 1} | index ${start} | ${value || "match vide"}`;
+      regexMatches.appendChild(item);
+    });
+
+    highlighted += escapeHtml(text.slice(cursor));
+    regexPreview.innerHTML = highlighted;
+    setRegexStatus(`${matches.length} correspondance${matches.length > 1 ? "s" : ""} trouvée${matches.length > 1 ? "s" : ""}.`, "success");
+  } catch (error) {
+    regexPreview.textContent = text;
+    setRegexStatus(`Regex invalide : ${error.message}`, "error");
+  }
+}
+
+function setupRegexTester() {
+  if (!regexPattern || !regexText) return;
+
+  updateRegexTester();
+
+  regexPattern.addEventListener("input", updateRegexTester);
+  regexText.addEventListener("input", updateRegexTester);
+  document.querySelectorAll("[data-regex-flag]").forEach((checkbox) => {
+    checkbox.addEventListener("change", updateRegexTester);
+  });
+}
+
 loadTools();
 setupColorPicker();
 setupJsonFormatter();
+setupRegexTester();
