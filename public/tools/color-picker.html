@@ -1,0 +1,72 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Color Picker - SoraTools</title>
+  <meta name="description" content="Choisis une couleur et convertis-la instantanément en HEX, RGB et HSL.">
+  <link rel="stylesheet" href="/css/style.css">
+  <script src="/js/main.js" defer></script>
+</head>
+<body>
+  <header class="site-header">
+    <nav class="navbar">
+      <a class="logo" href="/">SoraTools</a>
+      <div class="nav-links">
+        <a href="/#tools">Tools</a>
+        <a href="/tools/color-picker">Color picker</a>
+        <a href="/tools/json-formatter">JSON</a>
+      </div>
+    </nav>
+  </header>
+
+  <main>
+    <section class="section tool-section" id="color-picker">
+      <div class="section-heading">
+        <p class="eyebrow">Design</p>
+        <h1>Color picker</h1>
+        <p>Choisis une couleur pour obtenir instantanément ses valeurs HEX, RGB et HSL.</p>
+      </div>
+
+      <div class="color-tool">
+        <div class="color-preview" data-color-preview></div>
+
+        <div class="color-panel">
+          <label class="field">
+            <span>Couleur</span>
+            <input type="color" data-color-input value="#ff7a00">
+          </label>
+
+          <label class="field">
+            <span>HEX</span>
+            <div class="copy-row">
+              <input type="text" data-hex-output readonly>
+              <button type="button" data-copy="hex">Copier</button>
+            </div>
+          </label>
+
+          <label class="field">
+            <span>RGB</span>
+            <div class="copy-row">
+              <input type="text" data-rgb-output readonly>
+              <button type="button" data-copy="rgb">Copier</button>
+            </div>
+          </label>
+
+          <label class="field">
+            <span>HSL</span>
+            <div class="copy-row">
+              <input type="text" data-hsl-output readonly>
+              <button type="button" data-copy="hsl">Copier</button>
+            </div>
+          </label>
+        </div>
+      </div>
+    </section>
+  </main>
+
+  <footer class="site-footer">
+    <p>SoraTools - Color Picker.</p>
+  </footer>
+</body>
+</html>
