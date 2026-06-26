@@ -14,11 +14,11 @@
   <body>
     <header class="site-header">
       <nav class="navbar">
-        <a class="logo" href="/">SoraTools</a>
+        <a class="logo" href="/" data-label="Retourner à l'accueil SoraTools">SoraTools</a>
         <div class="nav-links">
-          <a href="/#tools">Tools</a>
-          <a href="/tools/color-picker">Color picker</a>
-          <a href="/tools/json-formatter">JSON</a>
+          <a href="/#tools" data-label="Aller au catalogue des tools">Tools</a>
+          <a href="/tools/color-picker" data-label="Ouvrir le Color Picker">Color picker</a>
+          <a href="/tools/json-formatter" data-label="Ouvrir le JSON Formatter">JSON</a>
         </div>
       </nav>
     </header>
@@ -33,35 +33,35 @@
         <div class="color-tool">
           <div class="color-preview" data-color-preview></div>
           <div class="color-panel">
-            <label class="field">
+            <label class="field" data-label="Champ de sélection de couleur">
               <span>Couleur</span>
               <input type="color" data-color-input
-                data-label="Selectionner une couleur" value="#ffffff">
+                data-label="Sélectionner une couleur" value="#ffffff">
             </label>
-            <label class="field">
+            <label class="field" data-label="Champ HEX">
               <span>HEX</span>
               <div class="copy-row">
                 <input type="text" data-hex-output
                   data-label="Entrer le code HEX" placeholder="#ffffff">
-                <button type="button" data-copy="hex">Copier</button>
+                <button type="button" data-copy="hex" data-label="Copier le code HEX">Copier</button>
               </div>
             </label>
-            <label class="field">
+            <label class="field" data-label="Champ RGB">
               <span>RGB</span>
               <div class="copy-row">
                 <input type="text" data-rgb-output
                   data-label="Entrer le code RGB"
                   placeholder="rgb(255, 255, 255)">
-                <button type="button" data-copy="rgb">Copier</button>
+                <button type="button" data-copy="rgb" data-label="Copier le code RGB">Copier</button>
               </div>
             </label>
-            <label class="field">
+            <label class="field" data-label="Champ HSL">
               <span>HSL</span>
               <div class="copy-row">
                 <input type="text" data-hsl-output
                   data-label="Entrer le code HSL"
                   placeholder="hsl(0, 0%, 100%)">
-                <button type="button" data-copy="hsl">Copier</button>
+                <button type="button" data-copy="hsl" data-label="Copier le code HSL">Copier</button>
               </div>
             </label>
           </div>
