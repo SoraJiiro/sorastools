@@ -7,6 +7,10 @@ export function escapeHtml(value) {
     .replaceAll("'", "&#039;");
 }
 
+export function clampNumber(value, min, max) {
+  return Math.min(Math.max(Number(value), min), max);
+}
+
 export function hexToRgb(hex) {
   const cleanHex = hex.replace("#", "");
   const value = parseInt(cleanHex, 16);
@@ -16,6 +20,12 @@ export function hexToRgb(hex) {
     g: (value >> 8) & 255,
     b: value & 255,
   };
+}
+
+export function rgbToHex(r, g, b) {
+  return `#${[r, g, b]
+    .map((value) => clampNumber(value, 0, 255).toString(16).padStart(2, "0"))
+    .join("")}`;
 }
 
 export function rgbToHsl(r, g, b) {
@@ -51,6 +61,46 @@ export function rgbToHsl(r, g, b) {
     h: Math.round(h * 360),
     s: Math.round(s * 100),
     l: Math.round(l * 100),
+  };
+}
+
+export function hslToRgb(h, s, l) {
+  h = ((Number(h) % 360) + 360) % 360;
+  s = clampNumber(s, 0, 100) / 100;
+  l = clampNumber(l, 0, 100) / 100;
+
+  const chroma = (1 - Math.abs(2 * l - 1)) * s;
+  const x = chroma * (1 - Math.abs(((h / 60) % 2) - 1));
+  const m = l - chroma / 2;
+
+  let r = 0;
+  let g = 0;
+  let b = 0;
+
+  if (h < 60) {
+    r = chroma;
+    g = x;
+  } else if (h < 120) {
+    r = x;
+    g = chroma;
+  } else if (h < 180) {
+    g = chroma;
+    b = x;
+  } else if (h < 240) {
+    g = x;
+    b = chroma;
+  } else if (h < 300) {
+    r = x;
+    b = chroma;
+  } else {
+    r = chroma;
+    b = x;
+  }
+
+  return {
+    r: Math.round((r + m) * 255),
+    g: Math.round((g + m) * 255),
+    b: Math.round((b + m) * 255),
   };
 }
 
