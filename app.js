@@ -22,8 +22,8 @@ const tools = [
     name: "JSON Formatter",
     category: "Dev",
     description: "Formate, valide et minifie du JSON.",
-    url: "#",
-    status: "soon",
+    url: "/tools/json-formatter",
+    status: "ready",
   },
   {
     id: "base64",
@@ -55,7 +55,7 @@ app.get("/api/tools", (req, res) => {
   res.json({ success: true, tools });
 });
 
-app.get(["/", "/tools/color-picker"], (req, res) => {
+app.get(["/", "/tools/color-picker", "/tools/json-formatter"], (req, res) => {
   res.sendFile(path.join(__dirname, "public", "index.html"));
 });
 
