@@ -52,10 +52,16 @@ input[type="color"] {
   padding: 14px;
   font-size: 1rem;
   outline: none;
+  transition: border-color 0.2s ease, box-shadow 0.2s ease;
 }
 
 .copy-row input:focus {
   border-color: var(--border-orange);
+}
+
+.copy-row input[data-invalid="true"] {
+  border-color: rgb(255, 107, 107);
+  box-shadow: 0 0 0 3px rgba(255, 107, 107, 0.12);
 }
 
 .copy-row button {
@@ -64,7 +70,7 @@ input[type="color"] {
   justify-content: center;
   border: 0;
   border-radius: 999px;
-  background: linear-gradient(135deg, var(--primary), #ff5200);
+  background: linear-gradient(135deg, var(--primary), rgb(255, 82, 0));
   color: #111;
   font-weight: 900;
   cursor: pointer;
