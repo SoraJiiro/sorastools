@@ -126,37 +126,96 @@ export function setStatus(element, message, type = "default") {
   element.dataset.type = type;
 }
 
-export function textAreaTabHandler(event, textarea) {
-  var accessTab = true;
+function emitTextareaInput(textarea) {
+  textarea.dispatchEvent(new Event("input", { bubbles: true }));
+}
 
-  if (event.key === "Escape") {
-    accessTab = false;
+function getSelectedTextRange(textarea) {
+  const { selectionStart, selectionEnd, value } = textarea;
+  const lineStart = value.lastIndexOf("\n", selectionStart - 1) + 1;
+  let lineEnd = selectionEnd;
+
+  if (selectionStart !== selectionEnd && value[selectionEnd - 1] === "\n") {
+    lineEnd = selectionEnd - 1;
+  }
+
+  const nextLineBreak = value.indexOf("\n", lineEnd);
+  lineEnd = nextLineBreak === -1 ? value.length : nextLineBreak;
+
+  return { lineStart, lineEnd, selectionStart, selectionEnd };
+}
+
+export function textAreaTabHandler(event, textarea = event.currentTarget) {
+  if (event.key !== "Tab" || !textarea || textarea.readOnly || textarea.disabled) {
     return;
   }
 
-  if (event.key === "Tab" && accessTab) {
-    event.preventDefault();
+  event.preventDefault();
 
-    const start = mdInput.selectionStart;
-    const end = mdInput.selectionEnd;
+  const tab = "\t";
+  const { value, selectionStart, selectionEnd } = textarea;
 
+  if (selectionStart === selectionEnd) {
     if (event.shiftKey) {
-      const before = mdInput.value.slice(0, start);
-      const after = mdInput.value.slice(end);
-      const lineStart = before.lastIndexOf("\n") + 1;
-      const line = mdInput.value.slice(lineStart, end);
+      const lineStart = value.lastIndexOf("\n", selectionStart - 1) + 1;
+      const lineBeforeCursor = value.slice(lineStart, selectionStart);
+      const indentationMatch = lineBeforeCursor.match(/^(\t| {1,2})/);
 
-      if (line.startsWith("\t")) {
-        mdInput.value =
-          mdInput.value.slice(0, lineStart) + line.slice(1) + after;
-        mdInput.selectionStart = mdInput.selectionEnd = start - 1;
-      }
-    } else {
-      mdInput.value =
-        mdInput.value.slice(0, start) + "\t" + mdInput.value.slice(end);
-      mdInput.selectionStart = mdInput.selectionEnd = start + 1;
+      if (!indentationMatch) return;
+
+      const removeLength = indentationMatch[0].length;
+      textarea.value = value.slice(0, lineStart) + value.slice(lineStart + removeLength);
+      textarea.selectionStart = textarea.selectionEnd = Math.max(lineStart, selectionStart - removeLength);
+      emitTextareaInput(textarea);
+      return;
     }
 
-    accessTab = true;
+    textarea.value = value.slice(0, selectionStart) + tab + value.slice(selectionEnd);
+    textarea.selectionStart = textarea.selectionEnd = selectionStart + tab.length;
+    emitTextareaInput(textarea);
+    return;
   }
+
+  const { lineStart, lineEnd } = getSelectedTextRange(textarea);
+  const before = value.slice(0, lineStart);
+  const selectedBlock = value.slice(lineStart, lineEnd);
+  const after = value.slice(lineEnd);
+  const lines = selectedBlock.split("\n");
+
+  if (event.shiftKey) {
+    let removedBeforeSelection = 0;
+    let totalRemoved = 0;
+    let currentIndex = lineStart;
+
+    const updatedLines = lines.map((line) => {
+      const match = line.match(/^(\t| {1,2})/);
+      const removeLength = match ? match[0].length : 0;
+
+      if (removeLength && currentIndex < selectionStart) {
+        removedBeforeSelection += Math.min(removeLength, selectionStart - currentIndex);
+      }
+
+      currentIndex += line.length + 1;
+      totalRemoved += removeLength;
+      return removeLength ? line.slice(removeLength) : line;
+    });
+
+    textarea.value = before + updatedLines.join("\n") + after;
+    textarea.selectionStart = Math.max(lineStart, selectionStart - removedBeforeSelection);
+    textarea.selectionEnd = Math.max(textarea.selectionStart, selectionEnd - totalRemoved);
+    emitTextareaInput(textarea);
+    return;
+  }
+
+  const updatedBlock = lines.map((line) => tab + line).join("\n");
+  textarea.value = before + updatedBlock + after;
+  textarea.selectionStart = selectionStart + tab.length;
+  textarea.selectionEnd = selectionEnd + lines.length * tab.length;
+  emitTextareaInput(textarea);
+}
+
+export function setupTextareaTabHandlers(selector = "textarea") {
+  document.querySelectorAll(selector).forEach((textarea) => {
+    textarea.addEventListener("keydown", (event) => textAreaTabHandler(event, textarea));
+  });
 }
