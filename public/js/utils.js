@@ -1,51 +1,3 @@
-const actionsLabels = {
-  minifier: "Minifier le code",
-  formatter: "Formater le code (indentation, espaces...)",
-  valider: "Valider le code (syntaxe)",
-  copier: "Copier dans le presse-papiers",
-  vider: "Vider l'input et l'output",
-  g: "Chercher toutes les correspondances",
-  i: "Ignorer la casse",
-  m: "Mode multi-lignes",
-  "voir les tools": "Voir les outils",
-  ouvrir: "Ouvrir l'outil",
-  "entrez le code hex": "Entrez le code hexadécimal de la couleur",
-  "entrez le code rgb": "Entrez le code RGB de la couleur",
-  "entrez le code hsl": "Entrez le code HSL de la couleur",
-};
-
-function normalizeActionLabel(value = "") {
-  return String(value).trim().replace(/\s+/g, " ").toLowerCase();
-}
-
-function getElementActionKey(element) {
-  const values = [
-    element.dataset?.label,
-    element.dataset?.action,
-    element.getAttribute("aria-label"),
-    element.getAttribute("title"),
-    element.getAttribute("placeholder"),
-    element.value,
-    element.textContent,
-  ];
-
-  return values.map(normalizeActionLabel).find(Boolean) || "";
-}
-
-function getActionLabel(actionKey) {
-  if (!actionKey) return "";
-
-  if (actionsLabels[actionKey]) {
-    return actionsLabels[actionKey];
-  }
-
-  const matchingKey = Object.keys(actionsLabels).find((key) =>
-    actionKey.includes(key),
-  );
-
-  return matchingKey ? actionsLabels[matchingKey] : "";
-}
-
 export function escapeHtml(value) {
   return String(value)
     .replaceAll("&", "&amp;")
@@ -55,20 +7,17 @@ export function escapeHtml(value) {
     .replaceAll("'", "&#039;");
 }
 
-export function applyActionsLabels(selector) {
-  if (!selector) return 0;
-
+export function applyActionsLabels(selector = "[data-label]") {
   const elements = document.querySelectorAll(selector);
   let appliedCount = 0;
 
   elements.forEach((element) => {
-    const actionKey = getElementActionKey(element);
-    const actionLabel = getActionLabel(actionKey);
+    const label = element.dataset.label?.trim();
 
-    if (!actionLabel) return;
+    if (!label) return;
 
-    element.setAttribute("aria-label", actionLabel);
-    element.setAttribute("title", actionLabel);
+    element.setAttribute("aria-label", label);
+    element.setAttribute("title", label);
     appliedCount += 1;
   });
 
