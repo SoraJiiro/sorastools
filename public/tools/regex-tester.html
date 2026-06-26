@@ -98,11 +98,15 @@
         Une expression régulière, ou <code>regex</code>, est un motif utilisé
         pour rechercher, valider ou extraire des morceaux de texte. Elle peut
         servir à trouver une adresse email, une URL, une date ou un format
-        précis dans une chaîne de caractères.
+        précis dans une chaîne de caractères. Le <code>Regex</code> sert
+        également à valider des entrées utilisateur, comme un mot de passe ou un
+        numéro de téléphone et ajoute une sécurité supplémentaire s'il est
+        ajouté au code serveur qui reçoit ces données.
       </p>
 
       <p>
-        Le Regex Tester utilise l’objet JavaScript <code>RegExp</code> pour
+        Le Regex Tester utilise l’objet / classe JavaScript <code>RegExp</code>
+        pour
         appliquer le motif au texte fourni. Les options comme <code>g</code>,
         <code>i</code> et <code>m</code> permettent respectivement de chercher
         toutes les correspondances, d’ignorer la casse et de gérer le mode
