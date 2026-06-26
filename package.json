@@ -2,10 +2,10 @@
   "name": "sorastools",
   "version": "1.0.0",
   "description": "Une app web regroupant des outils pratiques : conversions, color picker, générateurs de templates et utilitaires développeur.",
-  "main": "app.js",
+  "main": "src/app.js",
   "scripts": {
-    "start": "node app.js",
-    "dev": "node --watch app.js"
+    "start": "node src/app.js",
+    "dev": "node --watch src/app.js"
   },
   "keywords": [
     "tools",
