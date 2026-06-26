@@ -1,0 +1,70 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Regex Tester - SoraTools</title>
+  <meta name="description" content="Teste une expression régulière sur un texte et affiche les correspondances.">
+  <link rel="stylesheet" href="/css/style.css">
+  <script src="/js/main.js" defer></script>
+</head>
+<body>
+  <header class="site-header">
+    <nav class="navbar">
+      <a class="logo" href="/">SoraTools</a>
+      <div class="nav-links">
+        <a href="/#tools">Tools</a>
+        <a href="/tools/color-picker">Color picker</a>
+        <a href="/tools/json-formatter">JSON</a>
+        <a href="/tools/regex-tester">Regex</a>
+      </div>
+    </nav>
+  </header>
+
+  <main>
+    <section class="section tool-section" id="regex-tester">
+      <div class="section-heading">
+        <p class="eyebrow">Dev</p>
+        <h1>Regex Tester</h1>
+        <p>Teste une expression régulière sur un texte et affiche les correspondances en direct.</p>
+      </div>
+
+      <div class="regex-tool">
+        <div class="regex-controls">
+          <label class="field regex-pattern-field">
+            <span>Expression régulière</span>
+            <input type="text" data-regex-pattern placeholder="ex: \b[a-z]+\b" value="\btool\w*\b">
+          </label>
+
+          <div class="regex-flags" aria-label="Options Regex">
+            <label><input type="checkbox" data-regex-flag value="g" checked> g</label>
+            <label><input type="checkbox" data-regex-flag value="i" checked> i</label>
+            <label><input type="checkbox" data-regex-flag value="m"> m</label>
+          </div>
+        </div>
+
+        <div class="regex-editor-grid">
+          <label class="field regex-field">
+            <span>Texte à tester</span>
+            <textarea data-regex-text spellcheck="false">SoraTools regroupe plusieurs tools utiles : JSON Formatter, Color Picker et Regex Tester.</textarea>
+          </label>
+
+          <div class="field regex-field">
+            <span>Prévisualisation</span>
+            <pre class="regex-preview" data-regex-preview></pre>
+          </div>
+        </div>
+
+        <div class="regex-results">
+          <p class="regex-status" data-regex-status>En attente.</p>
+          <ul class="regex-matches" data-regex-matches></ul>
+        </div>
+      </div>
+    </section>
+  </main>
+
+  <footer class="site-footer">
+    <p>SoraTools - Regex Tester.</p>
+  </footer>
+</body>
+</html>
