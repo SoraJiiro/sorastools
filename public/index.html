@@ -13,7 +13,7 @@
     <nav class="navbar">
       <a class="logo" href="/">SoraTools</a>
       <div class="nav-links">
-        <a href="#tools">Tools</a>
+        <a href="/#tools">Tools</a>
         <a href="/tools/color-picker">Color picker</a>
         <a href="/tools/json-formatter">JSON</a>
       </div>
@@ -37,81 +37,6 @@
         <h2>Tools disponibles</h2>
       </div>
       <div class="tools-grid" data-tools-grid></div>
-    </section>
-
-    <section class="section tool-section" id="color-picker" data-route="/tools/color-picker">
-      <div class="section-heading">
-        <p class="eyebrow">Design</p>
-        <h2>Color picker</h2>
-        <p>Choisis une couleur pour obtenir instantanément ses valeurs HEX, RGB et HSL.</p>
-      </div>
-
-      <div class="color-tool">
-        <div class="color-preview" data-color-preview></div>
-
-        <div class="color-panel">
-          <label class="field">
-            <span>Couleur</span>
-            <input type="color" data-color-input value="#ff7a00">
-          </label>
-
-          <label class="field">
-            <span>HEX</span>
-            <div class="copy-row">
-              <input type="text" data-hex-output readonly>
-              <button type="button" data-copy="hex">Copier</button>
-            </div>
-          </label>
-
-          <label class="field">
-            <span>RGB</span>
-            <div class="copy-row">
-              <input type="text" data-rgb-output readonly>
-              <button type="button" data-copy="rgb">Copier</button>
-            </div>
-          </label>
-
-          <label class="field">
-            <span>HSL</span>
-            <div class="copy-row">
-              <input type="text" data-hsl-output readonly>
-              <button type="button" data-copy="hsl">Copier</button>
-            </div>
-          </label>
-        </div>
-      </div>
-    </section>
-
-    <section class="section tool-section" id="json-formatter" data-route="/tools/json-formatter">
-      <div class="section-heading">
-        <p class="eyebrow">Dev</p>
-        <h2>JSON Formatter</h2>
-        <p>Colle du JSON pour le valider, le formater, le minifier ou le copier proprement.</p>
-      </div>
-
-      <div class="json-tool">
-        <div class="json-toolbar">
-          <button type="button" data-json-format>Formatter</button>
-          <button type="button" data-json-minify>Minifier</button>
-          <button type="button" data-json-validate>Valider</button>
-          <button type="button" data-json-clear>Vider</button>
-          <button type="button" data-json-copy>Copier</button>
-        </div>
-
-        <div class="json-editor-grid">
-          <label class="field json-field">
-            <span>Input JSON</span>
-            <textarea data-json-input spellcheck="false" placeholder='{"name":"SoraTools","tools":["JSON Formatter","Color Picker"]}'></textarea>
-          </label>
-
-          <label class="field json-field">
-            <span>Résultat</span>
-            <textarea data-json-output spellcheck="false" readonly></textarea>
-          </label>
-        </div>
-
-        <p class="json-status" data-json-status>En attente de JSON.</p>
-      </div>
     </section>
   </main>
 
