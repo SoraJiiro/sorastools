@@ -5,7 +5,7 @@ const path = require("path");
 const app = express();
 const PORT = process.env.PORT || 3000;
 const PUBLIC_DIR = path.join(__dirname, "..", "public");
-const TOOLS_FILE = path.join(PUBLIC_DIR, "data", "toolStorage.json");
+const TOOLS_FILE = path.join(__dirname, "data", "toolStorage.json");
 
 app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
@@ -15,7 +15,11 @@ async function getTools() {
   try {
     const fileContent = await fs.readFile(TOOLS_FILE, "utf-8");
     const data = JSON.parse(fileContent);
-    return Array.isArray(data.tools) ? data.tools : [];
+
+    if (Array.isArray(data)) return data;
+    if (Array.isArray(data.tools)) return data.tools;
+
+    return [];
   } catch (error) {
     console.error("Erreur lors du chargement des outils :", error);
     return [];
