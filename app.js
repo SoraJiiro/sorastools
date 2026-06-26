@@ -55,8 +55,16 @@ app.get("/api/tools", (req, res) => {
   res.json({ success: true, tools });
 });
 
-app.get(["/", "/tools/color-picker", "/tools/json-formatter"], (req, res) => {
+app.get("/", (req, res) => {
   res.sendFile(path.join(__dirname, "public", "index.html"));
+});
+
+app.get("/tools/color-picker", (req, res) => {
+  res.sendFile(path.join(__dirname, "public", "tools", "color-picker.html"));
+});
+
+app.get("/tools/json-formatter", (req, res) => {
+  res.sendFile(path.join(__dirname, "public", "tools", "json-formatter.html"));
 });
 
 app.use((req, res) => {
