@@ -44,19 +44,20 @@
               <span>Markdown</span>
               <textarea data-md-input spellcheck="false"># SoraTools
 
-Un **Markdown Previewer** simple avec `marked`.
+Un **Markdown Previewer** simple à utiliser.
 
 ## Fonctionnalités
 
 - Rendu en direct
-- Copie du Markdown
-- Copie du HTML
+- Copies
+- Exports
 
 ```js
 console.log("Hello Markdown");
 ```
 
-> Première version simple.</textarea>
+> Utilisation du package Node `marked`.
+> [Documentation](https://www.npmjs.com/package/marked)</textarea>
             </label>
 
             <div class="field md-field">
@@ -69,6 +70,27 @@ console.log("Hello Markdown");
         </div>
       </section>
     </main>
+
+    <section class="tech-explanation">
+      <div class="tech-explanation-heading">
+        <p class="tech-name">Markdown (MD)</p>
+        <h2 class="subtitle">Comment ça marche ?</h2>
+      </div>
+
+      <p>
+        Le Markdown est un langage de balisage léger qui permet de formater du
+        texte en utilisant une syntaxe simple. Il est souvent utilisé pour
+        rédiger des documents, des articles de blog, des README de projets
+        logiciels, etc.
+      </p>
+
+      <p>
+        Le Markdown Previewer développé ici utilise le package Node
+        <code>marked</code> pour
+        convertir le texte Markdown en HTML. Le rendu est mis à jour en temps
+        réel à mesure que l'utilisateur saisit du texte dans la zone de saisie.
+      </p>
+    </section>
 
     <footer class="site-footer">
       <p>SoraTools - Markdown Previewer.</p>

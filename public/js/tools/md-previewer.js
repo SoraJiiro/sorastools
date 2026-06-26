@@ -34,7 +34,7 @@ async function renderMarkdown() {
 
     lastHtml = data.html;
     mdPreview.innerHTML = lastHtml;
-    setMdStatus("Preview générée.", "success");
+    setMdStatus("Préview générée en direct.", "success");
   } catch (error) {
     setMdStatus(`Erreur : ${error.message}`, "error");
   }
