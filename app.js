@@ -26,6 +26,14 @@ const tools = [
     status: "ready",
   },
   {
+    id: "regex-tester",
+    name: "Regex Tester",
+    category: "Dev",
+    description: "Teste une expression régulière sur un texte et affiche les correspondances.",
+    url: "/tools/regex-tester",
+    status: "ready",
+  },
+  {
     id: "youtube-downloader",
     name: "YouTube Downloader",
     category: "Médias",
@@ -81,6 +89,10 @@ app.get("/tools/color-picker", (req, res) => {
 
 app.get("/tools/json-formatter", (req, res) => {
   res.sendFile(path.join(__dirname, "public", "tools", "json-formatter.html"));
+});
+
+app.get("/tools/regex-tester", (req, res) => {
+  res.sendFile(path.join(__dirname, "public", "tools", "regex-tester.html"));
 });
 
 app.use((req, res) => {
