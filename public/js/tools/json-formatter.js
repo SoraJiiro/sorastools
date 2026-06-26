@@ -8,6 +8,16 @@ function setJsonStatus(message, type = "default") {
   setStatus(jsonStatus, message, type);
 }
 
+function setJsonOutput(value = "") {
+  if (!jsonOutput) return;
+
+  jsonOutput.textContent = value;
+}
+
+function getJsonOutput() {
+  return jsonOutput?.textContent || "";
+}
+
 function parseJsonInput() {
   if (!jsonInput) return null;
 
@@ -41,7 +51,7 @@ function setupJsonFormatter() {
     const parsedJson = parseJsonInput();
     if (!parsedJson) return;
 
-    jsonOutput.value = JSON.stringify(parsedJson, null, 2);
+    setJsonOutput(JSON.stringify(parsedJson, null, 2));
     setJsonStatus("JSON valide et formaté.", "success");
   });
 
@@ -49,7 +59,7 @@ function setupJsonFormatter() {
     const parsedJson = parseJsonInput();
     if (!parsedJson) return;
 
-    jsonOutput.value = JSON.stringify(parsedJson);
+    setJsonOutput(JSON.stringify(parsedJson));
     setJsonStatus("JSON valide et minifié.", "success");
   });
 
@@ -63,12 +73,12 @@ function setupJsonFormatter() {
 
   clearButton?.addEventListener("click", () => {
     jsonInput.value = "";
-    jsonOutput.value = "";
+    setJsonOutput();
     setJsonStatus("En attente de JSON.", "default");
   });
 
   copyButton?.addEventListener("click", async () => {
-    const textToCopy = jsonOutput.value || jsonInput.value;
+    const textToCopy = getJsonOutput() || jsonInput.value;
 
     if (!textToCopy.trim()) {
       setJsonStatus("Aucun JSON à copier.", "warning");
