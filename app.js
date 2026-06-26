@@ -26,6 +26,22 @@ const tools = [
     status: "ready",
   },
   {
+    id: "youtube-downloader",
+    name: "YouTube Downloader",
+    category: "Médias",
+    description: "Télécharge une vidéo YouTube en MP3 ou MP4.",
+    url: "#",
+    status: "soon",
+  },
+  {
+    id: "js-minifier",
+    name: "JS Minifier",
+    category: "Dev",
+    description: "Minifie du JavaScript avec Terser / minify.",
+    url: "#",
+    status: "soon",
+  },
+  {
     id: "base64",
     name: "Base64 Encoder / Decoder",
     category: "Dev",
