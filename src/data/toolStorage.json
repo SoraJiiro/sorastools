@@ -28,8 +28,8 @@
     "name": "Markdown Previewer",
     "category": "Dev",
     "description": "Prévisualise du Markdown en HTML.",
-    "url": "#",
-    "status": "soon"
+    "url": "/tools/md-previewer",
+    "status": "ready"
   },
   {
     "id": "js-minifier",
