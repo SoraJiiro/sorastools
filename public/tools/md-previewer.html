@@ -1,0 +1,76 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Markdown Previewer - SoraTools</title>
+  <meta name="description" content="Écris du Markdown et visualise le rendu HTML en direct.">
+  <link rel="stylesheet" href="/css/style.css">
+  <link rel="stylesheet" href="/css/md-previewer.css">
+  <script type="module" src="/js/tools/md-previewer.js"></script>
+</head>
+<body>
+  <header class="site-header">
+    <nav class="navbar">
+      <a class="logo" href="/">SoraTools</a>
+      <div class="nav-links">
+        <a href="/#tools">Tools</a>
+        <a href="/tools/color-picker">Color picker</a>
+        <a href="/tools/json-formatter">JSON</a>
+        <a href="/tools/regex-tester">Regex</a>
+        <a href="/tools/md-previewer">Markdown</a>
+      </div>
+    </nav>
+  </header>
+
+  <main>
+    <section class="section tool-section" id="md-previewer">
+      <div class="section-heading">
+        <p class="eyebrow">Dev</p>
+        <h1>Markdown Previewer</h1>
+        <p>Écris du Markdown à gauche et visualise le rendu HTML à droite.</p>
+      </div>
+
+      <div class="md-tool">
+        <div class="md-toolbar">
+          <button type="button" data-md-copy-markdown>Copier Markdown</button>
+          <button type="button" data-md-copy-html>Copier HTML</button>
+          <button type="button" data-md-clear>Vider</button>
+        </div>
+
+        <div class="md-editor-grid">
+          <label class="field md-field">
+            <span>Markdown</span>
+            <textarea data-md-input spellcheck="false"># SoraTools
+
+Un **Markdown Previewer** simple avec `marked`.
+
+## Fonctionnalités
+
+- Rendu en direct
+- Copie du Markdown
+- Copie du HTML
+
+```js
+console.log("Hello Markdown");
+```
+
+> Première version simple.</textarea>
+          </label>
+
+          <div class="field md-field">
+            <span>Preview</span>
+            <article class="md-preview" data-md-preview></article>
+          </div>
+        </div>
+
+        <p class="md-status" data-md-status>En attente.</p>
+      </div>
+    </section>
+  </main>
+
+  <footer class="site-footer">
+    <p>SoraTools - Markdown Previewer.</p>
+  </footer>
+</body>
+</html>
