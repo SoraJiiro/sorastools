@@ -1,12 +1,6 @@
 const express = require("express");
-let hljs = null;
+const hljs = require("highlight.js");
 const { marked } = require("marked");
-
-try {
-  hljs = require("highlight.js");
-} catch (error) {
-  hljs = require("hljs");
-}
 
 const router = express.Router();
 const renderer = new marked.Renderer();
@@ -24,7 +18,7 @@ function normalizeCodeToken(codeToken, languageToken = "") {
   if (typeof codeToken === "object" && codeToken !== null) {
     return {
       code: codeToken.text || "",
-      language: codeToken.lang || "",
+      language: String(codeToken.lang || "").split(/\s+/)[0],
     };
   }
 
@@ -35,25 +29,15 @@ function normalizeCodeToken(codeToken, languageToken = "") {
 }
 
 function highlightCode(code, language) {
-  if (!hljs) return escapeHtml(code);
-
   try {
-    if (language && typeof hljs.getLanguage === "function" && hljs.getLanguage(language)) {
-      try {
-        return hljs.highlight(code, { language, ignoreIllegals: true }).value;
-      } catch (error) {
-        return hljs.highlight(language, code, true).value;
-      }
+    if (language && hljs.getLanguage(language)) {
+      return hljs.highlight(code, { language, ignoreIllegals: true }).value;
     }
 
-    if (typeof hljs.highlightAuto === "function") {
-      return hljs.highlightAuto(code).value;
-    }
+    return hljs.highlightAuto(code).value;
   } catch (error) {
     return escapeHtml(code);
   }
-
-  return escapeHtml(code);
 }
 
 renderer.code = function renderCode(codeToken, languageToken) {
