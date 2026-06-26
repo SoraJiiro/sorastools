@@ -130,7 +130,8 @@ h2 {
 }
 
 .btn,
-.copy-row button {
+.copy-row button,
+.json-toolbar button {
   display: inline-flex;
   align-items: center;
   justify-content: center;
@@ -149,7 +150,8 @@ h2 {
 }
 
 .btn:hover,
-.copy-row button:hover {
+.copy-row button:hover,
+.json-toolbar button:hover {
   transform: translateY(-2px);
   filter: brightness(1.1);
   box-shadow: 0 0 45px rgba(255, 122, 0, 0.35);
@@ -170,7 +172,8 @@ h2 {
 }
 
 .tool-card,
-.color-tool {
+.color-tool,
+.json-tool {
   background: linear-gradient(180deg, rgba(29, 35, 44, 0.92), rgba(18, 22, 28, 0.92));
   border: 1px solid var(--border);
   border-radius: 24px;
@@ -290,7 +293,8 @@ input[type="color"] {
   gap: 10px;
 }
 
-.copy-row input {
+.copy-row input,
+.json-field textarea {
   width: 100%;
   border: 1px solid var(--border);
   border-radius: 14px;
@@ -301,12 +305,61 @@ input[type="color"] {
   outline: none;
 }
 
-.copy-row input:focus {
+.copy-row input:focus,
+.json-field textarea:focus {
   border-color: var(--border-orange);
 }
 
 .copy-row button {
   padding: 0 16px;
+}
+
+.json-tool {
+  padding: 24px;
+  display: grid;
+  gap: 18px;
+}
+
+.json-toolbar {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 10px;
+}
+
+.json-toolbar button {
+  padding: 12px 16px;
+}
+
+.json-editor-grid {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 18px;
+}
+
+.json-field textarea {
+  min-height: 360px;
+  resize: vertical;
+  font-family: Consolas, Monaco, "Courier New", monospace;
+  line-height: 1.55;
+  tab-size: 2;
+}
+
+.json-status {
+  margin: 0;
+  color: var(--muted);
+  font-weight: 800;
+}
+
+.json-status[data-type="success"] {
+  color: #39d353;
+}
+
+.json-status[data-type="warning"] {
+  color: #ffcc66;
+}
+
+.json-status[data-type="error"] {
+  color: #ff6b6b;
 }
 
 .site-footer {
@@ -336,7 +389,8 @@ input[type="color"] {
   .navbar,
   .nav-links,
   .color-tool,
-  .copy-row {
+  .copy-row,
+  .json-editor-grid {
     grid-template-columns: 1fr;
   }
 
