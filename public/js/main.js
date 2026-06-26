@@ -1,3 +1,5 @@
+import { applyActionsLabels } from "./utils.js";
+
 const toolsGrid = document.querySelector("[data-tools-grid]");
 
 async function displayTools() {
@@ -12,6 +14,9 @@ async function displayTools() {
         const isReady = tool.status === "ready";
         const statusText = isReady ? "Disponible" : "Bientôt";
         const href = isReady ? tool.url : "#tools";
+        const linkLabel = isReady
+          ? `Ouvrir l'outil ${tool.name}`
+          : `Outil ${tool.name} bientôt disponible`;
 
         return `
           <article class="tool-card ${isReady ? "" : "tool-card--soon"}">
@@ -19,11 +24,13 @@ async function displayTools() {
             <h3>${tool.name}</h3>
             <p>${tool.description}</p>
             <span class="tool-card__status">${statusText}</span>
-            <a class="tool-card__link" href="${href}">${isReady ? "Ouvrir" : "À venir"}</a>
+            <a class="tool-card__link" href="${href}" data-label="${linkLabel}">${isReady ? "Ouvrir" : "À venir"}</a>
           </article>
         `;
       })
       .join("");
+
+    applyActionsLabels();
   } catch (error) {
     toolsGrid.innerHTML = "<p>Impossible de charger les tools.</p>";
   }
