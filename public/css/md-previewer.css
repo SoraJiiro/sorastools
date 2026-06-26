@@ -55,7 +55,6 @@
   min-height: 460px;
   height: 460px;
   border: 1px solid var(--border);
-  border-radius: 14px;
   background: rgba(255, 255, 255, 0.04);
   color: var(--text);
   padding: 18px;
@@ -69,7 +68,7 @@
   line-height: 1.55;
   tab-size: 2;
   resize: none;
-  cursor: copy;
+  cursor: text;
 }
 
 .md-field textarea:focus {
