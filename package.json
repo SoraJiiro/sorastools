@@ -1,0 +1,22 @@
+{
+  "name": "sorastools",
+  "version": "1.0.0",
+  "description": "Une app web regroupant des outils pratiques : conversions, color picker, générateurs de templates et utilitaires développeur.",
+  "main": "app.js",
+  "scripts": {
+    "start": "node app.js",
+    "dev": "node --watch app.js"
+  },
+  "keywords": [
+    "tools",
+    "converter",
+    "color-picker",
+    "templates",
+    "express"
+  ],
+  "author": "SoraJiiro",
+  "license": "MIT",
+  "dependencies": {
+    "express": "^4.18.3"
+  }
+}
