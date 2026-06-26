@@ -14,13 +14,13 @@
   <body>
     <header class="site-header">
       <nav class="navbar">
-        <a class="logo" href="/">SoraTools</a>
+        <a class="logo" href="/" data-label="Retourner à l'accueil SoraTools">SoraTools</a>
         <div class="nav-links">
-          <a href="/#tools">Tools</a>
-          <a href="/tools/color-picker">Color picker</a>
-          <a href="/tools/json-formatter">JSON</a>
-          <a href="/tools/regex-tester">Regex</a>
-          <a href="/tools/md-previewer">Markdown</a>
+          <a href="/#tools" data-label="Aller au catalogue des tools">Tools</a>
+          <a href="/tools/color-picker" data-label="Ouvrir le Color Picker">Color picker</a>
+          <a href="/tools/json-formatter" data-label="Ouvrir le JSON Formatter">JSON</a>
+          <a href="/tools/regex-tester" data-label="Ouvrir le Regex Tester">Regex</a>
+          <a href="/tools/md-previewer" data-label="Ouvrir le Markdown Previewer">Markdown</a>
         </div>
       </nav>
     </header>
@@ -35,17 +35,17 @@
 
         <div class="md-tool">
           <div class="md-toolbar">
-            <button type="button" data-md-copy-markdown>Copier Markdown</button>
-            <button type="button" data-md-copy-html>Copier HTML</button>
-            <button type="button" data-md-export-markdown>Exporter .md</button>
-            <button type="button" data-md-export-html>Exporter .html</button>
-            <button type="button" data-md-clear>Vider</button>
+            <button type="button" data-md-copy-markdown data-label="Copier le Markdown">Copier Markdown</button>
+            <button type="button" data-md-copy-html data-label="Copier le HTML généré">Copier HTML</button>
+            <button type="button" data-md-export-markdown data-label="Exporter le Markdown en fichier .md">Exporter .md</button>
+            <button type="button" data-md-export-html data-label="Exporter le rendu en fichier HTML">Exporter .html</button>
+            <button type="button" data-md-clear data-label="Vider le Markdown et la prévisualisation">Vider</button>
           </div>
 
           <div class="md-editor-grid">
-            <label class="field md-field">
+            <label class="field md-field" data-label="Champ de saisie Markdown">
               <span>Markdown</span>
-              <textarea data-md-input spellcheck="false"><!--
+              <textarea data-md-input data-label="Écrire le Markdown" spellcheck="false"><!--
 A remplacer par votre texte Markdown
 --> 
 # SoraTools
