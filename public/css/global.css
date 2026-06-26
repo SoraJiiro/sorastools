@@ -430,6 +430,7 @@ h2 {
 textarea,
 article {
   z-index: 1;
+  resize: none;
   border-radius: 14px 0 0 14px;
 }
 

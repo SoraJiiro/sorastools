@@ -64,10 +64,6 @@
   tab-size: 2;
 }
 
-.json-field textarea {
-  resize: vertical;
-}
-
 .json-field textarea:focus,
 .json-output:focus {
   border-color: var(--border-orange);

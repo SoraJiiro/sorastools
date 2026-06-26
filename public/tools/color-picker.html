@@ -9,6 +9,7 @@
     <link rel="stylesheet" href="/css/global.css">
     <link rel="stylesheet" href="/css/color-picker.css">
     <script type="module" src="/js/tools/color-picker.js"></script>
+    <script type="module" src="/js/global.js"></script>
   </head>
   <body>
     <header class="site-header">
@@ -34,26 +35,32 @@
           <div class="color-panel">
             <label class="field">
               <span>Couleur</span>
-              <input type="color" data-color-input value="#ffffff">
+              <input type="color" data-color-input
+                data-label="Selectionner une couleur" value="#ffffff">
             </label>
             <label class="field">
               <span>HEX</span>
               <div class="copy-row">
-                <input type="text" data-hex-output placeholder="#ff7a00">
+                <input type="text" data-hex-output
+                  data-label="Entrer le code HEX" placeholder="#ffffff">
                 <button type="button" data-copy="hex">Copier</button>
               </div>
             </label>
             <label class="field">
               <span>RGB</span>
               <div class="copy-row">
-                <input type="text" data-rgb-output placeholder="rgb(255, 122, 0)">
+                <input type="text" data-rgb-output
+                  data-label="Entrer le code RGB"
+                  placeholder="rgb(255, 255, 255)">
                 <button type="button" data-copy="rgb">Copier</button>
               </div>
             </label>
             <label class="field">
               <span>HSL</span>
               <div class="copy-row">
-                <input type="text" data-hsl-output placeholder="hsl(28, 100%, 50%)">
+                <input type="text" data-hsl-output
+                  data-label="Entrer le code HSL"
+                  placeholder="hsl(0, 0%, 100%)">
                 <button type="button" data-copy="hsl">Copier</button>
               </div>
             </label>

@@ -63,11 +63,9 @@
 }
 
 .md-field textarea {
-  resize: vertical;
   font-family: Consolas, Monaco, "Courier New", monospace;
   line-height: 1.55;
   tab-size: 2;
-  resize: none;
   cursor: text;
 }
 

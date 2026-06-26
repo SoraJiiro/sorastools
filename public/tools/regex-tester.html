@@ -9,6 +9,7 @@
     <link rel="stylesheet" href="/css/global.css">
     <link rel="stylesheet" href="/css/regex-tester.css">
     <script type="module" src="/js/tools/regex-tester.js"></script>
+    <script type="module" src="/js/global.js"></script>
   </head>
   <body>
     <header class="site-header">
@@ -53,17 +54,21 @@
               <span>Expression régulière</span>
               <div class="regex-pattern-row">
                 <input type="text" data-regex-pattern
+                  data-label="Entrer l'expression régulière (regex)"
                   placeholder="ex: \b[a-z]+\b" value="\btool\w*\b">
                 <button type="button" data-regex-copy>Copier</button>
               </div>
             </label>
 
             <div class="regex-flags" aria-label="Options Regex">
-              <label><input type="checkbox" data-regex-flag value="g" checked>
+              <label data-label="g"><input type="checkbox" data-regex-flag
+                  value="g" checked>
                 g</label>
-              <label><input type="checkbox" data-regex-flag value="i" checked>
+              <label data-label="i"><input type="checkbox" data-regex-flag
+                  value="i" checked>
                 i</label>
-              <label><input type="checkbox" data-regex-flag value="m"> m</label>
+              <label data-label="m"><input type="checkbox" data-regex-flag
+                  value="m"> m</label>
             </div>
           </div>
 

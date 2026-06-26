@@ -3,7 +3,6 @@ import {
   downloadTextFile,
   escapeHtml,
   setStatus,
-  setupTextareaTabHandlers,
 } from "../utils.js";
 
 const mdInput = document.querySelector("[data-md-input]");
@@ -11,7 +10,9 @@ const mdPreview = document.querySelector("[data-md-preview]");
 const mdStatus = document.querySelector("[data-md-status]");
 const copyMarkdownButton = document.querySelector("[data-md-copy-markdown]");
 const copyHtmlButton = document.querySelector("[data-md-copy-html]");
-const exportMarkdownButton = document.querySelector("[data-md-export-markdown]");
+const exportMarkdownButton = document.querySelector(
+  "[data-md-export-markdown]",
+);
 const exportHtmlButton = document.querySelector("[data-md-export-html]");
 const clearButton = document.querySelector("[data-md-clear]");
 
@@ -137,7 +138,9 @@ async function exportHtml() {
     await renderMarkdown();
   }
 
-  const htmlDocument = buildFullHtmlDocument(lastHtml || escapeHtml(mdInput.value));
+  const htmlDocument = buildFullHtmlDocument(
+    lastHtml || escapeHtml(mdInput.value),
+  );
   downloadTextFile(htmlDocument, getSafeFilename("html"), "text/html");
   setMdStatus("Fichier .html exporté.", "success");
 }
@@ -145,7 +148,6 @@ async function exportHtml() {
 function setupMarkdownPreviewer() {
   if (!mdInput || !mdPreview) return;
 
-  setupTextareaTabHandlers("textarea:not([readonly])");
   renderMarkdown();
 
   mdInput.addEventListener("input", scheduleRender);

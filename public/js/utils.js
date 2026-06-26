@@ -1,10 +1,46 @@
+const actionsLabels = {
+  minifier: "Minifier le code",
+  formatter: "Formater le code (indentation, espaces...)",
+  valider: "Valider le code (syntaxe)",
+  copier: "Copier dans le presse-papiers",
+  vider: "Vider l'input et l'output",
+  g: "Chercher toutes les correspondances",
+  i: "Ignorer la casse",
+  m: "Mode multi-lignes",
+  "voir les tools": "Voir les outils",
+  ouvrir: "Ouvrir l'outil",
+  "entrez le code hex": "Entrez le code hexadécimal de la couleur",
+  "entrez le code rgb": "Entrez le code RGB de la couleur",
+  "entrez le code hsl": "Entrez le code HSL de la couleur",
+};
+
 export function escapeHtml(value) {
   return String(value)
     .replaceAll("&", "&amp;")
     .replaceAll("<", "&lt;")
     .replaceAll(">", "&gt;")
     .replaceAll('"', "&quot;")
+    .replaceAll(";", "&semi;")
     .replaceAll("'", "&#039;");
+}
+
+export function applyActionsLabels(selector) {
+  if (!selector) return false;
+  const elements = document.querySelectorAll(selector);
+  elements.forEach((element) => {
+    let elementAction =
+      element.textContent?.trim().toLowerCase() ||
+      element.getAttribute("data-label")?.trim().toLowerCase();
+    element.setAttribute("aria-label", actionsLabels[elementAction] || "");
+    element.setAttribute("title", actionsLabels[elementAction] || "");
+  });
+  console.log(`Actions labels applied to ${elements.length} elements.`);
+  elements.forEach((element) => {
+    console.log(
+      `ARIA label ${element.className || element.tagName}:`,
+      element.getAttribute("aria-label"),
+    );
+  });
 }
 
 export function clampNumber(value, min, max) {
@@ -160,7 +196,12 @@ function getSelectedTextRange(textarea) {
 }
 
 export function textAreaTabHandler(event, textarea = event.currentTarget) {
-  if (event.key !== "Tab" || !textarea || textarea.readOnly || textarea.disabled) {
+  if (
+    event.key !== "Tab" ||
+    !textarea ||
+    textarea.readOnly ||
+    textarea.disabled
+  ) {
     return;
   }
 
@@ -178,14 +219,20 @@ export function textAreaTabHandler(event, textarea = event.currentTarget) {
       if (!indentationMatch) return;
 
       const removeLength = indentationMatch[0].length;
-      textarea.value = value.slice(0, lineStart) + value.slice(lineStart + removeLength);
-      textarea.selectionStart = textarea.selectionEnd = Math.max(lineStart, selectionStart - removeLength);
+      textarea.value =
+        value.slice(0, lineStart) + value.slice(lineStart + removeLength);
+      textarea.selectionStart = textarea.selectionEnd = Math.max(
+        lineStart,
+        selectionStart - removeLength,
+      );
       emitTextareaInput(textarea);
       return;
     }
 
-    textarea.value = value.slice(0, selectionStart) + tab + value.slice(selectionEnd);
-    textarea.selectionStart = textarea.selectionEnd = selectionStart + tab.length;
+    textarea.value =
+      value.slice(0, selectionStart) + tab + value.slice(selectionEnd);
+    textarea.selectionStart = textarea.selectionEnd =
+      selectionStart + tab.length;
     emitTextareaInput(textarea);
     return;
   }
@@ -206,7 +253,10 @@ export function textAreaTabHandler(event, textarea = event.currentTarget) {
       const removeLength = match ? match[0].length : 0;
 
       if (removeLength && currentIndex < selectionStart) {
-        removedBeforeSelection += Math.min(removeLength, selectionStart - currentIndex);
+        removedBeforeSelection += Math.min(
+          removeLength,
+          selectionStart - currentIndex,
+        );
       }
 
       currentIndex += line.length + 1;
@@ -215,8 +265,14 @@ export function textAreaTabHandler(event, textarea = event.currentTarget) {
     });
 
     textarea.value = before + updatedLines.join("\n") + after;
-    textarea.selectionStart = Math.max(lineStart, selectionStart - removedBeforeSelection);
-    textarea.selectionEnd = Math.max(textarea.selectionStart, selectionEnd - totalRemoved);
+    textarea.selectionStart = Math.max(
+      lineStart,
+      selectionStart - removedBeforeSelection,
+    );
+    textarea.selectionEnd = Math.max(
+      textarea.selectionStart,
+      selectionEnd - totalRemoved,
+    );
     emitTextareaInput(textarea);
     return;
   }
@@ -230,6 +286,8 @@ export function textAreaTabHandler(event, textarea = event.currentTarget) {
 
 export function setupTextareaTabHandlers(selector = "textarea") {
   document.querySelectorAll(selector).forEach((textarea) => {
-    textarea.addEventListener("keydown", (event) => textAreaTabHandler(event, textarea));
+    textarea.addEventListener("keydown", (event) =>
+      textAreaTabHandler(event, textarea),
+    );
   });
 }

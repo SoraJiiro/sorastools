@@ -1,4 +1,8 @@
-import { copyToClipboard, setStatus, setupTextareaTabHandlers } from "../utils.js";
+import {
+  copyToClipboard,
+  setStatus,
+  setupTextareaTabHandlers,
+} from "../utils.js";
 
 const jsonInput = document.querySelector("[data-json-input]");
 const jsonOutput = document.querySelector("[data-json-output]");
@@ -38,8 +42,6 @@ function parseJsonInput() {
 
 function setupJsonFormatter() {
   if (!jsonInput || !jsonOutput) return;
-
-  setupTextareaTabHandlers("textarea:not([readonly])");
 
   const formatButton = document.querySelector("[data-json-format]");
   const minifyButton = document.querySelector("[data-json-minify]");

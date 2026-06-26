@@ -2,7 +2,6 @@ import {
   copyToClipboard,
   escapeHtml,
   setStatus,
-  setupTextareaTabHandlers,
   temporarilyChangeText,
 } from "../utils.js";
 
@@ -21,7 +20,8 @@ const regexPresets = {
     flags: ["g", "i"],
   },
   url: {
-    pattern: "https?:\\/\\/(?:www\\.)?[a-zA-Z0-9.-]+\\.[a-zA-Z]{2,}(?:\\/[^\\s]*)?",
+    pattern:
+      "https?:\\/\\/(?:www\\.)?[a-zA-Z0-9.-]+\\.[a-zA-Z]{2,}(?:\\/[^\\s]*)?",
     text: "Sites : https://soratools.dev et http://example.com/docs?page=1",
     flags: ["g", "i"],
   },
@@ -31,7 +31,8 @@ const regexPresets = {
     flags: ["g"],
   },
   ip: {
-    pattern: "\\b(?:(?:25[0-5]|2[0-4]\\d|1\\d\\d|[1-9]?\\d)\\.){3}(?:25[0-5]|2[0-4]\\d|1\\d\\d|[1-9]?\\d)\\b",
+    pattern:
+      "\\b(?:(?:25[0-5]|2[0-4]\\d|1\\d\\d|[1-9]?\\d)\\.){3}(?:25[0-5]|2[0-4]\\d|1\\d\\d|[1-9]?\\d)\\b",
     text: "IPs : 192.168.1.1, 8.8.8.8, 255.255.255.255",
     flags: ["g"],
   },
@@ -90,7 +91,11 @@ function updateRegexTester() {
 
   try {
     const regex = new RegExp(pattern, flags);
-    const matches = Array.from(text.matchAll(flags.includes("g") ? regex : new RegExp(pattern, `${flags}g`)));
+    const matches = Array.from(
+      text.matchAll(
+        flags.includes("g") ? regex : new RegExp(pattern, `${flags}g`),
+      ),
+    );
 
     if (matches.length === 0) {
       regexPreview.textContent = text;
@@ -117,7 +122,10 @@ function updateRegexTester() {
 
     highlighted += escapeHtml(text.slice(cursor));
     regexPreview.innerHTML = highlighted;
-    setRegexStatus(`${matches.length} correspondance${matches.length > 1 ? "s" : ""} trouvée${matches.length > 1 ? "s" : ""}.`, "success");
+    setRegexStatus(
+      `${matches.length} correspondance${matches.length > 1 ? "s" : ""} trouvée${matches.length > 1 ? "s" : ""}.`,
+      "success",
+    );
   } catch (error) {
     regexPreview.textContent = text;
     setRegexStatus(`Regex invalide : ${error.message}`, "error");
@@ -127,7 +135,6 @@ function updateRegexTester() {
 function setupRegexTester() {
   if (!regexPattern || !regexText) return;
 
-  setupTextareaTabHandlers("textarea:not([readonly])");
   updateRegexTester();
 
   regexCopyButton?.addEventListener("click", async () => {
