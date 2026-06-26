@@ -1,0 +1,68 @@
+{
+  "tools": [
+    {
+      "id": "color-picker",
+      "name": "Color Picker",
+      "category": "Design",
+      "description": "Choisis une couleur et convertis-la en HEX, RGB et HSL.",
+      "url": "/tools/color-picker",
+      "status": "ready"
+    },
+    {
+      "id": "json-formatter",
+      "name": "JSON Formatter",
+      "category": "Dev",
+      "description": "Formate, valide et minifie du JSON.",
+      "url": "/tools/json-formatter",
+      "status": "ready"
+    },
+    {
+      "id": "regex-tester",
+      "name": "Regex Tester",
+      "category": "Dev",
+      "description": "Teste une expression régulière sur un texte et affiche les correspondances.",
+      "url": "/tools/regex-tester",
+      "status": "ready"
+    },
+    {
+      "id": "markdown-previewer",
+      "name": "Markdown Previewer",
+      "category": "Texte",
+      "description": "Écris du Markdown et visualise le rendu HTML en direct.",
+      "url": "#",
+      "status": "soon"
+    },
+    {
+      "id": "js-minifier",
+      "name": "JS Minifier",
+      "category": "Dev",
+      "description": "Minifie du JavaScript avec Terser / minify.",
+      "url": "#",
+      "status": "soon"
+    },
+    {
+      "id": "base64",
+      "name": "Base64 Encoder / Decoder",
+      "category": "Dev",
+      "description": "Encode ou décode rapidement une chaîne en Base64.",
+      "url": "#",
+      "status": "soon"
+    },
+    {
+      "id": "template-generator",
+      "name": "Template Generator",
+      "category": "Générateurs",
+      "description": "Génère des templates HTML, README, Express ou .env.",
+      "url": "#",
+      "status": "soon"
+    },
+    {
+      "id": "file-converter",
+      "name": "File Converter",
+      "category": "Fichiers",
+      "description": "Convertis des fichiers image, texte ou données.",
+      "url": "#",
+      "status": "soon"
+    }
+  ]
+}
