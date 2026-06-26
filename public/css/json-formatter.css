@@ -49,10 +49,10 @@
   gap: 18px;
 }
 
-.json-field textarea {
+.json-field textarea,
+.json-output {
   width: 100%;
   min-height: 360px;
-  resize: vertical;
   border: 1px solid var(--border);
   background: rgba(255, 255, 255, 0.04);
   color: var(--text);
@@ -64,8 +64,24 @@
   tab-size: 2;
 }
 
-.json-field textarea:focus {
+.json-field textarea {
+  resize: vertical;
+}
+
+.json-field textarea:focus,
+.json-output:focus {
   border-color: var(--border-orange);
+}
+
+.json-output {
+  overflow: auto;
+  white-space: pre;
+  cursor: text;
+}
+
+.json-output:empty::before {
+  content: "Résultat JSON";
+  color: var(--muted);
 }
 
 .json-status {
