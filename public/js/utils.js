@@ -14,33 +14,65 @@ const actionsLabels = {
   "entrez le code hsl": "Entrez le code HSL de la couleur",
 };
 
+function normalizeActionLabel(value = "") {
+  return String(value).trim().replace(/\s+/g, " ").toLowerCase();
+}
+
+function getElementActionKey(element) {
+  const values = [
+    element.dataset?.label,
+    element.dataset?.action,
+    element.getAttribute("aria-label"),
+    element.getAttribute("title"),
+    element.getAttribute("placeholder"),
+    element.value,
+    element.textContent,
+  ];
+
+  return values.map(normalizeActionLabel).find(Boolean) || "";
+}
+
+function getActionLabel(actionKey) {
+  if (!actionKey) return "";
+
+  if (actionsLabels[actionKey]) {
+    return actionsLabels[actionKey];
+  }
+
+  const matchingKey = Object.keys(actionsLabels).find((key) =>
+    actionKey.includes(key),
+  );
+
+  return matchingKey ? actionsLabels[matchingKey] : "";
+}
+
 export function escapeHtml(value) {
   return String(value)
     .replaceAll("&", "&amp;")
     .replaceAll("<", "&lt;")
     .replaceAll(">", "&gt;")
     .replaceAll('"', "&quot;")
-    .replaceAll(";", "&semi;")
     .replaceAll("'", "&#039;");
 }
 
 export function applyActionsLabels(selector) {
-  if (!selector) return false;
+  if (!selector) return 0;
+
   const elements = document.querySelectorAll(selector);
+  let appliedCount = 0;
+
   elements.forEach((element) => {
-    let elementAction =
-      element.textContent?.trim().toLowerCase() ||
-      element.getAttribute("data-label")?.trim().toLowerCase();
-    element.setAttribute("aria-label", actionsLabels[elementAction] || "");
-    element.setAttribute("title", actionsLabels[elementAction] || "");
+    const actionKey = getElementActionKey(element);
+    const actionLabel = getActionLabel(actionKey);
+
+    if (!actionLabel) return;
+
+    element.setAttribute("aria-label", actionLabel);
+    element.setAttribute("title", actionLabel);
+    appliedCount += 1;
   });
-  console.log(`Actions labels applied to ${elements.length} elements.`);
-  elements.forEach((element) => {
-    console.log(
-      `ARIA label ${element.className || element.tagName}:`,
-      element.getAttribute("aria-label"),
-    );
-  });
+
+  return appliedCount;
 }
 
 export function clampNumber(value, min, max) {
