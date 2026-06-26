@@ -53,13 +53,16 @@ Un **Markdown Previewer** simple à utiliser.
 - Rendu en direct
 - Copies
 - Exports
+- Coloration syntaxique avec Highlight.js
 
 ```js
-console.log("Hello Markdown");
+const message = "Hello Markdown";
+console.log(message);
 ```
 
-> Utilisation du package Node `marked`.
-> [Documentation](https://www.npmjs.com/package/marked)
+> Utilisation des packages Node `marked` et `highlight.js`.
+> [Documentation marked](https://www.npmjs.com/package/marked)
+> [Documentation highlight.js](https://www.npmjs.com/package/highlight.js)
 </textarea>
               <p class="textarea-notice">Appuyer sur <code>Échap</code> pour
                 sortir du focus</p>
@@ -91,9 +94,9 @@ console.log("Hello Markdown");
 
       <p>
         Le Markdown Previewer développé ici utilise le package Node
-        <code>marked</code> pour
-        convertir le texte Markdown en HTML. Le rendu est mis à jour en temps
-        réel à mesure que l'utilisateur saisit du texte dans la zone de saisie.
+        <code>marked</code> pour convertir le texte Markdown en HTML et
+        <code>highlight.js</code> pour colorer automatiquement les blocs de code
+        selon le langage indiqué après les triples backticks.
       </p>
     </section>
 
