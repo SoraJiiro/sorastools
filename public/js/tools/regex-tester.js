@@ -1,4 +1,10 @@
-import { copyToClipboard, escapeHtml, setStatus, temporarilyChangeText } from "../utils.js";
+import {
+  copyToClipboard,
+  escapeHtml,
+  setStatus,
+  setupTextareaTabHandlers,
+  temporarilyChangeText,
+} from "../utils.js";
 
 const regexPreset = document.querySelector("[data-regex-preset]");
 const regexPattern = document.querySelector("[data-regex-pattern]");
@@ -121,6 +127,7 @@ function updateRegexTester() {
 function setupRegexTester() {
   if (!regexPattern || !regexText) return;
 
+  setupTextareaTabHandlers("textarea:not([readonly])");
   updateRegexTester();
 
   regexCopyButton?.addEventListener("click", async () => {
