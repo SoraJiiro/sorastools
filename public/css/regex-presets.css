@@ -1,0 +1,27 @@
+.regex-preset-field select {
+  width: 100%;
+  min-height: 52px;
+  border: 1px solid var(--border);
+  border-radius: 14px;
+  background: rgba(255, 255, 255, 0.04);
+  color: var(--text);
+  padding: 14px;
+  font-size: 1rem;
+  outline: none;
+  cursor: pointer;
+  appearance: none;
+  background-image: linear-gradient(45deg, transparent 50%, var(--primary-light) 50%),
+    linear-gradient(135deg, var(--primary-light) 50%, transparent 50%);
+  background-position: calc(100% - 20px) 22px, calc(100% - 14px) 22px;
+  background-size: 6px 6px, 6px 6px;
+  background-repeat: no-repeat;
+}
+
+.regex-preset-field select:focus {
+  border-color: var(--border-orange);
+}
+
+.regex-preset-field select option {
+  background: var(--bg-soft);
+  color: var(--text);
+}
