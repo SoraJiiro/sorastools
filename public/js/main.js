@@ -1,6 +1,6 @@
 const toolsGrid = document.querySelector("[data-tools-grid]");
 
-async function loadTools() {
+async function displayTools() {
   if (!toolsGrid) return;
 
   try {
@@ -29,4 +29,4 @@ async function loadTools() {
   }
 }
 
-loadTools();
+displayTools();
