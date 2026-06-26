@@ -11,6 +11,7 @@ const jsonStatus = document.querySelector("[data-json-status]");
 
 const regexPreset = document.querySelector("[data-regex-preset]");
 const regexPattern = document.querySelector("[data-regex-pattern]");
+const regexCopyButton = document.querySelector("[data-regex-copy]");
 const regexText = document.querySelector("[data-regex-text]");
 const regexPreview = document.querySelector("[data-regex-preview]");
 const regexStatus = document.querySelector("[data-regex-status]");
@@ -334,6 +335,22 @@ function setupRegexTester() {
   if (!regexPattern || !regexText) return;
 
   updateRegexTester();
+
+  regexCopyButton?.addEventListener("click", async () => {
+    if (!regexPattern.value.trim()) {
+      setRegexStatus("Aucune regex à copier.", "warning");
+      return;
+    }
+
+    await navigator.clipboard.writeText(regexPattern.value);
+    const oldText = regexCopyButton.textContent;
+    regexCopyButton.textContent = "Copié";
+    setRegexStatus("Regex copiée dans le presse-papiers.", "success");
+
+    setTimeout(() => {
+      regexCopyButton.textContent = oldText;
+    }, 1000);
+  });
 
   regexPreset?.addEventListener("change", () => {
     const preset = regexPresets[regexPreset.value];
