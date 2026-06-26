@@ -125,3 +125,38 @@ export function setStatus(element, message, type = "default") {
   element.textContent = message;
   element.dataset.type = type;
 }
+
+export function textAreaTabHandler(event, textarea) {
+  var accessTab = true;
+
+  if (event.key === "Escape") {
+    accessTab = false;
+    return;
+  }
+
+  if (event.key === "Tab" && accessTab) {
+    event.preventDefault();
+
+    const start = mdInput.selectionStart;
+    const end = mdInput.selectionEnd;
+
+    if (event.shiftKey) {
+      const before = mdInput.value.slice(0, start);
+      const after = mdInput.value.slice(end);
+      const lineStart = before.lastIndexOf("\n") + 1;
+      const line = mdInput.value.slice(lineStart, end);
+
+      if (line.startsWith("\t")) {
+        mdInput.value =
+          mdInput.value.slice(0, lineStart) + line.slice(1) + after;
+        mdInput.selectionStart = mdInput.selectionEnd = start - 1;
+      }
+    } else {
+      mdInput.value =
+        mdInput.value.slice(0, start) + "\t" + mdInput.value.slice(end);
+      mdInput.selectionStart = mdInput.selectionEnd = start + 1;
+    }
+
+    accessTab = true;
+  }
+}

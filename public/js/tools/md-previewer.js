@@ -1,4 +1,4 @@
-import { copyToClipboard, setStatus } from "../utils.js";
+import { copyToClipboard, setStatus, textAreaTabHandler } from "../utils.js";
 
 const mdInput = document.querySelector("[data-md-input]");
 const mdPreview = document.querySelector("[data-md-preview]");
@@ -51,6 +51,7 @@ function setupMarkdownPreviewer() {
   renderMarkdown();
 
   mdInput.addEventListener("input", scheduleRender);
+  mdInput.addEventListener("keydown", (e) => textAreaTabHandler(e, mdInput));
 
   copyMarkdownButton?.addEventListener("click", async () => {
     if (!mdInput.value.trim()) {
