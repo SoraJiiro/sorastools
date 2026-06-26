@@ -1,5 +1,6 @@
 const express = require("express");
 const fs = require("fs").promises;
+const { marked } = require("marked");
 const path = require("path");
 
 const app = express();
@@ -10,6 +11,11 @@ const TOOLS_FILE = path.join(__dirname, "data", "toolStorage.json");
 app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
 app.use(express.static(PUBLIC_DIR));
+
+marked.setOptions({
+  breaks: true,
+  gfm: true,
+});
 
 async function getTools() {
   try {
@@ -31,6 +37,13 @@ app.get("/api/tools", async (req, res) => {
   res.json({ success: true, tools });
 });
 
+app.post("/api/markdown/preview", (req, res) => {
+  const markdown = typeof req.body.markdown === "string" ? req.body.markdown : "";
+  const html = marked.parse(markdown);
+
+  res.json({ success: true, html });
+});
+
 app.get("/", (req, res) => {
   res.sendFile(path.join(PUBLIC_DIR, "index.html"));
 });
@@ -45,6 +58,10 @@ app.get("/tools/json-formatter", (req, res) => {
 
 app.get("/tools/regex-tester", (req, res) => {
   res.sendFile(path.join(PUBLIC_DIR, "tools", "regex-tester.html"));
+});
+
+app.get("/tools/md-previewer", (req, res) => {
+  res.sendFile(path.join(PUBLIC_DIR, "tools", "md-previewer.html"));
 });
 
 app.use((req, res) => {
