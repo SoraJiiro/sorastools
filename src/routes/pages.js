@@ -40,6 +40,10 @@ router.get("/tools/hexadecimal", (req, res) => {
   sendPublicFile(res, "tools", "hexadecimal.html");
 });
 
+router.get("/tools/time-calculator", (req, res) => {
+  sendPublicFile(res, "tools", "time-calculator.html");
+});
+
 router.use((req, res) => {
   res.status(404);
   sendPublicFile(res, "404.html");
