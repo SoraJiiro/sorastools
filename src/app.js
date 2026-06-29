@@ -1,5 +1,7 @@
-const express = require("express");
 const path = require("path");
+require("dotenv").config({ path: path.join(__dirname, ".env") });
+
+const express = require("express");
 const { NODE_MODULES_DIR, PUBLIC_DIR } = require("./config/paths");
 const toolsApiRoutes = require("./routes/api/tools");
 const markdownApiRoutes = require("./routes/api/markdown");
