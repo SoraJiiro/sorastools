@@ -215,6 +215,10 @@ async function setupContactForm() {
   await loadEmailJsConfig();
   updateCooldownState();
   form.addEventListener("submit", sendContactMessage);
+
+  if (submitButton.disabled) {
+    setContactStatus("Formulaire en cooldown ...", "default");
+  }
 }
 
 setupContactForm();

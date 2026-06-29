@@ -127,7 +127,11 @@
     linear-gradient(45deg, transparent 75%, rgba(255, 255, 255, 0.08) 75%),
     linear-gradient(-45deg, transparent 75%, rgba(255, 255, 255, 0.08) 75%);
   background-size: 24px 24px;
-  background-position: 0 0, 0 12px, 12px -12px, -12px 0;
+  background-position:
+    0 0,
+    0 12px,
+    12px -12px,
+    -12px 0;
 }
 
 .clip-preview {
@@ -161,7 +165,6 @@
 
 .clip-field textarea {
   min-height: 170px;
-  resize: none;
   font-family: Consolas, Monaco, "Courier New", monospace;
   line-height: 1.55;
 }
