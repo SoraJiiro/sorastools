@@ -8,6 +8,7 @@
       content="Écris du Markdown et visualise le rendu HTML en direct.">
     <link rel="icon" type="image/png" href="/assets/logo.png">
     <link rel="shortcut icon" type="image/png" href="/assets/logo.png">
+    <link rel="stylesheet" href="/vendor/highlight.js/styles/github-dark.min.css">
     <link rel="stylesheet" href="/css/global.css">
     <link rel="stylesheet" href="/css/md-previewer.css">
     <link rel="preconnect" href="https://fonts.googleapis.com">
@@ -15,6 +16,7 @@
     <link
       href="https://fonts.googleapis.com/css2?family=Intel+One+Mono:ital,wght@0,300..700;1,300..700&family=Roboto+Condensed:ital,wght@0,100..900;1,100..900&family=Science+Gothic:wght@100..900&display=swap"
       rel="stylesheet">
+    <script defer src="/vendor/highlight.js/highlight.min.js"></script>
     <script type="module" src="/js/tools/md-previewer.js"></script>
     <script type="module" src="/js/global.js"></script>
   </head>
@@ -126,8 +128,7 @@ console.log(message);
       <p>
         Le Markdown Previewer développé ici utilise le package Node
         <code>marked</code> pour convertir le texte Markdown en HTML et
-        <code>highlight.js</code> pour colorer automatiquement les blocs de code
-        selon le langage indiqué après les triples backticks.
+        <code>highlight.js</code> pour colorer automatiquement les blocs de code.
       </p>
     </section>
 
