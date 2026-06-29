@@ -1,0 +1,182 @@
+<!DOCTYPE html>
+<html lang="fr">
+  <head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Time Calculator - SoraTools</title>
+    <meta name="description"
+      content="Convertis des durées entre ms, secondes, minutes, heures, mois et années, puis génère ou décode des timestamps.">
+    <link rel="icon" type="image/png" href="/assets/logo.png">
+    <link rel="shortcut icon" type="image/png" href="/assets/logo.png">
+    <link rel="stylesheet" href="/css/global.css">
+    <link rel="stylesheet" href="/css/time-calculator.css">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link
+      href="https://fonts.googleapis.com/css2?family=Intel+One+Mono:ital,wght@0,300..700;1,300..700&family=Roboto+Condensed:ital,wght@0,100..900;1,100..900&family=Science+Gothic:wght@100..900&display=swap"
+      rel="stylesheet">
+    <script type="module" src="/js/tools/time-calculator.js"></script>
+    <script type="module" src="/js/global.js"></script>
+  </head>
+  <body>
+    <header class="site-header">
+      <nav class="navbar">
+        <a class="logo" href="/"
+          data-label="Retourner à l'accueil SoraTools"><img class="logo-img"
+            src="/assets/logo.png" alt aria-hidden="true">SoraTools</a>
+        <div class="nav-links">
+          <a href="/#tools" data-label="Aller au catalogue des tools">Tools</a>
+          <a href="/suggest"
+            data-label="Aller aux suggestions de tools">Suggest</a>
+          <a href="/tools/color-picker"
+            data-label="Ouvrir le Color Picker">Color Picker</a>
+          <a href="/tools/json-formatter"
+            data-label="Ouvrir le JSON Formatter">JSON</a>
+          <a href="/tools/regex-tester"
+            data-label="Ouvrir le Regex Tester">Regex</a>
+          <a href="/tools/md-previewer"
+            data-label="Ouvrir le Markdown Previewer">Markdown</a>
+          <a href="/tools/base64"
+            data-label="Ouvrir le Base64 Encoder">Base64</a>
+          <a href="/tools/binary"
+            data-label="Ouvrir le Binary Translator">Binary</a>
+          <a href="/tools/hexadecimal"
+            data-label="Ouvrir le Hexadecimal Translator">Hex</a>
+          <a href="/tools/time-calculator"
+            data-label="Ouvrir le Time Calculator">Time</a>
+        </div>
+      </nav>
+    </header>
+
+    <main>
+      <section class="section tool-section" id="time-calculator">
+        <div class="section-heading">
+          <p class="eyebrow">Dev</p>
+          <h1>Time Calculator</h1>
+          <p>Convertis n'importe quelle valeur de temps vers une autre unité,
+            puis génère ou décode des timestamps.</p>
+        </div>
+
+        <div class="time-tool">
+          <section class="time-panel">
+            <h2>Convertisseur de durée</h2>
+            <div class="time-grid">
+              <label class="time-field">
+                <span>Valeur</span>
+                <input type="text" data-time-duration-value value="1"
+                  placeholder="Ex : 1500, 2.5, 10">
+              </label>
+
+              <label class="time-field">
+                <span>Depuis</span>
+                <select data-time-duration-from>
+                  <option value="ms">Millisecondes (ms)</option>
+                  <option value="s">Secondes (s)</option>
+                  <option value="min">Minutes (min)</option>
+                  <option value="h" selected>Heures (h)</option>
+                  <option value="d">Jours</option>
+                  <option value="month">Mois</option>
+                  <option value="year">Années</option>
+                </select>
+              </label>
+
+              <label class="time-field">
+                <span>Vers</span>
+                <select data-time-duration-to>
+                  <option value="ms">Millisecondes (ms)</option>
+                  <option value="s">Secondes (s)</option>
+                  <option value="min" selected>Minutes (min)</option>
+                  <option value="h">Heures (h)</option>
+                  <option value="d">Jours</option>
+                  <option value="month">Mois</option>
+                  <option value="year">Années</option>
+                </select>
+              </label>
+            </div>
+
+            <div class="time-toolbar">
+              <button type="button" data-time-duration-convert
+                data-label="Convertir la durée">Convertir</button>
+              <button type="button" data-time-duration-swap
+                data-label="Inverser les unités">Inverser</button>
+              <button type="button" data-time-duration-copy
+                data-label="Copier le résultat de conversion">Copier</button>
+              <button type="button" data-time-duration-clear
+                data-label="Vider le convertisseur de durée">Vider</button>
+            </div>
+
+            <label class="time-field">
+              <span>Résultat</span>
+              <textarea data-time-duration-output readonly spellcheck="false"></textarea>
+            </label>
+
+            <p class="time-status" data-time-duration-status>En attente.</p>
+          </section>
+
+          <section class="time-panel">
+            <h2>Timestamp Generator / Decoder</h2>
+            <div class="time-grid">
+              <label class="time-field">
+                <span>Mode</span>
+                <select data-time-timestamp-mode>
+                  <option value="now" selected>Maintenant</option>
+                  <option value="date">Date vers timestamp</option>
+                  <option value="timestamp">Timestamp vers date</option>
+                </select>
+              </label>
+
+              <label class="time-field">
+                <span>Date ou timestamp</span>
+                <input type="text" data-time-timestamp-input
+                  placeholder="Ex : 2026-06-29 14:30 ou 1782736215">
+              </label>
+
+              <div class="time-toolbar">
+                <button type="button" data-time-timestamp-run
+                  data-label="Générer ou décoder le timestamp">Convertir</button>
+                <button type="button" data-time-timestamp-now
+                  data-label="Insérer la date actuelle">Maintenant</button>
+                <button type="button" data-time-timestamp-copy
+                  data-label="Copier le résultat timestamp">Copier</button>
+                <button type="button" data-time-timestamp-clear
+                  data-label="Vider le timestamp tool">Vider</button>
+              </div>
+            </div>
+
+            <label class="time-field">
+              <span>Résultat</span>
+              <textarea data-time-timestamp-output readonly spellcheck="false"></textarea>
+            </label>
+
+            <p class="time-status" data-time-timestamp-status>En attente.</p>
+          </section>
+        </div>
+      </section>
+    </main>
+
+    <section class="tech-explanation">
+      <div class="tech-explanation-heading">
+        <p class="tech-name">Time</p>
+        <h2 class="subtitle">Comment ça marche ?</h2>
+      </div>
+
+      <p>
+        Le convertisseur transforme d'abord la valeur entrée en millisecondes,
+        puis la reconvertit vers l'unité demandée. Les mois sont basés sur une
+        moyenne de <code>30,4375</code> jours et les années sur
+        <code>365,25</code> jours.
+      </p>
+
+      <p>
+        Le générateur de timestamp accepte une date lisible ou un timestamp Unix
+        en secondes ou en millisecondes, puis affiche la date locale, la date UTC,
+        le format ISO 8601, le timestamp en secondes et le timestamp en
+        millisecondes.
+      </p>
+    </section>
+
+    <footer class="site-footer">
+      <p>SoraTools - Time Calculator.</p>
+    </footer>
+  </body>
+</html>
