@@ -1,5 +1,5 @@
 .hero {
-  padding: 86px 0 70px;
+  padding: 86px 0;
   max-width: 780px;
 }
 
@@ -177,7 +177,7 @@
 }
 
 .why .section-heading h2 {
-  max-width: 632px;
+  max-width: 748px;
 }
 
 .why-text,
