@@ -117,8 +117,7 @@
   padding: 16px;
 }
 
-.md-preview pre code,
-.md-preview .hljs {
+.md-preview pre code {
   display: block;
   overflow-x: auto;
   border: 0;
@@ -127,58 +126,6 @@
   padding: 0;
   font-family: Consolas, Monaco, "Courier New", monospace;
   line-height: 1.6;
-}
-
-.md-preview .hljs-comment,
-.md-preview .hljs-quote {
-  color: #8b949e;
-  font-style: italic;
-}
-
-.md-preview .hljs-keyword,
-.md-preview .hljs-selector-tag,
-.md-preview .hljs-subst {
-  color: #ff7a00;
-}
-
-.md-preview .hljs-string,
-.md-preview .hljs-doctag,
-.md-preview .hljs-regexp {
-  color: #a5d6ff;
-}
-
-.md-preview .hljs-title,
-.md-preview .hljs-section,
-.md-preview .hljs-selector-id {
-  color: #d2a8ff;
-  font-weight: 800;
-}
-
-.md-preview .hljs-number,
-.md-preview .hljs-literal,
-.md-preview .hljs-variable,
-.md-preview .hljs-template-variable,
-.md-preview .hljs-tag .hljs-attr {
-  color: #79c0ff;
-}
-
-.md-preview .hljs-tag,
-.md-preview .hljs-name,
-.md-preview .hljs-attribute {
-  color: #7ee787;
-}
-
-.md-preview .hljs-built_in,
-.md-preview .hljs-builtin-name,
-.md-preview .hljs-type,
-.md-preview .hljs-class .hljs-title {
-  color: #ffa657;
-}
-
-.md-preview .hljs-symbol,
-.md-preview .hljs-bullet,
-.md-preview .hljs-link {
-  color: #ffb86b;
 }
 
 .md-preview blockquote {

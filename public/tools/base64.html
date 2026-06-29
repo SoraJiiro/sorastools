@@ -23,10 +23,11 @@
       <nav class="navbar">
         <a class="logo" href="/"
           data-label="Retourner à l'accueil SoraTools"><img class="logo-img"
-            src="/assets/logo.png" alt="" aria-hidden="true">SoraTools</a>
+            src="/assets/logo.png" alt aria-hidden="true">SoraTools</a>
         <div class="nav-links">
           <a href="/#tools" data-label="Aller au catalogue des tools">Tools</a>
-          <a href="/#suggest" data-label="Aller aux suggestions de tools">Suggest</a>
+          <a href="/suggest"
+            data-label="Aller aux suggestions de tools">Suggest</a>
           <a href="/tools/color-picker"
             data-label="Ouvrir le Color Picker">Color Picker</a>
           <a href="/tools/json-formatter"
@@ -46,7 +47,8 @@
         <div class="section-heading">
           <p class="eyebrow">Dev</p>
           <h1>Base64 Encoder / Decoder</h1>
-          <p>Encode du texte en Base64 ou décode une chaîne Base64 en texte lisible.</p>
+          <p>Encode du texte en Base64 ou décode une chaîne Base64 en texte
+            lisible.</p>
         </div>
 
         <div class="b64-tool">
@@ -72,7 +74,8 @@
                 sortir du focus</p>
             </label>
 
-            <label class="field b64-field" data-label="Champ de résultat Base64">
+            <label class="field b64-field"
+              data-label="Champ de résultat Base64">
               <span>Résultat</span>
               <textarea data-b64-output data-label="Résultat Base64"
                 spellcheck="false" readonly></textarea>
@@ -98,8 +101,10 @@
       </p>
 
       <p>
-        Ce tool encode et décode en conservant correctement les caractères UTF-8,
-        donc les accents, emojis et caractères spéciaux peuvent être traités sans
+        Ce tool encode et décode en conservant correctement les caractères
+        UTF-8,
+        donc les accents, emojis et caractères spéciaux peuvent être traités
+        sans
         casser le résultat.
       </p>
     </section>

@@ -1,4 +1,3 @@
-@import url("https://cdn.jsdelivr.net/gh/highlightjs/cdn-release@11.11.1/build/styles/default.min.css");
 @import url("https://fonts.googleapis.com/css2?family=Intel+One+Mono:ital,wght@0,300..700;1,300..700&family=Roboto+Condensed:ital,wght@0,100..900;1,100..900&family=Science+Gothic:wght@100..900&display=swap");
 
 :root {
@@ -15,7 +14,7 @@
   --border-orange: rgba(255, 122, 0, 0.4);
   --shadow: 0 24px 70px rgba(0, 0, 0, 0.5);
   --orange-glow: 0 0 34px rgba(255, 122, 0, 0.2);
-  --transition: 0.2s ease;
+  --transition: 0.25s ease;
 }
 
 * {

@@ -45,7 +45,7 @@ renderer.code = function renderCode(codeToken, languageToken) {
   const highlightedCode = highlightCode(code, language);
   const languageClass = language ? ` language-${escapeHtml(language)}` : "";
 
-  return `<pre><code class="hljs${languageClass}">${highlightedCode}</code></pre>`;
+  return `<pre><code class="hljs${languageClass} language-${escapeHtml(language)}">${highlightedCode}</code></pre>`;
 };
 
 marked.setOptions({
@@ -55,7 +55,8 @@ marked.setOptions({
 });
 
 router.post("/api/markdown/preview", (req, res) => {
-  const markdown = typeof req.body.markdown === "string" ? req.body.markdown : "";
+  const markdown =
+    typeof req.body.markdown === "string" ? req.body.markdown : "";
   const html = marked.parse(markdown);
 
   res.json({ success: true, html });
