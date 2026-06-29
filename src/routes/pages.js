@@ -32,6 +32,14 @@ router.get("/tools/base64", (req, res) => {
   sendPublicFile(res, "tools", "base64.html");
 });
 
+router.get("/tools/binary", (req, res) => {
+  sendPublicFile(res, "tools", "binary.html");
+});
+
+router.get("/tools/hexadecimal", (req, res) => {
+  sendPublicFile(res, "tools", "hexadecimal.html");
+});
+
 router.use((req, res) => {
   res.status(404);
   sendPublicFile(res, "404.html");
