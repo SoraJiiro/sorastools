@@ -1,0 +1,159 @@
+<!DOCTYPE html>
+<html lang="fr">
+  <head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>CSS Clip-Path Generator - SoraTools</title>
+    <meta name="description"
+      content="Génère visuellement des clip-path CSS avec presets, points modifiables et aperçu en direct.">
+    <link rel="icon" type="image/png" href="/assets/logo.png">
+    <link rel="shortcut icon" type="image/png" href="/assets/logo.png">
+    <link rel="stylesheet" href="/css/global.css">
+    <link rel="stylesheet" href="/css/clip-path-generator.css">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link
+      href="https://fonts.googleapis.com/css2?family=Intel+One+Mono:ital,wght@0,300..700;1,300..700&family=Roboto+Condensed:ital,wght@0,100..900;1,100..900&family=Science+Gothic:wght@100..900&display=swap"
+      rel="stylesheet">
+    <script type="module" src="/js/tools/clip-path-generator.js"></script>
+    <script type="module" src="/js/global.js"></script>
+  </head>
+  <body>
+    <header class="site-header">
+      <nav class="navbar">
+        <a class="logo" href="/"
+          data-label="Retourner à l'accueil SoraTools"><img class="logo-img"
+            src="/assets/logo.png" alt aria-hidden="true">SoraTools</a>
+        <div class="nav-links">
+          <a href="/#tools" data-label="Aller au catalogue des tools">Tools</a>
+          <a href="/suggest"
+            data-label="Aller aux suggestions de tools">Suggest</a>
+          <a href="/tools/color-picker"
+            data-label="Ouvrir le Color Picker">Color Picker</a>
+          <a href="/tools/json-formatter"
+            data-label="Ouvrir le JSON Formatter">JSON</a>
+          <a href="/tools/regex-tester"
+            data-label="Ouvrir le Regex Tester">Regex</a>
+          <a href="/tools/md-previewer"
+            data-label="Ouvrir le Markdown Previewer">Markdown</a>
+          <a href="/tools/base64"
+            data-label="Ouvrir le Base64 Encoder">Base64</a>
+          <a href="/tools/binary"
+            data-label="Ouvrir le Binary Translator">Binary</a>
+          <a href="/tools/hexadecimal"
+            data-label="Ouvrir le Hexadecimal Translator">Hex</a>
+          <a href="/tools/time-calculator"
+            data-label="Ouvrir le Time Calculator">Time</a>
+          <a href="/tools/clip-path-generator"
+            data-label="Ouvrir le CSS Clip-Path Generator">Clip-Path</a>
+        </div>
+      </nav>
+    </header>
+
+    <main>
+      <section class="section tool-section" id="clip-path-generator">
+        <div class="section-heading">
+          <p class="eyebrow">Design</p>
+          <h1>CSS Clip-Path Generator</h1>
+          <p>Crée un <code>clip-path: polygon()</code> visuellement avec des
+            presets, des points déplaçables et un aperçu en direct.</p>
+        </div>
+
+        <div class="clip-tool">
+          <div class="clip-toolbar">
+            <select data-clip-preset data-label="Choisir une forme prédéfinie">
+              <option value="custom">Custom</option>
+              <option value="triangle">Triangle</option>
+              <option value="diamond">Losange</option>
+              <option value="pentagon">Pentagone</option>
+              <option value="hexagon" selected>Hexagone</option>
+              <option value="octagon">Octogone</option>
+              <option value="star">Étoile</option>
+              <option value="arrow">Flèche</option>
+              <option value="chevron">Chevron</option>
+              <option value="parallelogram">Parallélogramme</option>
+              <option value="trapezoid">Trapèze</option>
+            </select>
+
+            <button type="button" data-clip-add-point
+              data-label="Ajouter un point au centre">Ajouter point</button>
+            <button type="button" data-clip-remove-point
+              data-label="Supprimer le dernier point">Supprimer point</button>
+            <button type="button" data-clip-copy
+              data-label="Copier le CSS généré">Copier CSS</button>
+            <button type="button" data-clip-reset
+              data-label="Réinitialiser le générateur">Reset</button>
+          </div>
+
+          <div class="clip-layout">
+            <section class="clip-panel">
+              <h2>Éditeur</h2>
+              <div class="clip-editor-wrap">
+                <svg class="clip-editor" data-clip-editor viewBox="0 0 100 100"
+                  preserveAspectRatio="none" role="img"
+                  aria-label="Éditeur visuel de polygon clip-path">
+                  <polygon class="clip-polygon" data-clip-polygon></polygon>
+                  <g data-clip-points></g>
+                </svg>
+              </div>
+              <p class="clip-status" data-clip-status>En attente.</p>
+              <p class="textarea-notice">Clique dans la grille pour ajouter un
+                point. Glisse un point pour le déplacer. Clic droit sur un point
+                pour le supprimer.</p>
+            </section>
+
+            <section class="clip-panel">
+              <h2>Aperçu & sortie</h2>
+
+              <div class="clip-preview-wrap">
+                <div class="clip-preview" data-clip-preview>
+                  SoraTools
+                </div>
+              </div>
+
+              <div class="clip-grid">
+                <label class="clip-field">
+                  <span>Couleur aperçu</span>
+                  <input type="color" data-clip-color value="#ff7a00">
+                </label>
+
+                <label class="clip-field">
+                  <span>Décimales coordonnées</span>
+                  <input type="number" data-clip-round value="0" min="0"
+                    max="4">
+                </label>
+              </div>
+
+              <label class="clip-field">
+                <span>CSS généré</span>
+                <textarea data-clip-output readonly spellcheck="false"></textarea>
+              </label>
+            </section>
+          </div>
+        </div>
+      </section>
+    </main>
+
+    <section class="tech-explanation">
+      <div class="tech-explanation-heading">
+        <p class="tech-name">Clip-Path</p>
+        <h2 class="subtitle">Comment ça marche ?</h2>
+      </div>
+
+      <p>
+        La propriété CSS <code>clip-path</code> permet de découper un élément en
+        suivant une forme. Avec <code>polygon()</code>, chaque point est défini
+        par une coordonnée <code>X% Y%</code> dans la zone de l'élément.
+      </p>
+
+      <p>
+        Ce générateur crée automatiquement le CSS à partir des points placés sur
+        la grille. Plus tu ajoutes de points, plus la forme peut être précise.
+      </p>
+    </section>
+
+    <footer class="site-footer">
+      <p>SoraTools - CSS Clip-Path Generator.</p>
+    </footer>
+  </body>
+</html>
