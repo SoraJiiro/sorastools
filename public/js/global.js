@@ -177,6 +177,81 @@ function injectResponsiveNavbarStyles() {
   document.head.appendChild(style);
 }
 
+function injectActionIconStyles() {
+  if (document.querySelector("[data-action-icon-style]")) return;
+
+  const style = document.createElement("style");
+  style.dataset.actionIconStyle = "";
+  style.textContent = `
+    [data-action-icon] {
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      gap: 0.5em;
+    }
+
+    [data-action-icon]::before {
+      content: attr(data-action-icon);
+      display: inline-block;
+      flex: 0 0 auto;
+      font-family: "Font Awesome 6 Free";
+      font-size: 0.95em;
+      font-style: normal;
+      font-variant: normal;
+      font-weight: 900;
+      line-height: 1;
+      text-rendering: auto;
+      -webkit-font-smoothing: antialiased;
+    }
+  `;
+
+  document.head.appendChild(style);
+}
+
+function normalizeActionText(value = "") {
+  return value
+    .toLowerCase()
+    .normalize("NFD")
+    .replace(/[\u0300-\u036f]/g, "")
+    .trim();
+}
+
+function getActionIcon(element) {
+  const text = normalizeActionText(
+    `${element.textContent || ""} ${element.dataset.label || ""}`,
+  );
+  const href = element.getAttribute("href") || "";
+
+  if (/envoyer|submit/.test(text)) return "\uf1d8";
+  if (/copier|copy/.test(text)) return "\uf0c5";
+  if (/telecharger|download|exporter|export/.test(text)) return "\uf019";
+  if (/generer|generate/.test(text)) return "\ue2ca";
+  if (/convertir|convert|encoder|decoder|inverser|traduire/.test(text)) return "\uf362";
+  if (/reinitialiser|reset/.test(text)) return "\uf2ea";
+  if (/effacer|vider|clear|supprimer|delete/.test(text)) return "\uf1f8";
+  if (/ajouter|add/.test(text)) return "\u002b";
+  if (/rechercher|search/.test(text)) return "\uf002";
+  if (/retour|back/.test(text) || href === "/") return "\uf060";
+  if (/contact/.test(text) || href === "/contact") return "\uf0e0";
+  if (/suggest|suggestion/.test(text) || href === "/suggest") return "\uf0eb";
+
+  return "";
+}
+
+function applyActionIcons(selector = "button, .btn, .nav-links a") {
+  injectActionIconStyles();
+
+  document.querySelectorAll(selector).forEach((element) => {
+    if (element.dataset.noActionIcon !== undefined) return;
+
+    const icon = getActionIcon(element);
+
+    if (!icon) return;
+
+    element.dataset.actionIcon = icon;
+  });
+}
+
 function ensureContactLink(navLinks) {
   if (!navLinks || navLinks.querySelector('a[href="/contact"]')) return;
 
@@ -251,4 +326,5 @@ initFaKit();
 setupResponsiveNavbar();
 setupTextareaTabHandlers("textarea:not([readonly])");
 applyActionsLabels();
+applyActionIcons();
 setupHighlightJs();
