@@ -45,6 +45,24 @@
     "status": "ready"
   },
   {
+    "id": "binary",
+    "name": "Binary Translator",
+    "category": "Dev",
+    "description": "Convertis du texte en binaire 01 ou traduis du binaire en texte.",
+    "icon": "<i class='fa-solid fa-square-binary'></i>",
+    "url": "/tools/binary",
+    "status": "ready"
+  },
+  {
+    "id": "hexadecimal",
+    "name": "Hexadecimal Translator",
+    "category": "Dev",
+    "description": "Convertis du texte en hexadécimal ou traduis de l'hexadécimal en texte.",
+    "icon": "<i class='fa-solid fa-hashtag'></i>",
+    "url": "/tools/hexadecimal",
+    "status": "ready"
+  },
+  {
     "id": "js-minifier",
     "name": "JS Minifier",
     "category": "Dev",
