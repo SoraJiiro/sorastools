@@ -7,7 +7,9 @@ const form = document.querySelector("[data-contact-form]");
 const nameInput = document.querySelector("[data-contact-name]");
 const subjectInput = document.querySelector("[data-contact-subject]");
 const messageInput = document.querySelector("[data-contact-message]");
-const captchaQuestion = document.querySelector("[data-contact-captcha-question]");
+const captchaQuestion = document.querySelector(
+  "[data-contact-captcha-question]",
+);
 const captchaInput = document.querySelector("[data-contact-captcha]");
 const submitButton = document.querySelector("[data-contact-submit]");
 const statusElement = document.querySelector("[data-contact-status]");
@@ -75,8 +77,8 @@ function generateCaptcha() {
 function isEmailJsConfigured() {
   return Boolean(
     emailJsConfig?.publicKey &&
-      emailJsConfig?.serviceId &&
-      emailJsConfig?.contactTemplateId,
+    emailJsConfig?.serviceId &&
+    emailJsConfig?.contactTemplateId,
   );
 }
 
@@ -120,12 +122,18 @@ function validateForm() {
   }
 
   if (subject.length < 2 || subject.length > 100) {
-    setContactStatus("Le sujet doit faire entre 2 et 100 caractères.", "warning");
+    setContactStatus(
+      "Le sujet doit faire entre 2 et 100 caractères.",
+      "warning",
+    );
     return false;
   }
 
   if (message.length < 15 || message.length > 2000) {
-    setContactStatus("Le message doit faire entre 15 et 2000 caractères.", "warning");
+    setContactStatus(
+      "Le message doit faire entre 15 et 2000 caractères.",
+      "warning",
+    );
     return false;
   }
 
@@ -136,17 +144,26 @@ function validateForm() {
   }
 
   if (getRemainingCooldown() > 0) {
-    setContactStatus("Cooldown actif : attends avant de renvoyer un message.", "warning");
+    setContactStatus(
+      "Cooldown actif : attends avant de renvoyer un message.",
+      "warning",
+    );
     return false;
   }
 
   if (!isEmailJsConfigured()) {
-    setContactStatus("EmailJS contact n'est pas configuré dans le .env.", "error");
+    setContactStatus(
+      "EmailJS contact n'est pas configuré dans le .env.",
+      "error",
+    );
     return false;
   }
 
   if (!window.emailjs) {
-    setContactStatus("EmailJS n'est pas chargé. Vérifie le script CDN.", "error");
+    setContactStatus(
+      "EmailJS n'est pas chargé. Vérifie le script CDN.",
+      "error",
+    );
     return false;
   }
 
@@ -165,8 +182,7 @@ async function sendContactMessage(event) {
     name: nameInput.value.trim(),
     subject: subjectInput.value.trim(),
     message: messageInput.value.trim(),
-    submitted_at: new Date().toLocaleString("fr-FR"),
-    page_url: window.location.href,
+    date: new Date().toLocaleString("fr-FR"),
   };
 
   try {
@@ -183,7 +199,10 @@ async function sendContactMessage(event) {
     setContactStatus("Message envoyé avec succès. Merci !", "success");
   } catch (error) {
     submitButton.disabled = false;
-    setContactStatus("Erreur lors de l'envoi. Vérifie ta config EmailJS.", "error");
+    setContactStatus(
+      "Erreur lors de l'envoi. Vérifie ta config EmailJS.",
+      "error",
+    );
   }
 }
 

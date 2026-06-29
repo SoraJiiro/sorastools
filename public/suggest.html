@@ -15,7 +15,8 @@
     <link
       href="https://fonts.googleapis.com/css2?family=Intel+One+Mono:ital,wght@0,300..700;1,300..700&family=Roboto+Condensed:ital,wght@0,100..900;1,100..900&family=Science+Gothic:wght@100..900&display=swap"
       rel="stylesheet">
-    <script src="https://cdn.jsdelivr.net/npm/@emailjs/browser@4/dist/email.min.js"></script>
+    <script
+      src="https://cdn.jsdelivr.net/npm/@emailjs/browser@4/dist/email.min.js"></script>
     <script type="module" src="/js/suggest.js"></script>
     <script type="module" src="/js/global.js"></script>
   </head>
@@ -44,7 +45,7 @@
     </header>
 
     <main>
-      <section class="section suggest-section" id="suggest">
+      <section class="section form-section" id="suggest">
         <div class="section-heading">
           <p class="eyebrow">Suggestion</p>
           <h1>Proposer un tool</h1>
@@ -52,25 +53,29 @@
             minutes est appliqué entre chaque suggestion.</p>
         </div>
 
-        <div class="suggest-card">
-          <form class="suggest-form" data-suggest-form>
-            <div class="suggest-grid">
-              <label class="suggest-field">
+        <div class="form-card">
+          <form class="form" data-suggest-form>
+            <div class="form-grid">
+              <label class="form-field">
                 <span>Pseudo</span>
                 <input type="text" data-suggest-pseudo name="pseudo"
                   maxlength="40" autocomplete="nickname"
                   placeholder="Ex : Sora" required>
+                <p class="pseudo-notice">Votre pseudo sera crédité si le tool
+                  est ajouté au site.</p>
               </label>
 
-              <label class="suggest-field">
+              <label class="form-field">
                 <span>Nom du tool</span>
                 <input type="text" data-suggest-tool name="tool_name"
                   maxlength="80" placeholder="Ex : CSS Gradient Generator"
                   required>
+                <p class="tool-name-notice">Le nom du tool doit être unique et
+                  ne pas déjà exister sur le site.</p>
               </label>
             </div>
 
-            <label class="suggest-field">
+            <label class="form-field">
               <span>Description</span>
               <textarea data-suggest-description name="description"
                 maxlength="1500"
@@ -78,40 +83,35 @@
                 required></textarea>
             </label>
 
-            <div class="suggest-captcha">
-              <div class="suggest-field">
-                <span class="suggest-captcha-label">Captcha</span>
-                <div class="suggest-captcha-question"
+            <div class="form-captcha">
+              <div class="form-field">
+                <span class="form-captcha-label">Captcha</span>
+                <div class="form-captcha-question"
                   data-suggest-captcha-question>...</div>
               </div>
 
-              <label class="suggest-field">
+              <label class="form-field">
                 <span>Réponse</span>
                 <input type="number" data-suggest-captcha
                   placeholder="Résultat" required>
               </label>
             </div>
 
-            <div class="suggest-actions">
+            <div class="form-actions">
               <button type="submit" data-suggest-submit
                 data-label="Envoyer la suggestion">Envoyer</button>
               <p class="suggest-cooldown" data-suggest-cooldown></p>
             </div>
 
-            <p class="suggest-status" data-suggest-status>En attente.</p>
+            <p class="form-status" data-suggest-status>En attente.</p>
           </form>
-
-          <p class="suggest-note">
-            Note : la protection par cooldown et le captcha sont côté navigateur.
-            Pour une protection anti-spam plus forte, il faudra ajouter une
-            route serveur plus tard.
-          </p>
         </div>
       </section>
     </main>
 
     <footer class="site-footer">
-      <p>SoraTools - Suggest.</p>
+      <p>&copy; 2026 SoraTools. Tous droits réservés.</p>
+      <p>Suggest</p>
     </footer>
   </body>
 </html>

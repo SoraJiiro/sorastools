@@ -15,7 +15,8 @@
     <link
       href="https://fonts.googleapis.com/css2?family=Intel+One+Mono:ital,wght@0,300..700;1,300..700&family=Roboto+Condensed:ital,wght@0,100..900;1,100..900&family=Science+Gothic:wght@100..900&display=swap"
       rel="stylesheet">
-    <script src="https://cdn.jsdelivr.net/npm/@emailjs/browser@4/dist/email.min.js"></script>
+    <script
+      src="https://cdn.jsdelivr.net/npm/@emailjs/browser@4/dist/email.min.js"></script>
     <script type="module" src="/js/contact.js"></script>
     <script type="module" src="/js/global.js"></script>
   </head>
@@ -45,7 +46,7 @@
     </header>
 
     <main>
-      <section class="section suggest-section" id="contact">
+      <section class="section form-section" id="contact">
         <div class="section-heading">
           <p class="eyebrow">Contact</p>
           <h1>Envoyer un message</h1>
@@ -53,49 +54,49 @@
             cooldown de 30 minutes est appliqué entre chaque envoi.</p>
         </div>
 
-        <div class="suggest-card">
-          <form class="suggest-form" data-contact-form>
-            <div class="suggest-grid">
-              <label class="suggest-field">
+        <div class="form-card">
+          <form class="form" data-contact-form>
+            <div class="form-grid">
+              <label class="form-field">
                 <span>Nom</span>
                 <input type="text" data-contact-name name="name" maxlength="60"
                   autocomplete="name" placeholder="Ex : Sora" required>
               </label>
 
-              <label class="suggest-field">
+              <label class="form-field">
                 <span>Sujet</span>
                 <input type="text" data-contact-subject name="subject"
                   maxlength="100" placeholder="Ex : Bug sur un tool" required>
               </label>
             </div>
 
-            <label class="suggest-field">
+            <label class="form-field">
               <span>Message</span>
               <textarea data-contact-message name="message" maxlength="2000"
                 placeholder="Écris ton message..." required></textarea>
             </label>
 
-            <div class="suggest-captcha">
-              <div class="suggest-field">
-                <span class="suggest-captcha-label">Captcha</span>
-                <div class="suggest-captcha-question"
+            <div class="form-captcha">
+              <div class="form-field">
+                <span class="form-captcha-label">Captcha</span>
+                <div class="form-captcha-question"
                   data-contact-captcha-question>...</div>
               </div>
 
-              <label class="suggest-field">
+              <label class="form-field">
                 <span>Réponse</span>
                 <input type="number" data-contact-captcha placeholder="Résultat"
                   required>
               </label>
             </div>
 
-            <div class="suggest-actions">
+            <div class="form-actions">
               <button type="submit" data-contact-submit
                 data-label="Envoyer le message">Envoyer</button>
               <p class="suggest-cooldown" data-contact-cooldown></p>
             </div>
 
-            <p class="suggest-status" data-contact-status>En attente.</p>
+            <p class="form-status" data-contact-status>En attente.</p>
           </form>
         </div>
       </section>

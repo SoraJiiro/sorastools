@@ -1,9 +1,6 @@
-.suggest-section {
+.form-section {
   max-width: 980px;
-  margin-inline: auto;
-}
-
-.suggest-card {
+  margin: 54px auto 54px;
   padding: 24px;
   display: grid;
   gap: 18px;
@@ -18,30 +15,30 @@
   backdrop-filter: blur(14px);
 }
 
-.suggest-form {
+.form {
   display: grid;
   gap: 16px;
 }
 
-.suggest-grid {
+.form-grid {
   display: grid;
   grid-template-columns: repeat(2, minmax(0, 1fr));
   gap: 16px;
 }
 
-.suggest-field {
+.form-field {
   display: grid;
   gap: 8px;
 }
 
-.suggest-field span,
-.suggest-captcha-label {
+.form-field span,
+.form-captcha-label {
   color: var(--muted);
   font-weight: 800;
 }
 
-.suggest-field input,
-.suggest-field textarea {
+.form-field input,
+.form-field textarea {
   width: 100%;
   border: 1px solid var(--border);
   background: rgba(255, 255, 255, 0.04);
@@ -52,25 +49,25 @@
   outline: none;
 }
 
-.suggest-field textarea {
+.form-field textarea {
   min-height: 220px;
   resize: vertical;
   line-height: 1.55;
 }
 
-.suggest-field input:focus,
-.suggest-field textarea:focus {
+.form-field input:focus,
+.form-field textarea:focus {
   border-color: var(--border-orange);
 }
 
-.suggest-captcha {
+.form-captcha {
   display: grid;
   grid-template-columns: 1fr minmax(140px, 220px);
   gap: 14px;
   align-items: end;
 }
 
-.suggest-captcha-question {
+.form-captcha-question {
   display: inline-flex;
   align-items: center;
   min-height: 52px;
@@ -81,14 +78,14 @@
   font-weight: 900;
 }
 
-.suggest-actions {
+.form-actions {
   display: flex;
   flex-wrap: wrap;
   align-items: center;
   gap: 12px;
 }
 
-.suggest-actions button {
+.form-actions button {
   display: inline-flex;
   align-items: center;
   justify-content: center;
@@ -106,46 +103,40 @@
     box-shadow 0.2s ease;
 }
 
-.suggest-actions button:hover:not(:disabled) {
+.form-actions button:hover:not(:disabled) {
   transform: translateY(-2px);
   filter: brightness(1.1);
   box-shadow: 0 0 45px rgba(255, 122, 0, 0.35);
 }
 
-.suggest-actions button:disabled {
+.form-actions button:disabled {
   cursor: not-allowed;
   opacity: 0.55;
   filter: grayscale(0.25);
 }
 
-.suggest-status,
+.form-status,
 .suggest-cooldown {
   margin: 0;
   color: var(--muted);
   font-weight: 800;
 }
 
-.suggest-status[data-type="success"] {
+.form-status[data-type="success"] {
   color: #39d353;
 }
 
-.suggest-status[data-type="warning"] {
+.form-status[data-type="warning"] {
   color: #ffcc66;
 }
 
-.suggest-status[data-type="error"] {
+.form-status[data-type="error"] {
   color: #ff6b6b;
 }
 
-.suggest-note {
-  margin: 0;
-  color: var(--muted);
-  line-height: 1.6;
-}
-
 @media (max-width: 760px) {
-  .suggest-grid,
-  .suggest-captcha {
+  .form-grid,
+  .form-captcha {
     grid-template-columns: 1fr;
   }
 }

@@ -7,7 +7,9 @@ const form = document.querySelector("[data-suggest-form]");
 const pseudoInput = document.querySelector("[data-suggest-pseudo]");
 const toolNameInput = document.querySelector("[data-suggest-tool]");
 const descriptionInput = document.querySelector("[data-suggest-description]");
-const captchaQuestion = document.querySelector("[data-suggest-captcha-question]");
+const captchaQuestion = document.querySelector(
+  "[data-suggest-captcha-question]",
+);
 const captchaInput = document.querySelector("[data-suggest-captcha]");
 const submitButton = document.querySelector("[data-suggest-submit]");
 const statusElement = document.querySelector("[data-suggest-status]");
@@ -78,7 +80,9 @@ function generateCaptcha() {
 
 function isEmailJsConfigured() {
   return Boolean(
-    emailJsConfig?.publicKey && emailJsConfig?.serviceId && getSuggestTemplateId(),
+    emailJsConfig?.publicKey &&
+    emailJsConfig?.serviceId &&
+    getSuggestTemplateId(),
   );
 }
 
@@ -99,7 +103,10 @@ async function loadEmailJsConfig() {
       return;
     }
 
-    setSuggestStatus("Config EmailJS suggestion manquante dans le .env.", "error");
+    setSuggestStatus(
+      "Config EmailJS suggestion manquante dans le .env.",
+      "error",
+    );
   } catch (error) {
     setSuggestStatus("Impossible de charger la config EmailJS.", "error");
   }
@@ -117,17 +124,26 @@ function validateForm() {
   }
 
   if (pseudo.length < 2 || pseudo.length > 40) {
-    setSuggestStatus("Le pseudo doit faire entre 2 et 40 caractères.", "warning");
+    setSuggestStatus(
+      "Le pseudo doit faire entre 2 et 40 caractères.",
+      "warning",
+    );
     return false;
   }
 
   if (toolName.length < 2 || toolName.length > 80) {
-    setSuggestStatus("Le nom du tool doit faire entre 2 et 80 caractères.", "warning");
+    setSuggestStatus(
+      "Le nom du tool doit faire entre 2 et 80 caractères.",
+      "warning",
+    );
     return false;
   }
 
   if (description.length < 15 || description.length > 1500) {
-    setSuggestStatus("La description doit faire entre 15 et 1500 caractères.", "warning");
+    setSuggestStatus(
+      "La description doit faire entre 15 et 1500 caractères.",
+      "warning",
+    );
     return false;
   }
 
@@ -138,17 +154,26 @@ function validateForm() {
   }
 
   if (getRemainingCooldown() > 0) {
-    setSuggestStatus("Cooldown actif : attends avant de renvoyer une suggestion.", "warning");
+    setSuggestStatus(
+      "Cooldown actif : attends avant de renvoyer une suggestion.",
+      "warning",
+    );
     return false;
   }
 
   if (!isEmailJsConfigured()) {
-    setSuggestStatus("EmailJS suggestion n'est pas configuré dans le .env.", "error");
+    setSuggestStatus(
+      "EmailJS suggestion n'est pas configuré dans le .env.",
+      "error",
+    );
     return false;
   }
 
   if (!window.emailjs) {
-    setSuggestStatus("EmailJS n'est pas chargé. Vérifie le script CDN.", "error");
+    setSuggestStatus(
+      "EmailJS n'est pas chargé. Vérifie le script CDN.",
+      "error",
+    );
     return false;
   }
 
@@ -167,8 +192,7 @@ async function sendSuggestion(event) {
     pseudo: pseudoInput.value.trim(),
     tool_name: toolNameInput.value.trim(),
     description: descriptionInput.value.trim(),
-    submitted_at: new Date().toLocaleString("fr-FR"),
-    page_url: window.location.href,
+    date: new Date().toLocaleString("fr-FR"),
   };
 
   try {
@@ -185,7 +209,10 @@ async function sendSuggestion(event) {
     setSuggestStatus("Suggestion envoyée avec succès. Merci !", "success");
   } catch (error) {
     submitButton.disabled = false;
-    setSuggestStatus("Erreur lors de l'envoi. Vérifie ta config EmailJS.", "error");
+    setSuggestStatus(
+      "Erreur lors de l'envoi. Vérifie ta config EmailJS.",
+      "error",
+    );
   }
 }
 
