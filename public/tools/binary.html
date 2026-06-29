@@ -1,0 +1,118 @@
+<!DOCTYPE html>
+<html lang="fr">
+  <head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Binary Translator - SoraTools</title>
+    <meta name="description"
+      content="Convertis du texte en binaire 01 ou traduis du binaire en texte.">
+    <link rel="icon" type="image/png" href="/assets/logo.png">
+    <link rel="shortcut icon" type="image/png" href="/assets/logo.png">
+    <link rel="stylesheet" href="/css/global.css">
+    <link rel="stylesheet" href="/css/base-converter.css">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link
+      href="https://fonts.googleapis.com/css2?family=Intel+One+Mono:ital,wght@0,300..700;1,300..700&family=Roboto+Condensed:ital,wght@0,100..900;1,100..900&family=Science+Gothic:wght@100..900&display=swap"
+      rel="stylesheet">
+    <script type="module" src="/js/tools/binary.js"></script>
+    <script type="module" src="/js/global.js"></script>
+  </head>
+  <body>
+    <header class="site-header">
+      <nav class="navbar">
+        <a class="logo" href="/"
+          data-label="Retourner à l'accueil SoraTools"><img class="logo-img"
+            src="/assets/logo.png" alt aria-hidden="true">SoraTools</a>
+        <div class="nav-links">
+          <a href="/#tools" data-label="Aller au catalogue des tools">Tools</a>
+          <a href="/suggest"
+            data-label="Aller aux suggestions de tools">Suggest</a>
+          <a href="/tools/color-picker"
+            data-label="Ouvrir le Color Picker">Color Picker</a>
+          <a href="/tools/json-formatter"
+            data-label="Ouvrir le JSON Formatter">JSON</a>
+          <a href="/tools/regex-tester"
+            data-label="Ouvrir le Regex Tester">Regex</a>
+          <a href="/tools/md-previewer"
+            data-label="Ouvrir le Markdown Previewer">Markdown</a>
+          <a href="/tools/base64"
+            data-label="Ouvrir le Base64 Encoder">Base64</a>
+          <a href="/tools/binary"
+            data-label="Ouvrir le Binary Translator">Binary</a>
+          <a href="/tools/hexadecimal"
+            data-label="Ouvrir le Hexadecimal Translator">Hex</a>
+        </div>
+      </nav>
+    </header>
+
+    <main>
+      <section class="section tool-section" id="binary">
+        <div class="section-heading">
+          <p class="eyebrow">Dev</p>
+          <h1>Binary Translator</h1>
+          <p>Convertis du texte en binaire <code>0</code>/<code>1</code> ou
+            traduis du binaire en texte lisible.</p>
+        </div>
+
+        <div class="base-converter-tool">
+          <div class="base-converter-toolbar">
+            <button type="button" data-binary-encode
+              data-label="Convertir le texte en binaire">Encoder</button>
+            <button type="button" data-binary-decode
+              data-label="Traduire le binaire en texte">Décoder</button>
+            <button type="button" data-binary-swap
+              data-label="Inverser l'entrée et le résultat">Inverser</button>
+            <button type="button" data-binary-copy
+              data-label="Copier le résultat binaire">Copier</button>
+            <button type="button" data-binary-clear
+              data-label="Vider les champs binaire">Vider</button>
+          </div>
+
+          <div class="base-converter-editor-grid">
+            <label class="field base-converter-field"
+              data-label="Champ d'entrée binaire">
+              <span>Input</span>
+              <textarea data-binary-input
+                data-label="Écrire ou coller le texte ou le binaire"
+                spellcheck="false">SoraTools</textarea>
+              <p class="textarea-notice">Appuyer sur <code>Échap</code> pour
+                sortir du focus</p>
+            </label>
+
+            <label class="field base-converter-field"
+              data-label="Champ de résultat binaire">
+              <span>Résultat</span>
+              <textarea data-binary-output data-label="Résultat binaire"
+                spellcheck="false" readonly></textarea>
+            </label>
+          </div>
+
+          <p class="base-converter-status" data-binary-status>En attente.</p>
+        </div>
+      </section>
+    </main>
+
+    <section class="tech-explanation">
+      <div class="tech-explanation-heading">
+        <p class="tech-name">Binary</p>
+        <h2 class="subtitle">Comment ça marche ?</h2>
+      </div>
+
+      <p>
+        Le binaire représente chaque octet avec uniquement des <code>0</code> et
+        des <code>1</code>. Par exemple, un caractère texte est converti en un
+        ou plusieurs octets, puis chaque octet est affiché sur 8 bits.
+      </p>
+
+      <p>
+        Ce tool utilise l'encodage UTF-8, donc les accents, emojis et caractères
+        spéciaux peuvent aussi être convertis puis reconstruits correctement.
+      </p>
+    </section>
+
+    <footer class="site-footer">
+      <p>SoraTools - Binary Translator.</p>
+    </footer>
+  </body>
+</html>
