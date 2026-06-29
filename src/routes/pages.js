@@ -16,12 +16,17 @@ router.get("/suggest", (req, res) => {
   sendPublicFile(res, "suggest.html");
 });
 
+router.get("/contact", (req, res) => {
+  sendPublicFile(res, "contact.html");
+});
+
 router.get("/api/emailjs-config", (req, res) => {
   res.json({
     success: true,
     publicKey: process.env.EMAILJS_PUBLIC_KEY || "",
     serviceId: process.env.EMAILJS_SERVICE_ID || "",
-    templateId: process.env.EMAILJS_TEMPLATE_ID || "",
+    suggestTemplateId: process.env.EMAILJS_SUGGEST_TEMPLATE_ID || process.env.EMAILJS_TEMPLATE_ID || "",
+    contactTemplateId: process.env.EMAILJS_CONTACT_TEMPLATE_ID || "",
   });
 });
 
