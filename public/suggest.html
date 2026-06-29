@@ -1,0 +1,117 @@
+<!DOCTYPE html>
+<html lang="fr">
+  <head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Suggest - SoraTools</title>
+    <meta name="description"
+      content="Propose une idée de tool pour SoraTools via le formulaire de suggestion.">
+    <link rel="icon" type="image/png" href="/assets/logo.png">
+    <link rel="shortcut icon" type="image/png" href="/assets/logo.png">
+    <link rel="stylesheet" href="/css/global.css">
+    <link rel="stylesheet" href="/css/suggest.css">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link
+      href="https://fonts.googleapis.com/css2?family=Intel+One+Mono:ital,wght@0,300..700;1,300..700&family=Roboto+Condensed:ital,wght@0,100..900;1,100..900&family=Science+Gothic:wght@100..900&display=swap"
+      rel="stylesheet">
+    <script src="https://cdn.jsdelivr.net/npm/@emailjs/browser@4/dist/email.min.js"></script>
+    <script type="module" src="/js/suggest.js"></script>
+    <script type="module" src="/js/global.js"></script>
+  </head>
+  <body>
+    <header class="site-header">
+      <nav class="navbar">
+        <a class="logo" href="/"
+          data-label="Retourner à l'accueil SoraTools"><img class="logo-img"
+            src="/assets/logo.png" alt aria-hidden="true">SoraTools</a>
+        <div class="nav-links">
+          <a href="/#tools" data-label="Aller au catalogue des tools">Tools</a>
+          <a href="/suggest"
+            data-label="Aller aux suggestions de tools">Suggest</a>
+          <a href="/tools/color-picker"
+            data-label="Ouvrir le Color Picker">Color Picker</a>
+          <a href="/tools/json-formatter"
+            data-label="Ouvrir le JSON Formatter">JSON</a>
+          <a href="/tools/regex-tester"
+            data-label="Ouvrir le Regex Tester">Regex</a>
+          <a href="/tools/md-previewer"
+            data-label="Ouvrir le Markdown Previewer">Markdown</a>
+          <a href="/tools/base64"
+            data-label="Ouvrir le Base64 Encoder">Base64</a>
+        </div>
+      </nav>
+    </header>
+
+    <main>
+      <section class="section suggest-section" id="suggest">
+        <div class="section-heading">
+          <p class="eyebrow">Suggestion</p>
+          <h1>Proposer un tool</h1>
+          <p>Une idée utile pour SoraTools ? Envoie-la ici. Un cooldown de 30
+            minutes est appliqué entre chaque suggestion.</p>
+        </div>
+
+        <div class="suggest-card">
+          <form class="suggest-form" data-suggest-form>
+            <div class="suggest-grid">
+              <label class="suggest-field">
+                <span>Pseudo</span>
+                <input type="text" data-suggest-pseudo name="pseudo"
+                  maxlength="40" autocomplete="nickname"
+                  placeholder="Ex : Sora" required>
+              </label>
+
+              <label class="suggest-field">
+                <span>Nom du tool</span>
+                <input type="text" data-suggest-tool name="tool_name"
+                  maxlength="80" placeholder="Ex : CSS Gradient Generator"
+                  required>
+              </label>
+            </div>
+
+            <label class="suggest-field">
+              <span>Description</span>
+              <textarea data-suggest-description name="description"
+                maxlength="1500"
+                placeholder="Décris le tool, les options voulues, le rendu attendu..."
+                required></textarea>
+            </label>
+
+            <div class="suggest-captcha">
+              <div class="suggest-field">
+                <span class="suggest-captcha-label">Captcha</span>
+                <div class="suggest-captcha-question"
+                  data-suggest-captcha-question>...</div>
+              </div>
+
+              <label class="suggest-field">
+                <span>Réponse</span>
+                <input type="number" data-suggest-captcha
+                  placeholder="Résultat" required>
+              </label>
+            </div>
+
+            <div class="suggest-actions">
+              <button type="submit" data-suggest-submit
+                data-label="Envoyer la suggestion">Envoyer</button>
+              <p class="suggest-cooldown" data-suggest-cooldown></p>
+            </div>
+
+            <p class="suggest-status" data-suggest-status>En attente.</p>
+          </form>
+
+          <p class="suggest-note">
+            Note : la protection par cooldown et le captcha sont côté navigateur.
+            Pour une protection anti-spam plus forte, il faudra ajouter une
+            route serveur plus tard.
+          </p>
+        </div>
+      </section>
+    </main>
+
+    <footer class="site-footer">
+      <p>SoraTools - Suggest.</p>
+    </footer>
+  </body>
+</html>
