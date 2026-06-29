@@ -1,8 +1,5 @@
 import { setStatus } from "./utils.js";
 
-const EMAILJS_PUBLIC_KEY = "REMPLACE_PAR_TA_PUBLIC_KEY";
-const EMAILJS_SERVICE_ID = "REMPLACE_PAR_TON_SERVICE_ID";
-const EMAILJS_TEMPLATE_ID = "REMPLACE_PAR_TON_TEMPLATE_ID";
 const COOLDOWN_MS = 30 * 60 * 1000;
 const COOLDOWN_KEY = "soraToolsSuggestLastSubmit";
 
@@ -18,6 +15,7 @@ const cooldownElement = document.querySelector("[data-suggest-cooldown]");
 
 let captchaAnswer = 0;
 let cooldownTimer = null;
+let emailJsConfig = null;
 
 function setSuggestStatus(message, type = "default") {
   setStatus(statusElement, message, type);
@@ -75,11 +73,34 @@ function generateCaptcha() {
 }
 
 function isEmailJsConfigured() {
-  return ![
-    EMAILJS_PUBLIC_KEY,
-    EMAILJS_SERVICE_ID,
-    EMAILJS_TEMPLATE_ID,
-  ].some((value) => value.startsWith("REMPLACE_PAR"));
+  return Boolean(
+    emailJsConfig?.publicKey &&
+      emailJsConfig?.serviceId &&
+      emailJsConfig?.templateId,
+  );
+}
+
+async function loadEmailJsConfig() {
+  try {
+    const response = await fetch("/api/emailjs-config");
+    const config = await response.json();
+
+    if (!response.ok || !config.success) {
+      throw new Error("EmailJS config unavailable");
+    }
+
+    emailJsConfig = config;
+
+    if (window.emailjs && isEmailJsConfigured()) {
+      window.emailjs.init({ publicKey: emailJsConfig.publicKey });
+      setSuggestStatus("Formulaire prêt.", "success");
+      return;
+    }
+
+    setSuggestStatus("Config EmailJS manquante dans le .env.", "error");
+  } catch (error) {
+    setSuggestStatus("Impossible de charger la config EmailJS.", "error");
+  }
 }
 
 function validateForm() {
@@ -120,7 +141,7 @@ function validateForm() {
   }
 
   if (!isEmailJsConfigured()) {
-    setSuggestStatus("EmailJS n'est pas encore configuré dans public/js/suggest.js.", "error");
+    setSuggestStatus("EmailJS n'est pas configuré dans le .env.", "error");
     return false;
   }
 
@@ -150,8 +171,8 @@ async function sendSuggestion(event) {
 
   try {
     await window.emailjs.send(
-      EMAILJS_SERVICE_ID,
-      EMAILJS_TEMPLATE_ID,
+      emailJsConfig.serviceId,
+      emailJsConfig.templateId,
       templateParams,
     );
 
@@ -166,15 +187,14 @@ async function sendSuggestion(event) {
   }
 }
 
-function setupSuggestForm() {
+async function setupSuggestForm() {
   if (!form) return;
 
-  if (window.emailjs && isEmailJsConfigured()) {
-    window.emailjs.init({ publicKey: EMAILJS_PUBLIC_KEY });
-  }
-
+  submitButton.disabled = true;
   generateCaptcha();
   startCooldownTimer();
+  await loadEmailJsConfig();
+  updateCooldownState();
   form.addEventListener("submit", sendSuggestion);
 }
 
