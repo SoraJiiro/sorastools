@@ -60,6 +60,25 @@ function buildFullHtmlDocument(bodyContent) {
         font-family: Consolas, Monaco, monospace;
       }
 
+      .hljs-keyword,
+      .hljs-selector-tag,
+      .hljs-title,
+      .hljs-section {
+        color: #ff7a00;
+      }
+
+      .hljs-string,
+      .hljs-attribute,
+      .hljs-symbol,
+      .hljs-bullet {
+        color: #16a34a;
+      }
+
+      .hljs-comment,
+      .hljs-quote {
+        color: #6b7280;
+      }
+
       blockquote {
         margin-left: 0;
         padding-left: 16px;
@@ -105,10 +124,11 @@ async function renderMarkdown() {
 
     lastHtml = data.html;
     mdPreview.innerHTML = lastHtml;
-    mdPreview.querySelectorAll("code[data-hljs-applied]").forEach((code) => {
-      delete code.dataset.hljsApplied;
-    });
-    document.dispatchEvent(new CustomEvent("soratools:content-updated"));
+    document.dispatchEvent(
+      new CustomEvent("soratools:content-updated", {
+        detail: { root: mdPreview },
+      }),
+    );
     setMdStatus("Préview générée en direct.", "success");
   } catch (error) {
     setMdStatus(`Erreur : ${error.message}`, "error");
@@ -142,9 +162,8 @@ async function exportHtml() {
     await renderMarkdown();
   }
 
-  const htmlDocument = buildFullHtmlDocument(
-    lastHtml || escapeHtml(mdInput.value),
-  );
+  const renderedHtml = mdPreview.innerHTML || lastHtml || escapeHtml(mdInput.value);
+  const htmlDocument = buildFullHtmlDocument(renderedHtml);
   downloadTextFile(htmlDocument, getSafeFilename("html"), "text/html");
   setMdStatus("Fichier .html exporté.", "success");
 }
@@ -172,7 +191,7 @@ function setupMarkdownPreviewer() {
       return;
     }
 
-    await copyToClipboard(lastHtml);
+    await copyToClipboard(mdPreview.innerHTML || lastHtml);
     setMdStatus("HTML copié dans le presse-papiers.", "success");
   });
 
