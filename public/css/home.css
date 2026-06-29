@@ -86,6 +86,7 @@
 
 .tool-card__category {
   color: var(--primary-light);
+  font-family: "Science Gothic", sans-serif;
   font-weight: 800;
   font-size: 0.78rem;
   text-transform: uppercase;
@@ -142,15 +143,6 @@
     linear-gradient(135deg, rgba(29, 35, 44, 0.92), rgba(18, 22, 28, 0.78));
   box-shadow: var(--shadow);
   backdrop-filter: blur(14px);
-}
-
-.why::before {
-  content: "";
-  position: absolute;
-  inset: 18px;
-  pointer-events: none;
-  border: 1px solid rgba(255, 122, 0, 0.12);
-  border-radius: 22px;
 }
 
 .why::after {
@@ -223,18 +215,6 @@
   backdrop-filter: blur(14px);
 }
 
-.future::before {
-  content: "soon";
-  position: absolute;
-  right: 24px;
-  bottom: -22px;
-  color: rgba(255, 255, 255, 0.035);
-  font-size: clamp(4rem, 14vw, 10rem);
-  font-weight: 900;
-  letter-spacing: -0.08em;
-  text-transform: uppercase;
-}
-
 .future .section-heading,
 .future .future-text {
   margin: 0;
@@ -244,19 +224,6 @@
   padding: 20px 22px;
   border-radius: 20px;
   background: rgba(3, 4, 5, 0.34);
-}
-
-.future-text a {
-  color: var(--primary-light);
-  font-weight: 900;
-  text-decoration: underline;
-  text-decoration-color: rgba(255, 184, 107, 0.42);
-  text-underline-offset: 4px;
-}
-
-.future-text a:hover {
-  color: var(--primary-hover);
-  text-decoration-color: currentColor;
 }
 
 @media (max-width: 800px) {
