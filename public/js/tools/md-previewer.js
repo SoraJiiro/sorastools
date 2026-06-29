@@ -105,6 +105,10 @@ async function renderMarkdown() {
 
     lastHtml = data.html;
     mdPreview.innerHTML = lastHtml;
+    mdPreview.querySelectorAll("code[data-hljs-applied]").forEach((code) => {
+      delete code.dataset.hljsApplied;
+    });
+    document.dispatchEvent(new CustomEvent("soratools:content-updated"));
     setMdStatus("Préview générée en direct.", "success");
   } catch (error) {
     setMdStatus(`Erreur : ${error.message}`, "error");
