@@ -36,20 +36,20 @@
     "status": "ready"
   },
   {
-    "id": "js-minifier",
-    "name": "JS Minifier",
-    "category": "Dev",
-    "description": "Minifie du JavaScript avec Terser / minify.",
-    "icon": "<i class='fa-brands fa-square-js'></i>",
-    "url": "#",
-    "status": "soon"
-  },
-  {
     "id": "base64",
     "name": "Base64 Encoder",
     "category": "Dev",
     "description": "Encode ou décode rapidement une chaîne en Base64.",
     "icon": "<i class='fa-solid fa-square-binary'></i>",
+    "url": "/tools/base64",
+    "status": "ready"
+  },
+  {
+    "id": "js-minifier",
+    "name": "JS Minifier",
+    "category": "Dev",
+    "description": "Minifie du JavaScript avec Terser / minify.",
+    "icon": "<i class='fa-brands fa-square-js'></i>",
     "url": "#",
     "status": "soon"
   },
