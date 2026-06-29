@@ -190,10 +190,19 @@ function injectActionIconStyles() {
       gap: 0.5em;
     }
 
-    [data-action-icon]::before {
+    [data-action-icon]::before,
+    .nav-links a[data-action-icon]::before {
       content: attr(data-action-icon);
+      position: static;
       display: inline-block;
       flex: 0 0 auto;
+      width: auto;
+      height: auto;
+      margin: 0;
+      opacity: 1;
+      transform: none;
+      color: currentColor;
+      background: transparent;
       font-family: "Font Awesome 6 Free";
       font-size: 0.95em;
       font-style: normal;
@@ -202,6 +211,10 @@ function injectActionIconStyles() {
       line-height: 1;
       text-rendering: auto;
       -webkit-font-smoothing: antialiased;
+    }
+
+    .nav-links a[data-action-icon]::after {
+      display: none;
     }
   `;
 
