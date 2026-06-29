@@ -1,0 +1,123 @@
+.time-tool {
+  padding: 24px;
+  display: grid;
+  gap: 22px;
+  background: linear-gradient(
+    180deg,
+    rgba(29, 35, 44, 0.92),
+    rgba(18, 22, 28, 0.92)
+  );
+  border: 1px solid var(--border);
+  border-radius: 24px;
+  box-shadow: var(--shadow);
+  backdrop-filter: blur(14px);
+}
+
+.time-panel {
+  display: grid;
+  gap: 16px;
+  padding: 18px;
+  border: 1px solid var(--border);
+  border-radius: 20px;
+  background: rgba(255, 255, 255, 0.035);
+}
+
+.time-panel h2 {
+  margin: 0;
+}
+
+.time-grid {
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  gap: 14px;
+}
+
+.time-field {
+  display: grid;
+  gap: 8px;
+}
+
+.time-field span {
+  color: var(--muted);
+  font-weight: 800;
+}
+
+.time-field input,
+.time-field select,
+.time-field textarea {
+  width: 100%;
+  border: 1px solid var(--border);
+  background: rgba(255, 255, 255, 0.04);
+  color: var(--text);
+  padding: 14px;
+  font: inherit;
+  border-radius: 14px;
+  outline: none;
+}
+
+.time-field textarea {
+  min-height: 220px;
+  resize: none;
+  font-family: Consolas, Monaco, "Courier New", monospace;
+  line-height: 1.55;
+}
+
+.time-field input:focus,
+.time-field select:focus,
+.time-field textarea:focus {
+  border-color: var(--border-orange);
+}
+
+.time-toolbar {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 10px;
+}
+
+.time-toolbar button {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  border: 0;
+  border-radius: 999px;
+  background: linear-gradient(135deg, var(--primary), #ff5200);
+  color: #111;
+  font-weight: 900;
+  cursor: pointer;
+  box-shadow: var(--orange-glow);
+  padding: 12px 16px;
+  transition:
+    transform 0.2s ease,
+    filter 0.2s ease,
+    box-shadow 0.2s ease;
+}
+
+.time-toolbar button:hover {
+  transform: translateY(-2px);
+  filter: brightness(1.1);
+  box-shadow: 0 0 45px rgba(255, 122, 0, 0.35);
+}
+
+.time-status {
+  margin: 0;
+  color: var(--muted);
+  font-weight: 800;
+}
+
+.time-status[data-type="success"] {
+  color: #39d353;
+}
+
+.time-status[data-type="warning"] {
+  color: #ffcc66;
+}
+
+.time-status[data-type="error"] {
+  color: #ff6b6b;
+}
+
+@media (max-width: 900px) {
+  .time-grid {
+    grid-template-columns: 1fr;
+  }
+}
