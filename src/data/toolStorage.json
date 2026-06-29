@@ -72,6 +72,15 @@
     "status": "ready"
   },
   {
+    "id": "clip-path-generator",
+    "name": "CSS Clip-Path Generator",
+    "category": "Design",
+    "description": "Génère des clip-path CSS avec presets, points déplaçables et aperçu en direct.",
+    "icon": "<i class='fa-solid fa-crop-simple'></i>",
+    "url": "/tools/clip-path-generator",
+    "status": "ready"
+  },
+  {
     "id": "js-minifier",
     "name": "JS Minifier",
     "category": "Dev",
