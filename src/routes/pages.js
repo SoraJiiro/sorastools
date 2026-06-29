@@ -12,6 +12,10 @@ router.get("/", (req, res) => {
   sendPublicFile(res, "index.html");
 });
 
+router.get("/suggest", (req, res) => {
+  sendPublicFile(res, "suggest.html");
+});
+
 router.get("/tools/color-picker", (req, res) => {
   sendPublicFile(res, "tools", "color-picker.html");
 });
