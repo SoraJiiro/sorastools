@@ -21,6 +21,10 @@ function setSuggestStatus(message, type = "default") {
   setStatus(statusElement, message, type);
 }
 
+function getSuggestTemplateId() {
+  return emailJsConfig?.suggestTemplateId || emailJsConfig?.templateId || "";
+}
+
 function getLastSubmitTime() {
   return Number(localStorage.getItem(COOLDOWN_KEY)) || 0;
 }
@@ -74,9 +78,7 @@ function generateCaptcha() {
 
 function isEmailJsConfigured() {
   return Boolean(
-    emailJsConfig?.publicKey &&
-      emailJsConfig?.serviceId &&
-      emailJsConfig?.templateId,
+    emailJsConfig?.publicKey && emailJsConfig?.serviceId && getSuggestTemplateId(),
   );
 }
 
@@ -97,7 +99,7 @@ async function loadEmailJsConfig() {
       return;
     }
 
-    setSuggestStatus("Config EmailJS manquante dans le .env.", "error");
+    setSuggestStatus("Config EmailJS suggestion manquante dans le .env.", "error");
   } catch (error) {
     setSuggestStatus("Impossible de charger la config EmailJS.", "error");
   }
@@ -141,7 +143,7 @@ function validateForm() {
   }
 
   if (!isEmailJsConfigured()) {
-    setSuggestStatus("EmailJS n'est pas configuré dans le .env.", "error");
+    setSuggestStatus("EmailJS suggestion n'est pas configuré dans le .env.", "error");
     return false;
   }
 
@@ -172,7 +174,7 @@ async function sendSuggestion(event) {
   try {
     await window.emailjs.send(
       emailJsConfig.serviceId,
-      emailJsConfig.templateId,
+      getSuggestTemplateId(),
       templateParams,
     );
 
