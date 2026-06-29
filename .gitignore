@@ -1,3 +1,6 @@
 README.md
 node_modules/
 logs/
+src/.env
+.env.local
+.env
