@@ -1,0 +1,120 @@
+<!DOCTYPE html>
+<html lang="fr">
+  <head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Hexadecimal Translator - SoraTools</title>
+    <meta name="description"
+      content="Convertis du texte en hexadécimal ou traduis de l'hexadécimal en texte.">
+    <link rel="icon" type="image/png" href="/assets/logo.png">
+    <link rel="shortcut icon" type="image/png" href="/assets/logo.png">
+    <link rel="stylesheet" href="/css/global.css">
+    <link rel="stylesheet" href="/css/base-converter.css">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link
+      href="https://fonts.googleapis.com/css2?family=Intel+One+Mono:ital,wght@0,300..700;1,300..700&family=Roboto+Condensed:ital,wght@0,100..900;1,100..900&family=Science+Gothic:wght@100..900&display=swap"
+      rel="stylesheet">
+    <script type="module" src="/js/tools/hexadecimal.js"></script>
+    <script type="module" src="/js/global.js"></script>
+  </head>
+  <body>
+    <header class="site-header">
+      <nav class="navbar">
+        <a class="logo" href="/"
+          data-label="Retourner à l'accueil SoraTools"><img class="logo-img"
+            src="/assets/logo.png" alt aria-hidden="true">SoraTools</a>
+        <div class="nav-links">
+          <a href="/#tools" data-label="Aller au catalogue des tools">Tools</a>
+          <a href="/suggest"
+            data-label="Aller aux suggestions de tools">Suggest</a>
+          <a href="/tools/color-picker"
+            data-label="Ouvrir le Color Picker">Color Picker</a>
+          <a href="/tools/json-formatter"
+            data-label="Ouvrir le JSON Formatter">JSON</a>
+          <a href="/tools/regex-tester"
+            data-label="Ouvrir le Regex Tester">Regex</a>
+          <a href="/tools/md-previewer"
+            data-label="Ouvrir le Markdown Previewer">Markdown</a>
+          <a href="/tools/base64"
+            data-label="Ouvrir le Base64 Encoder">Base64</a>
+          <a href="/tools/binary"
+            data-label="Ouvrir le Binary Translator">Binary</a>
+          <a href="/tools/hexadecimal"
+            data-label="Ouvrir le Hexadecimal Translator">Hex</a>
+        </div>
+      </nav>
+    </header>
+
+    <main>
+      <section class="section tool-section" id="hexadecimal">
+        <div class="section-heading">
+          <p class="eyebrow">Dev</p>
+          <h1>Hexadecimal Translator</h1>
+          <p>Convertis du texte en hexadécimal ou traduis une suite
+            hexadécimale en texte lisible.</p>
+        </div>
+
+        <div class="base-converter-tool">
+          <div class="base-converter-toolbar">
+            <button type="button" data-hex-encode
+              data-label="Convertir le texte en hexadécimal">Encoder</button>
+            <button type="button" data-hex-decode
+              data-label="Traduire l'hexadécimal en texte">Décoder</button>
+            <button type="button" data-hex-swap
+              data-label="Inverser l'entrée et le résultat">Inverser</button>
+            <button type="button" data-hex-copy
+              data-label="Copier le résultat hexadécimal">Copier</button>
+            <button type="button" data-hex-clear
+              data-label="Vider les champs hexadécimal">Vider</button>
+          </div>
+
+          <div class="base-converter-editor-grid">
+            <label class="field base-converter-field"
+              data-label="Champ d'entrée hexadécimal">
+              <span>Input</span>
+              <textarea data-hex-input
+                data-label="Écrire ou coller le texte ou l'hexadécimal"
+                spellcheck="false">SoraTools</textarea>
+              <p class="textarea-notice">Appuyer sur <code>Échap</code> pour
+                sortir du focus</p>
+            </label>
+
+            <label class="field base-converter-field"
+              data-label="Champ de résultat hexadécimal">
+              <span>Résultat</span>
+              <textarea data-hex-output data-label="Résultat hexadécimal"
+                spellcheck="false" readonly></textarea>
+            </label>
+          </div>
+
+          <p class="base-converter-status" data-hex-status>En attente.</p>
+        </div>
+      </section>
+    </main>
+
+    <section class="tech-explanation">
+      <div class="tech-explanation-heading">
+        <p class="tech-name">Hexadecimal</p>
+        <h2 class="subtitle">Comment ça marche ?</h2>
+      </div>
+
+      <p>
+        L'hexadécimal représente les octets avec les caractères
+        <code>0-9</code> et <code>A-F</code>. Deux caractères hexadécimaux
+        forment un octet, par exemple <code>53</code> pour la lettre
+        <code>S</code> en UTF-8.
+      </p>
+
+      <p>
+        Ce tool accepte les valeurs collées avec espaces, tirets, deux-points ou
+        préfixes <code>0x</code>, puis reconstruit le texte avec l'encodage
+        UTF-8.
+      </p>
+    </section>
+
+    <footer class="site-footer">
+      <p>SoraTools - Hexadecimal Translator.</p>
+    </footer>
+  </body>
+</html>
