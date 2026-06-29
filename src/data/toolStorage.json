@@ -63,6 +63,15 @@
     "status": "ready"
   },
   {
+    "id": "time-calculator",
+    "name": "Time Calculator",
+    "category": "Dev",
+    "description": "Convertis des durées et génère ou décode des timestamps Unix.",
+    "icon": "<i class='fa-solid fa-clock'></i>",
+    "url": "/tools/time-calculator",
+    "status": "ready"
+  },
+  {
     "id": "js-minifier",
     "name": "JS Minifier",
     "category": "Dev",
