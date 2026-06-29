@@ -3,52 +3,11 @@
   max-width: 780px;
 }
 
-.eyebrow {
-  margin: 0 0 12px;
-  color: var(--primary-light);
-  font-weight: 800;
-  text-transform: uppercase;
-  letter-spacing: 0.12em;
-  font-size: 0.8rem;
-}
-
 .hero-text,
 .section-heading p {
   color: var(--muted);
   font-size: 1.05rem;
   line-height: 1.7;
-}
-
-.btn {
-  display: inline-flex;
-  align-items: center;
-  justify-content: center;
-  border: 0;
-  border-radius: 999px;
-  background: linear-gradient(135deg, var(--primary), #ff5200);
-  color: #111;
-  font-weight: 900;
-  cursor: pointer;
-  box-shadow: var(--orange-glow);
-  padding: 14px 22px;
-  transition:
-    transform var(--transition),
-    filter var(--transition),
-    box-shadow var(--transition);
-}
-
-.btn:hover {
-  transform: translateY(-2px);
-  filter: brightness(1.1);
-  box-shadow: 0 0 45px rgba(255, 122, 0, 0.35);
-}
-
-.section {
-  padding: 54px 0;
-}
-
-.section-heading {
-  margin-bottom: 28px;
 }
 
 .tools-grid {

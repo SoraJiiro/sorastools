@@ -8,17 +8,25 @@
       content="Formate, valide, minifie et copie rapidement du JSON.">
     <link rel="stylesheet" href="/css/global.css">
     <link rel="stylesheet" href="/css/json-formatter.css">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link
+      href="https://fonts.googleapis.com/css2?family=Intel+One+Mono:ital,wght@0,300..700;1,300..700&family=Roboto+Condensed:ital,wght@0,100..900;1,100..900&family=Science+Gothic:wght@100..900&display=swap"
+      rel="stylesheet">
     <script type="module" src="/js/tools/json-formatter.js"></script>
     <script type="module" src="/js/global.js"></script>
   </head>
   <body>
     <header class="site-header">
       <nav class="navbar">
-        <a class="logo" href="/" data-label="Retourner à l'accueil SoraTools">SoraTools</a>
+        <a class="logo" href="/"
+          data-label="Retourner à l'accueil SoraTools">SoraTools</a>
         <div class="nav-links">
           <a href="/#tools" data-label="Aller au catalogue des tools">Tools</a>
-          <a href="/tools/color-picker" data-label="Ouvrir le Color Picker">Color picker</a>
-          <a href="/tools/json-formatter" data-label="Ouvrir le JSON Formatter">JSON</a>
+          <a href="/tools/color-picker"
+            data-label="Ouvrir le Color Picker">Color picker</a>
+          <a href="/tools/json-formatter"
+            data-label="Ouvrir le JSON Formatter">JSON</a>
         </div>
       </nav>
     </header>
@@ -34,17 +42,23 @@
 
         <div class="json-tool">
           <div class="json-toolbar">
-            <button type="button" data-json-format data-label="Formater le JSON">Formatter</button>
-            <button type="button" data-json-minify data-label="Minifier le JSON">Minifier</button>
-            <button type="button" data-json-validate data-label="Valider le JSON">Valider</button>
-            <button type="button" data-json-clear data-label="Vider les champs JSON">Vider</button>
-            <button type="button" data-json-copy data-label="Copier le JSON">Copier</button>
+            <button type="button" data-json-format
+              data-label="Formater le JSON">Formatter</button>
+            <button type="button" data-json-minify
+              data-label="Minifier le JSON">Minifier</button>
+            <button type="button" data-json-validate
+              data-label="Valider le JSON">Valider</button>
+            <button type="button" data-json-clear
+              data-label="Vider les champs JSON">Vider</button>
+            <button type="button" data-json-copy
+              data-label="Copier le JSON">Copier</button>
           </div>
 
           <div class="json-editor-grid">
             <label class="field json-field" data-label="Champ de saisie JSON">
               <span>Input JSON</span>
-              <textarea data-json-input data-label="Écrire ou coller du JSON" spellcheck="false"
+              <textarea data-json-input data-label="Écrire ou coller du JSON"
+                spellcheck="false"
                 placeholder="JSON à formater"></textarea>
               <p class="textarea-notice">Appuyer sur <code>Échap</code> pour
                 sortir du focus</p>

@@ -1,4 +1,5 @@
 @import url("https://cdn.jsdelivr.net/gh/highlightjs/cdn-release@11.11.1/build/styles/default.min.css");
+@import url("https://fonts.googleapis.com/css2?family=Intel+One+Mono:ital,wght@0,300..700;1,300..700&family=Roboto+Condensed:ital,wght@0,100..900;1,100..900&family=Science+Gothic:wght@100..900&display=swap");
 
 :root {
   --bg: #0b0d10;
@@ -28,7 +29,7 @@ html {
 
 body {
   margin: 0;
-  font-family: Arial, Helvetica, sans-serif;
+  font-family: "Roboto Condensed", sans-serif;
   color: var(--text);
   background:
     radial-gradient(
@@ -153,7 +154,55 @@ h2 {
   margin-bottom: 12px;
 }
 
+.eyebrow,
+.section-heading .eyebrow {
+  margin: 0 0 12px;
+  color: var(--primary-light);
+  font-weight: 800;
+  text-transform: uppercase;
+  letter-spacing: 0.12em;
+  font-size: 0.8rem;
+  font-family: "Science Gothic", sans-serif !important;
+}
 
+.btn {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  border: 0;
+  border-radius: 999px;
+  background: linear-gradient(135deg, var(--primary), #ff5200);
+  color: #111;
+  font-weight: 900;
+  cursor: pointer;
+  box-shadow: var(--orange-glow);
+  padding: 14px 22px;
+  transition:
+    transform var(--transition),
+    filter var(--transition),
+    box-shadow var(--transition);
+}
+
+.btn:hover {
+  transform: translateY(-2px);
+  filter: brightness(1.1);
+  box-shadow: 0 0 45px rgba(255, 122, 0, 0.35);
+}
+
+.section {
+  padding: 0;
+}
+
+.section-heading {
+  margin-bottom: 28px;
+  padding: 8px 0 8px 12px;
+  border-left: 5px solid var(--primary);
+  border-radius: 8px 0 0 8px;
+}
+
+.section-heading p {
+  margin: 0;
+}
 
 .field {
   display: grid;
@@ -168,12 +217,6 @@ h2 {
   font-size: 0.75rem;
   font-style: italic;
   color: var(--muted);
-}
-
-.textarea-notice code {
-  padding: 2px 4px;
-  border-radius: 4px;
-  color: var(--primary-light);
 }
 
 .textarea-notice code::before,
@@ -248,15 +291,6 @@ h2 {
   margin-bottom: 0;
 }
 
-.tech-explanation code {
-  border: 1px solid var(--border);
-  border-radius: 6px;
-  background: rgba(255, 255, 255, 0.06);
-  color: var(--primary-light);
-  padding: 2px 6px;
-  font-family: Consolas, Monaco, "Courier New", monospace;
-}
-
 .site-footer {
   padding: 32px 0;
   color: var(--muted);
@@ -320,6 +354,16 @@ article {
 
 .internal-link:hover {
   color: var(--primary-light);
+}
+
+code {
+  border: 1px solid var(--border);
+  border-radius: 6px;
+  background: rgba(255, 255, 255, 0.06);
+  color: var(--primary-light);
+  padding: 2px 4px;
+  font-family: "Intel One Mono", monospace;
+  font-size: clamp(0.88rem, 1vw, 1rem);
 }
 
 @keyframes pop {

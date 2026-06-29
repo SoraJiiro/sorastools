@@ -6,6 +6,11 @@
     <title>Color Picker - SoraTools</title>
     <meta name="description"
       content="Choisis une couleur et convertis-la instantanément en HEX, RGB et HSL.">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link
+      href="https://fonts.googleapis.com/css2?family=Intel+One+Mono:ital,wght@0,300..700;1,300..700&family=Roboto+Condensed:ital,wght@0,100..900;1,100..900&family=Science+Gothic:wght@100..900&display=swap"
+      rel="stylesheet">
     <link rel="stylesheet" href="/css/global.css">
     <link rel="stylesheet" href="/css/color-picker.css">
     <script type="module" src="/js/tools/color-picker.js"></script>
@@ -14,11 +19,14 @@
   <body>
     <header class="site-header">
       <nav class="navbar">
-        <a class="logo" href="/" data-label="Retourner à l'accueil SoraTools">SoraTools</a>
+        <a class="logo" href="/"
+          data-label="Retourner à l'accueil SoraTools">SoraTools</a>
         <div class="nav-links">
           <a href="/#tools" data-label="Aller au catalogue des tools">Tools</a>
-          <a href="/tools/color-picker" data-label="Ouvrir le Color Picker">Color picker</a>
-          <a href="/tools/json-formatter" data-label="Ouvrir le JSON Formatter">JSON</a>
+          <a href="/tools/color-picker"
+            data-label="Ouvrir le Color Picker">Color picker</a>
+          <a href="/tools/json-formatter"
+            data-label="Ouvrir le JSON Formatter">JSON</a>
         </div>
       </nav>
     </header>
@@ -43,7 +51,8 @@
               <div class="copy-row">
                 <input type="text" data-hex-output
                   data-label="Entrer le code HEX" placeholder="#ffffff">
-                <button type="button" data-copy="hex" data-label="Copier le code HEX">Copier</button>
+                <button type="button" data-copy="hex"
+                  data-label="Copier le code HEX">Copier</button>
               </div>
             </label>
             <label class="field" data-label="Champ RGB">
@@ -52,7 +61,8 @@
                 <input type="text" data-rgb-output
                   data-label="Entrer le code RGB"
                   placeholder="rgb(255, 255, 255)">
-                <button type="button" data-copy="rgb" data-label="Copier le code RGB">Copier</button>
+                <button type="button" data-copy="rgb"
+                  data-label="Copier le code RGB">Copier</button>
               </div>
             </label>
             <label class="field" data-label="Champ HSL">
@@ -61,7 +71,8 @@
                 <input type="text" data-hsl-output
                   data-label="Entrer le code HSL"
                   placeholder="hsl(0, 0%, 100%)">
-                <button type="button" data-copy="hsl" data-label="Copier le code HSL">Copier</button>
+                <button type="button" data-copy="hsl"
+                  data-label="Copier le code HSL">Copier</button>
               </div>
             </label>
           </div>

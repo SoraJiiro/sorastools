@@ -8,18 +8,27 @@
       content="Teste une expression régulière sur un texte et affiche les correspondances.">
     <link rel="stylesheet" href="/css/global.css">
     <link rel="stylesheet" href="/css/regex-tester.css">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link
+      href="https://fonts.googleapis.com/css2?family=Intel+One+Mono:ital,wght@0,300..700;1,300..700&family=Roboto+Condensed:ital,wght@0,100..900;1,100..900&family=Science+Gothic:wght@100..900&display=swap"
+      rel="stylesheet">
     <script type="module" src="/js/tools/regex-tester.js"></script>
     <script type="module" src="/js/global.js"></script>
   </head>
   <body>
     <header class="site-header">
       <nav class="navbar">
-        <a class="logo" href="/" data-label="Retourner à l'accueil SoraTools">SoraTools</a>
+        <a class="logo" href="/"
+          data-label="Retourner à l'accueil SoraTools">SoraTools</a>
         <div class="nav-links">
           <a href="/#tools" data-label="Aller au catalogue des tools">Tools</a>
-          <a href="/tools/color-picker" data-label="Ouvrir le Color Picker">Color picker</a>
-          <a href="/tools/json-formatter" data-label="Ouvrir le JSON Formatter">JSON</a>
-          <a href="/tools/regex-tester" data-label="Ouvrir le Regex Tester">Regex</a>
+          <a href="/tools/color-picker"
+            data-label="Ouvrir le Color Picker">Color picker</a>
+          <a href="/tools/json-formatter"
+            data-label="Ouvrir le JSON Formatter">JSON</a>
+          <a href="/tools/regex-tester"
+            data-label="Ouvrir le Regex Tester">Regex</a>
         </div>
       </nav>
     </header>
@@ -34,7 +43,8 @@
         </div>
 
         <div class="regex-tool">
-          <label class="field regex-preset-field" data-label="Champ de sélection du preset Regex">
+          <label class="field regex-preset-field"
+            data-label="Champ de sélection du preset Regex">
             <span>Préset</span>
             <select data-regex-preset data-label="Sélectionner un preset Regex">
               <option value>Regex personnalisée</option>
@@ -50,32 +60,41 @@
           </label>
 
           <div class="regex-controls">
-            <label class="field regex-pattern-field" data-label="Champ de l'expression régulière">
+            <label class="field regex-pattern-field"
+              data-label="Champ de l'expression régulière">
               <span>Expression régulière</span>
               <div class="regex-pattern-row">
                 <input type="text" data-regex-pattern
                   data-label="Entrer l'expression régulière"
                   placeholder="ex: \b[a-z]+\b" value="\btool\w*\b">
-                <button type="button" data-regex-copy data-label="Copier l'expression régulière">Copier</button>
+                <button type="button" data-regex-copy
+                  data-label="Copier l'expression régulière">Copier</button>
               </div>
             </label>
 
             <div class="regex-flags" aria-label="Options Regex">
-              <label data-label="Activer le flag g pour chercher toutes les correspondances"><input type="checkbox" data-regex-flag
+              <label
+                data-label="Activer le flag g pour chercher toutes les correspondances"><input
+                  type="checkbox" data-regex-flag
                   value="g" checked>
                 g</label>
-              <label data-label="Activer le flag i pour ignorer la casse"><input type="checkbox" data-regex-flag
+              <label data-label="Activer le flag i pour ignorer la casse"><input
+                  type="checkbox" data-regex-flag
                   value="i" checked>
                 i</label>
-              <label data-label="Activer le flag m pour le mode multi-lignes"><input type="checkbox" data-regex-flag
+              <label
+                data-label="Activer le flag m pour le mode multi-lignes"><input
+                  type="checkbox" data-regex-flag
                   value="m"> m</label>
             </div>
           </div>
 
           <div class="regex-editor-grid">
-            <label class="field regex-field" data-label="Champ du texte à tester">
+            <label class="field regex-field"
+              data-label="Champ du texte à tester">
               <span>Texte à tester</span>
-              <textarea data-regex-text data-label="Écrire le texte à tester avec la Regex"
+              <textarea data-regex-text
+                data-label="Écrire le texte à tester avec la Regex"
                 spellcheck="false">SoraTools regroupe plusieurs tools utiles : JSON Formatter, Color Picker et Regex Tester.</textarea>
               <p class="textarea-notice">Appuyer sur <code>Échap</code> pour
                 sortir du focus</p>
