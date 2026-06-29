@@ -28,6 +28,10 @@ router.get("/tools/md-previewer", (req, res) => {
   sendPublicFile(res, "tools", "md-previewer.html");
 });
 
+router.get("/tools/base64", (req, res) => {
+  sendPublicFile(res, "tools", "base64.html");
+});
+
 router.use((req, res) => {
   res.status(404);
   sendPublicFile(res, "404.html");
