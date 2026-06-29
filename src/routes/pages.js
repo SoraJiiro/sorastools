@@ -16,6 +16,15 @@ router.get("/suggest", (req, res) => {
   sendPublicFile(res, "suggest.html");
 });
 
+router.get("/api/emailjs-config", (req, res) => {
+  res.json({
+    success: true,
+    publicKey: process.env.EMAILJS_PUBLIC_KEY || "",
+    serviceId: process.env.EMAILJS_SERVICE_ID || "",
+    templateId: process.env.EMAILJS_TEMPLATE_ID || "",
+  });
+});
+
 router.get("/tools/color-picker", (req, res) => {
   sendPublicFile(res, "tools", "color-picker.html");
 });
