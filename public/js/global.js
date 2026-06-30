@@ -154,6 +154,10 @@ function injectResponsiveNavbarStyles() {
       width: 20px;
     }
 
+    body.nav-open .nav-category {
+      display: block;
+    }
+
     @media (max-width: 980px) {
       .navbar {
         position: relative;
@@ -322,9 +326,10 @@ function applyActionIcons(selector = "button, .btn, .nav-links a") {
 
 function setupResponsiveNavbar() {
   const navbar = document.querySelector(".navbar");
-  const navLinks = document.querySelector(".nav-links");
+  const navCategories = document.querySelectorAll(".nav-category");
+  const navLinks = document.querySelectorAll(".nav-links");
 
-  if (!navbar || !navLinks) return;
+  if (!navbar || !navLinks || !navCategories) return;
 
   injectResponsiveNavbarStyles();
 
@@ -358,8 +363,10 @@ function setupResponsiveNavbar() {
   toggleButton.addEventListener("click", toggleMenu);
   overlay.addEventListener("click", closeMenu);
 
-  navLinks.addEventListener("click", (event) => {
-    if (event.target.closest("a")) closeMenu();
+  navLinks.forEach((navLink) => {
+    navLink.addEventListener("click", (event) => {
+      if (event.target.closest("a")) closeMenu();
+    });
   });
 
   window.addEventListener("keydown", (event) => {

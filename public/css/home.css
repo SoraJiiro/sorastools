@@ -3,11 +3,29 @@
   max-width: 780px;
 }
 
+.hero h1 {
+  z-index: 1;
+}
+
+.hero .hero-icon {
+  position: absolute;
+  top: -70px;
+  right: -32px;
+  font-size: 16rem;
+  color: var(--primary);
+  opacity: 0.66;
+  -webkit-box-reflect: below 0px
+    linear-gradient(transparent, transparent, rgba(255, 255, 255, 0.5));
+  z-index: -1;
+}
+
 .hero-text,
 .section-heading p {
   color: var(--muted);
   font-size: 1.05rem;
   line-height: 1.7;
+  position: relative;
+  z-index: 1;
 }
 
 .tools-grid {

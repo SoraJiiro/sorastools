@@ -40,7 +40,7 @@
     "name": "Base64 Encoder",
     "category": "Dev",
     "description": "Encode ou décode rapidement une chaîne en Base64.",
-    "icon": "<i class='fa-solid fa-square-barcode'></i>",
+    "icon": "<i class='fa-solid fa-barcode'></i>",
     "url": "/tools/base64",
     "status": "ready"
   },
@@ -48,7 +48,7 @@
     "id": "binary",
     "name": "Binary Translator",
     "category": "Dev",
-    "description": "Convertis du texte en binaire 01 ou traduis du binaire en texte.",
+    "description": "Convertis du texte en binaire (base 2) ou traduis du binaire en texte.",
     "icon": "<i class='fa-solid fa-square-binary'></i>",
     "url": "/tools/binary",
     "status": "ready"
@@ -57,7 +57,7 @@
     "id": "hexadecimal",
     "name": "Hexadecimal Translator",
     "category": "Dev",
-    "description": "Convertis du texte en hexadécimal ou traduis de l'hexadécimal en texte.",
+    "description": "Convertis du texte en hexadécimal (base 16) ou traduis de l'hexadécimal en texte.",
     "icon": "<i class='fa-solid fa-hashtag'></i>",
     "url": "/tools/hexadecimal",
     "status": "ready"
@@ -84,7 +84,7 @@
     "id": "js-minifier",
     "name": "JS Minifier",
     "category": "Dev",
-    "description": "Minifie du JavaScript et ajoute une obfuscation légère en option.",
+    "description": "Minifie du JavaScript et ajoute une obfuscation en option.",
     "icon": "<i class='fa-brands fa-square-js'></i>",
     "url": "/tools/js-minifier",
     "status": "ready"
@@ -92,7 +92,7 @@
   {
     "id": "chart-editor",
     "name": "Chart Editor",
-    "category": "Musique",
+    "category": "Jeu / Musique",
     "description": "Crée et exporte des charts Clone Hero au format .chart, avec audio, timeline et notes synchronisées.",
     "icon": "<i class='fa-solid fa-guitar'></i>",
     "url": "/tools/chart-editor",
