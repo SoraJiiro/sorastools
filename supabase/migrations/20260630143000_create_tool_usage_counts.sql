@@ -7,7 +7,9 @@ create table if not exists public.tool_usage_counts (
 
 alter table public.tool_usage_counts enable row level security;
 
-create policy if not exists "Tool usage counts are readable"
+drop policy if exists "Tool usage counts are readable" on public.tool_usage_counts;
+
+create policy "Tool usage counts are readable"
   on public.tool_usage_counts
   for select
   to anon, authenticated
