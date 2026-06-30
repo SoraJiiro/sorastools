@@ -1,13 +1,14 @@
 const express = require("express");
 const readJsonFile = require("../../utils/readJsonFile");
-const {
-  runSupabaseRequest,
-  sendWebResponse,
-} = require("../../utils/supabaseRequestHandler");
 const { TOOLS_FILE } = require("../../config/paths");
 
 const router = express.Router();
 const TOOL_USAGE_TABLE = "tool_usage_counts";
+const SUPABASE_REST_HEADERS = {
+  apikey: "",
+  Authorization: "",
+  "Content-Type": "application/json",
+};
 
 async function getTools() {
   const data = await readJsonFile(TOOLS_FILE, []);
@@ -20,7 +21,11 @@ async function getTools() {
 
 function shouldPreventSubmitCount() {
   return (
-    String(process.env.PREVENT_SUBMIT_COUNT_SUPA || "")
+    String(
+      process.env.PREVENT_COUNT_SUBMIT_SUPA ||
+        process.env.PREVENT_SUBMIT_COUNT_SUPA ||
+        "",
+    )
       .trim()
       .toLowerCase() === "true"
   );
@@ -55,63 +60,79 @@ function mapMostUsedTools(tools, usageRows = []) {
   return [...rankedTools, ...fallbackTools].slice(0, 3);
 }
 
-async function getSupabaseMostUsedTools(req, tools) {
-  const response = await runSupabaseRequest(
-    req,
-    { auth: "none" },
-    async (_request, ctx) => {
-      const client = ctx.supabaseAdmin || ctx.supabase;
-      const { data, error } = await client
-        .from(TOOL_USAGE_TABLE)
-        .select("tool_id, submit_count")
-        .order("submit_count", { ascending: false })
-        .limit(3);
+function getSupabaseConfig() {
+  const url = (process.env.SUPABASE_URL || "").replace(/\/$/, "");
+  const secretKey = process.env.SUPABASE_SECRET_KEY || "";
+  const publishableKey = process.env.SUPABASE_PUBLISHABLE_KEY || "";
+  const apiKey = secretKey || publishableKey;
 
-      if (error) {
-        return Response.json(
-          { success: false, message: error.message },
-          { status: 500 },
-        );
-      }
+  if (!url || !apiKey) {
+    throw new Error(
+      "Configuration Supabase incomplète : SUPABASE_URL et une clé Supabase sont requis.",
+    );
+  }
 
-      return Response.json({
-        success: true,
-        tools: mapMostUsedTools(tools, data || []),
-      });
-    },
-  );
-
-  return response;
+  return { url, apiKey };
 }
 
-async function incrementSupabaseToolUsage(req, toolId) {
-  const response = await runSupabaseRequest(
-    req,
-    { auth: "none" },
-    async (_request, ctx) => {
-      const client = ctx.supabaseAdmin || ctx.supabase;
-      const { data, error } = await client.rpc("increment_tool_usage", {
-        p_tool_id: toolId,
-      });
+function getSupabaseHeaders() {
+  const { apiKey } = getSupabaseConfig();
 
-      if (error) {
-        return Response.json(
-          { success: false, message: error.message },
-          { status: 500 },
-        );
-      }
+  return {
+    ...SUPABASE_REST_HEADERS,
+    apikey: apiKey,
+    Authorization: `Bearer ${apiKey}`,
+  };
+}
 
-      const usageRow = Array.isArray(data) ? data[0] : data;
+async function readSupabaseJson(response) {
+  const text = await response.text();
 
-      return Response.json({
-        success: true,
-        toolId,
-        submitCount: Number(usageRow?.submit_count || 0),
-      });
-    },
-  );
+  if (!text) return null;
 
-  return response;
+  try {
+    return JSON.parse(text);
+  } catch (error) {
+    return { message: text };
+  }
+}
+
+async function getSupabaseMostUsedTools(tools) {
+  const { url } = getSupabaseConfig();
+  const query = new URLSearchParams({
+    select: "tool_id,submit_count",
+    order: "submit_count.desc",
+    limit: "3",
+  });
+
+  const response = await fetch(`${url}/rest/v1/${TOOL_USAGE_TABLE}?${query}`, {
+    headers: getSupabaseHeaders(),
+  });
+  const data = await readSupabaseJson(response);
+
+  if (!response.ok) {
+    throw new Error(data?.message || "Impossible de charger les stats Supabase.");
+  }
+
+  return mapMostUsedTools(tools, Array.isArray(data) ? data : []);
+}
+
+async function incrementSupabaseToolUsage(toolId) {
+  const { url } = getSupabaseConfig();
+  const response = await fetch(`${url}/rest/v1/rpc/increment_tool_usage`, {
+    method: "POST",
+    headers: getSupabaseHeaders(),
+    body: JSON.stringify({ p_tool_id: toolId }),
+  });
+  const data = await readSupabaseJson(response);
+
+  if (!response.ok) {
+    throw new Error(data?.message || "Impossible d'incrémenter les stats Supabase.");
+  }
+
+  const usageRow = Array.isArray(data) ? data[0] : data;
+
+  return Number(usageRow?.submit_count || 0);
 }
 
 router.get("/api/tools", async (req, res) => {
@@ -123,13 +144,13 @@ router.get("/api/tools/most-used", async (req, res) => {
   const tools = await getTools();
 
   try {
-    const response = await getSupabaseMostUsedTools(req, tools);
-    return sendWebResponse(res, response);
+    const mostUsedTools = await getSupabaseMostUsedTools(tools);
+    return res.json({ success: true, tools: mostUsedTools });
   } catch (error) {
     return res.json({
       success: true,
       fallback: true,
-      message: "Supabase n'est pas encore configuré pour les stats.",
+      message: error.message || "Supabase n'est pas encore configuré pour les stats.",
       tools: mapMostUsedTools(tools),
     });
   }
@@ -158,13 +179,13 @@ router.post("/api/tools/:toolId/submit", async (req, res) => {
   }
 
   try {
-    const response = await incrementSupabaseToolUsage(req, toolId);
-    return sendWebResponse(res, response);
+    const submitCount = await incrementSupabaseToolUsage(toolId);
+    return res.json({ success: true, toolId, submitCount });
   } catch (error) {
     return res.status(503).json({
       success: false,
       fallback: true,
-      message: "Supabase n'est pas encore configuré pour les stats.",
+      message: error.message || "Supabase n'est pas encore configuré pour les stats.",
     });
   }
 });
