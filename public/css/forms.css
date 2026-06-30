@@ -37,6 +37,12 @@
   font-weight: 800;
 }
 
+.form-field span::before {
+  content: "➢";
+  color: var(--primary);
+  margin-right: 4px;
+}
+
 .form-field input,
 .form-field textarea {
   width: 100%;
@@ -140,6 +146,11 @@
   color: var(--muted);
   display: inline-block;
   margin: 0;
+}
+
+.tool-name-notice,
+.pseudo-notice {
+  font-size: 0.7rem;
 }
 
 @media (max-width: 760px) {

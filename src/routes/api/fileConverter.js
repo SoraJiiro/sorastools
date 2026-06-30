@@ -22,13 +22,38 @@ const ffmpegPath = ffmpegStatic || "ffmpeg";
 const upload = multer({
   storage: multer.memoryStorage(),
   limits: {
-    fileSize: 350 * 1024 * 1024,
+    fileSize: 100 * 1024 * 1024, // 100 MB
   },
 });
 
-const IMAGE_FORMATS = new Set(["jpg", "jpeg", "png", "webp", "avif", "tiff", "gif"]);
-const VIDEO_FORMATS = new Set(["mp4", "webm", "mkv", "mov", "avi", "m4v", "ogv"]);
-const AUDIO_FORMATS = new Set(["mp3", "wav", "ogg", "flac", "aac", "m4a", "opus", "webm"]);
+const IMAGE_FORMATS = new Set([
+  "jpg",
+  "jpeg",
+  "png",
+  "webp",
+  "avif",
+  "tiff",
+  "gif",
+]);
+const VIDEO_FORMATS = new Set([
+  "mp4",
+  "webm",
+  "mkv",
+  "mov",
+  "avi",
+  "m4v",
+  "ogv",
+]);
+const AUDIO_FORMATS = new Set([
+  "mp3",
+  "wav",
+  "ogg",
+  "flac",
+  "aac",
+  "m4a",
+  "opus",
+  "webm",
+]);
 const WORD_INPUT_FORMATS = new Set(["doc", "docx", "odt", "rtf"]);
 const EXCEL_INPUT_FORMATS = new Set(["xls", "xlsx", "ods", "csv"]);
 const POWERPOINT_INPUT_FORMATS = new Set(["ppt", "pptx", "odp"]);
@@ -72,7 +97,10 @@ function getExtension(filename = "") {
 }
 
 function normalizeExtension(extension = "") {
-  const cleanExtension = String(extension).replace(/^\./, "").trim().toLowerCase();
+  const cleanExtension = String(extension)
+    .replace(/^\./, "")
+    .trim()
+    .toLowerCase();
   return cleanExtension === "jpg" ? "jpeg" : cleanExtension;
 }
 
@@ -81,19 +109,24 @@ function getDownloadExtension(extension = "") {
 }
 
 function sanitizeFilename(filename = "file") {
-  return String(filename)
-    .normalize("NFD")
-    .replace(/[\u0300-\u036f]/g, "")
-    .replace(/\.[^.]+$/, "")
-    .replace(/[^a-zA-Z0-9_-]+/g, "-")
-    .replace(/^-+|-+$/g, "")
-    .slice(0, 80) || "converted-file";
+  return (
+    String(filename)
+      .normalize("NFD")
+      .replace(/[\u0300-\u036f]/g, "")
+      .replace(/\.[^.]+$/, "")
+      .replace(/[^a-zA-Z0-9_-]+/g, "-")
+      .replace(/^-+|-+$/g, "")
+      .slice(0, 80) || "converted-file"
+  );
 }
 
 function inferCategory(inputExtension, mimetype = "") {
-  if (mimetype.startsWith("image/") || IMAGE_FORMATS.has(inputExtension)) return "image";
-  if (mimetype.startsWith("video/") || VIDEO_FORMATS.has(inputExtension)) return "video";
-  if (mimetype.startsWith("audio/") || AUDIO_FORMATS.has(inputExtension)) return "audio";
+  if (mimetype.startsWith("image/") || IMAGE_FORMATS.has(inputExtension))
+    return "image";
+  if (mimetype.startsWith("video/") || VIDEO_FORMATS.has(inputExtension))
+    return "video";
+  if (mimetype.startsWith("audio/") || AUDIO_FORMATS.has(inputExtension))
+    return "audio";
   if (
     inputExtension === "pdf" ||
     OFFICE_TO_PDF_FORMATS.has(inputExtension) ||
@@ -115,7 +148,9 @@ function validateConversion(category, inputExtension, outputExtension, mode) {
   }
 
   if (category === "image") {
-    return IMAGE_FORMATS.has(inputExtension) && IMAGE_FORMATS.has(outputExtension);
+    return (
+      IMAGE_FORMATS.has(inputExtension) && IMAGE_FORMATS.has(outputExtension)
+    );
   }
 
   if (category === "video") {
@@ -128,7 +163,8 @@ function validateConversion(category, inputExtension, outputExtension, mode) {
 
   if (category === "document") {
     return (
-      (OFFICE_TO_PDF_FORMATS.has(inputExtension) && outputExtension === "pdf") ||
+      (OFFICE_TO_PDF_FORMATS.has(inputExtension) &&
+        outputExtension === "pdf") ||
       (inputExtension === "pdf" && PDF_TO_OFFICE_FORMATS.has(outputExtension))
     );
   }
@@ -153,7 +189,10 @@ async function safeUnlink(filePath) {
     await fs.unlink(filePath);
   } catch (error) {
     if (error.code !== "ENOENT") {
-      console.warn(`Impossible de supprimer le fichier temporaire ${filePath}:`, error.message);
+      console.warn(
+        `Impossible de supprimer le fichier temporaire ${filePath}:`,
+        error.message,
+      );
     }
   }
 }
@@ -178,7 +217,9 @@ function runProcess(command, args, label) {
         return;
       }
 
-      reject(new Error(stderr.trim() || `${label} a quitté avec le code ${code}.`));
+      reject(
+        new Error(stderr.trim() || `${label} a quitté avec le code ${code}.`),
+      );
     });
   });
 }
@@ -194,7 +235,13 @@ async function convertImage(inputBuffer, outputExtension, quality = 90) {
   return pipeline.toFormat(sharpFormat, { quality }).toBuffer();
 }
 
-function buildFfmpegArgs(inputPath, outputPath, outputExtension, category, mode = "convert") {
+function buildFfmpegArgs(
+  inputPath,
+  outputPath,
+  outputExtension,
+  category,
+  mode = "convert",
+) {
   const args = ["-y", "-i", inputPath];
 
   if (category === "audio") {
@@ -203,7 +250,18 @@ function buildFfmpegArgs(inputPath, outputPath, outputExtension, category, mode 
 
   if (mode === "compress") {
     if (category === "video") {
-      args.push("-vcodec", "libx264", "-crf", "28", "-preset", "medium", "-acodec", "aac", "-b:a", "128k");
+      args.push(
+        "-vcodec",
+        "libx264",
+        "-crf",
+        "28",
+        "-preset",
+        "medium",
+        "-acodec",
+        "aac",
+        "-b:a",
+        "128k",
+      );
     }
 
     if (category === "audio") {
@@ -222,8 +280,20 @@ function buildFfmpegArgs(inputPath, outputPath, outputExtension, category, mode 
   return args;
 }
 
-function convertWithFfmpeg(inputPath, outputPath, outputExtension, category, mode = "convert") {
-  const args = buildFfmpegArgs(inputPath, outputPath, outputExtension, category, mode);
+function convertWithFfmpeg(
+  inputPath,
+  outputPath,
+  outputExtension,
+  category,
+  mode = "convert",
+) {
+  const args = buildFfmpegArgs(
+    inputPath,
+    outputPath,
+    outputExtension,
+    category,
+    mode,
+  );
   return runProcess(ffmpegPath, args, "FFmpeg");
 }
 
@@ -236,7 +306,13 @@ function createDocxFromText(text) {
 
   const children = lines.length
     ? lines.map((line) => new Paragraph({ children: [new TextRun(line)] }))
-    : [new Paragraph({ children: [new TextRun("Document PDF converti sans texte détectable.")] })];
+    : [
+        new Paragraph({
+          children: [
+            new TextRun("Document PDF converti sans texte détectable."),
+          ],
+        }),
+      ];
 
   return new Document({ sections: [{ children }] });
 }
@@ -248,7 +324,11 @@ function createXlsxFromText(text) {
     .map((line) => [line.trim()])
     .filter((row) => row[0]);
 
-  const worksheet = XLSX.utils.aoa_to_sheet(rows.length ? [["Contenu extrait du PDF"], ...rows] : [["Aucun texte détectable dans le PDF."]]);
+  const worksheet = XLSX.utils.aoa_to_sheet(
+    rows.length
+      ? [["Contenu extrait du PDF"], ...rows]
+      : [["Aucun texte détectable dans le PDF."]],
+  );
   const workbook = XLSX.utils.book_new();
 
   XLSX.utils.book_append_sheet(workbook, worksheet, "PDF");
@@ -271,7 +351,9 @@ async function createPptxFromText(text) {
     .filter(Boolean)
     .flatMap((line) => line.match(/[\s\S]{1,700}/g) || []);
 
-  const slideTexts = chunks.length ? chunks : ["Aucun texte détectable dans le PDF."];
+  const slideTexts = chunks.length
+    ? chunks
+    : ["Aucun texte détectable dans le PDF."];
 
   slideTexts.forEach((slideText, index) => {
     const slide = pptx.addSlide();
@@ -329,7 +411,13 @@ async function convertDocument(inputBuffer, inputExtension, outputExtension) {
   throw new Error("Conversion de document non supportée.");
 }
 
-async function convertMedia(inputBuffer, inputExtension, outputExtension, category, mode = "convert") {
+async function convertMedia(
+  inputBuffer,
+  inputExtension,
+  outputExtension,
+  category,
+  mode = "convert",
+) {
   const inputPath = await writeTempFile(inputBuffer, inputExtension || "bin");
   const outputPath = path.join(
     os.tmpdir(),
@@ -337,7 +425,13 @@ async function convertMedia(inputBuffer, inputExtension, outputExtension, catego
   );
 
   try {
-    await convertWithFfmpeg(inputPath, outputPath, outputExtension, category, mode);
+    await convertWithFfmpeg(
+      inputPath,
+      outputPath,
+      outputExtension,
+      category,
+      mode,
+    );
     return await fs.readFile(outputPath);
   } finally {
     await safeUnlink(inputPath);
@@ -347,7 +441,10 @@ async function convertMedia(inputBuffer, inputExtension, outputExtension, catego
 
 async function compressPdf(inputBuffer) {
   const inputPath = await writeTempFile(inputBuffer, "pdf");
-  const outputPath = path.join(os.tmpdir(), `sorastools-${Date.now()}-${crypto.randomUUID()}.pdf`);
+  const outputPath = path.join(
+    os.tmpdir(),
+    `sorastools-${Date.now()}-${crypto.randomUUID()}.pdf`,
+  );
 
   try {
     await runProcess(
@@ -378,7 +475,13 @@ async function compressFile(inputBuffer, inputExtension, category) {
   }
 
   if (category === "video" || category === "audio") {
-    return convertMedia(inputBuffer, inputExtension, inputExtension, category, "compress");
+    return convertMedia(
+      inputBuffer,
+      inputExtension,
+      inputExtension,
+      category,
+      "compress",
+    );
   }
 
   if (inputExtension === "pdf") {
@@ -393,68 +496,104 @@ function getResponseFilename(originalName, outputExtension, mode) {
   return `${sanitizeFilename(originalName)}${suffix}.${getDownloadExtension(outputExtension)}`;
 }
 
-router.post("/api/file-converter/convert", upload.single("file"), async (req, res) => {
-  if (!req.file) {
-    return res.status(400).json({ success: false, message: "Aucun fichier reçu." });
-  }
-
-  const inputExtension = normalizeExtension(getExtension(req.file.originalname));
-  const requestedMode = String(req.body.mode || "convert").toLowerCase();
-  const mode = requestedMode === "compress" ? "compress" : "convert";
-  const outputExtension = mode === "compress"
-    ? inputExtension
-    : normalizeExtension(req.body.outputFormat);
-  const requestedCategory = String(req.body.category || "auto").toLowerCase();
-  const category = requestedCategory === "auto"
-    ? inferCategory(inputExtension, req.file.mimetype)
-    : requestedCategory;
-
-  if (mode === "convert" && !outputExtension) {
-    return res.status(400).json({ success: false, message: "Choisis un format de sortie." });
-  }
-
-  if (!validateConversion(category, inputExtension, outputExtension, mode)) {
-    return res.status(400).json({
-      success: false,
-      message: mode === "compress"
-        ? "Compression non supportée pour ce type de fichier."
-        : "Conversion non supportée pour ce type de fichier.",
-    });
-  }
-
-  try {
-    let resultBuffer;
-
-    if (mode === "compress") {
-      resultBuffer = await compressFile(req.file.buffer, inputExtension, category);
-    } else if (category === "image") {
-      resultBuffer = await convertImage(req.file.buffer, outputExtension);
-    } else if (category === "video" || category === "audio") {
-      resultBuffer = await convertMedia(req.file.buffer, inputExtension, outputExtension, category);
-    } else if (category === "document") {
-      resultBuffer = await convertDocument(req.file.buffer, inputExtension, outputExtension);
+router.post(
+  "/api/file-converter/convert",
+  upload.single("file"),
+  async (req, res) => {
+    if (!req.file) {
+      return res
+        .status(400)
+        .json({ success: false, message: "Aucun fichier reçu." });
     }
 
-    const downloadExtension = getDownloadExtension(outputExtension);
-    const filename = getResponseFilename(req.file.originalname, outputExtension, mode);
+    const inputExtension = normalizeExtension(
+      getExtension(req.file.originalname),
+    );
+    const requestedMode = String(req.body.mode || "convert").toLowerCase();
+    const mode = requestedMode === "compress" ? "compress" : "convert";
+    const outputExtension =
+      mode === "compress"
+        ? inputExtension
+        : normalizeExtension(req.body.outputFormat);
+    const requestedCategory = String(req.body.category || "auto").toLowerCase();
+    const category =
+      requestedCategory === "auto"
+        ? inferCategory(inputExtension, req.file.mimetype)
+        : requestedCategory;
 
-    res.setHeader("Content-Type", MIME_TYPES[downloadExtension] || "application/octet-stream");
-    res.setHeader("Content-Disposition", `attachment; filename="${filename}"`);
-    res.setHeader("Content-Length", resultBuffer.length);
-    return res.send(resultBuffer);
-  } catch (error) {
-    console.error("Erreur file converter:", error);
+    if (mode === "convert" && !outputExtension) {
+      return res
+        .status(400)
+        .json({ success: false, message: "Choisis un format de sortie." });
+    }
 
-    return res.status(500).json({
-      success: false,
-      message:
-        mode === "compress"
-          ? "Compression impossible. Pour les PDF, Ghostscript doit être installé sur la machine serveur."
-          : category === "document"
-            ? "Conversion impossible. Pour Office → PDF, LibreOffice doit être installé sur la machine serveur. PDF → Office extrait le texte du PDF dans un fichier éditable."
-            : "Conversion impossible. Vérifie que le fichier est valide et que FFmpeg supporte ce format.",
-    });
-  }
-});
+    if (!validateConversion(category, inputExtension, outputExtension, mode)) {
+      return res.status(400).json({
+        success: false,
+        message:
+          mode === "compress"
+            ? "Compression non supportée pour ce type de fichier."
+            : "Conversion non supportée pour ce type de fichier.",
+      });
+    }
+
+    try {
+      let resultBuffer;
+
+      if (mode === "compress") {
+        resultBuffer = await compressFile(
+          req.file.buffer,
+          inputExtension,
+          category,
+        );
+      } else if (category === "image") {
+        resultBuffer = await convertImage(req.file.buffer, outputExtension);
+      } else if (category === "video" || category === "audio") {
+        resultBuffer = await convertMedia(
+          req.file.buffer,
+          inputExtension,
+          outputExtension,
+          category,
+        );
+      } else if (category === "document") {
+        resultBuffer = await convertDocument(
+          req.file.buffer,
+          inputExtension,
+          outputExtension,
+        );
+      }
+
+      const downloadExtension = getDownloadExtension(outputExtension);
+      const filename = getResponseFilename(
+        req.file.originalname,
+        outputExtension,
+        mode,
+      );
+
+      res.setHeader(
+        "Content-Type",
+        MIME_TYPES[downloadExtension] || "application/octet-stream",
+      );
+      res.setHeader(
+        "Content-Disposition",
+        `attachment; filename="${filename}"`,
+      );
+      res.setHeader("Content-Length", resultBuffer.length);
+      return res.send(resultBuffer);
+    } catch (error) {
+      console.error("Erreur file converter:", error);
+
+      return res.status(500).json({
+        success: false,
+        message:
+          mode === "compress"
+            ? "Compression impossible. Pour les PDF, Ghostscript doit être installé sur la machine serveur."
+            : category === "document"
+              ? "Conversion impossible. Pour Office → PDF, LibreOffice doit être installé sur la machine serveur. PDF → Office extrait le texte du PDF dans un fichier éditable."
+              : "Conversion impossible. Vérifie que le fichier est valide et que FFmpeg supporte ce format.",
+      });
+    }
+  },
+);
 
 module.exports = router;

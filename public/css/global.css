@@ -63,6 +63,12 @@ body::before {
   mask-image: linear-gradient(to bottom, black, transparent 82%);
 }
 
+:focus {
+  outline: 2px dotted var(--primary);
+  outline-offset: 6px;
+  border-radius: 6px;
+}
+
 ::-webkit-scrollbar {
   width: 8px;
   height: 8px;
@@ -149,11 +155,13 @@ main,
   display: flex;
   gap: 18px;
   color: var(--muted);
+  position: relative;
 }
 
 .nav-links a {
   position: relative;
   font-weight: 600;
+  overflow: hidden;
   transition:
     color var(--transition),
     text-shadow var(--transition);
@@ -466,7 +474,7 @@ code {
   }
 }
 
-@media (max-width: 720px) {
+@media (max-width: 832px) {
   .navbar,
   .nav-links {
     display: grid;

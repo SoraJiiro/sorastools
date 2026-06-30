@@ -7,7 +7,7 @@ import { setupMostUsedTools, setupToolSubmitTracking } from "./toolUsage.js";
 
 const HIGHLIGHT_STYLE_HREF = "/vendor/highlight.js/styles/github-dark.min.css";
 const HIGHLIGHT_SCRIPT_SRC = "/vendor/highlight.js/highlight.min.js";
-const NAVBAR_MOBILE_QUERY = "(max-width: 720px)";
+const NAVBAR_MOBILE_QUERY = "(max-width: 832px)";
 const MOST_USED_SELECTOR = "[data-tools-most-used]";
 let highlightJsPromise = null;
 
@@ -163,7 +163,7 @@ function injectResponsiveNavbarStyles() {
       width: 20px;
     }
 
-    @media (min-width: 721px) {
+    @media (min-width: 833px) {
       .nav-menu {
         position: static;
         width: auto;
@@ -180,7 +180,7 @@ function injectResponsiveNavbarStyles() {
       }
     }
 
-    @media (max-width: 720px) {
+    @media (max-width: 832px) {
       .navbar {
         position: relative;
         display: flex !important;
