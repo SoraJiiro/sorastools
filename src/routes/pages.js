@@ -70,10 +70,6 @@ router.get("/tools/js-minifier", (req, res) => {
   sendPublicFile(res, "tools", "js-minifier.html");
 });
 
-router.get("/tools/chart-editor", (req, res) => {
-  sendPublicFile(res, "tools", "chart-editor.html");
-});
-
 router.get("/tools/file-converter", (req, res) => {
   sendPublicFile(res, "tools", "file-converter.html");
 });
