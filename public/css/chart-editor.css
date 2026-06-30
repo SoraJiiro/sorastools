@@ -1,3 +1,3 @@
-:root {
-  --ce-bg: #05090f;
-}
+@import url("/css/chart-editor-base.css");
+@import url("/css/chart-editor-panels.css");
+@import url("/css/chart-editor-stage.css");
