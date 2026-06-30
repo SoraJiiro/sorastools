@@ -1,5 +1,29 @@
+code.hljs {
+  display: inline;
+  white-space: normal;
+  background: rgba(255, 255, 255, 0.08) !important;
+  color: #c9d1d9 !important;
+}
+
+pre code.hljs {
+  display: block;
+  white-space: pre;
+}
+
 .hljs-keyword {
   color: #ff7b72 !important;
+}
+
+.hljs-attribute,
+.hljs-built_in,
+.hljs-selector-tag,
+.hljs-title.function_ {
+  color: #d2a8ff !important;
+}
+
+.hljs-number,
+.hljs-literal {
+  color: #79c0ff !important;
 }
 
 .hljs-string {
