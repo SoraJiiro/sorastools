@@ -197,6 +197,24 @@ main,
   opacity: 1;
 }
 
+.nav-tool-link {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.42rem;
+  white-space: nowrap;
+}
+
+.nav-tool-link i {
+  color: var(--primary-light);
+  font-size: 0.9em;
+}
+
+.nav-empty {
+  color: var(--muted);
+  font-weight: 600;
+  opacity: 0.8;
+}
+
 h1,
 h2,
 p {

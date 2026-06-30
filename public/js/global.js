@@ -3,10 +3,12 @@ import {
   setupTextareaTabHandlers,
   initFaKit,
 } from "./utils.js";
+import { setupMostUsedTools, setupToolSubmitTracking } from "./toolUsage.js";
 
 const HIGHLIGHT_STYLE_HREF = "/vendor/highlight.js/styles/github-dark.min.css";
 const HIGHLIGHT_SCRIPT_SRC = "/vendor/highlight.js/highlight.min.js";
 const NAVBAR_MOBILE_QUERY = "(max-width: 720px)";
+const MOST_USED_SELECTOR = "[data-tools-most-used]";
 let highlightJsPromise = null;
 
 function hasHighlightableCode(root = document) {
@@ -352,6 +354,20 @@ function applyActionIcons(selector = "button, .btn, .nav-links a") {
   });
 }
 
+function ensureMostUsedNavbarSection(navbar) {
+  if (navbar.querySelector(MOST_USED_SELECTOR)) return;
+
+  const category = document.createElement("h3");
+  category.className = "nav-category";
+  category.textContent = "Les plus utilisés";
+
+  const links = document.createElement("div");
+  links.className = "nav-links";
+  links.dataset.toolsMostUsed = "";
+
+  navbar.append(category, links);
+}
+
 function buildNavbarMenu(navbar) {
   let navMenu = navbar.querySelector("[data-nav-menu]");
 
@@ -377,6 +393,8 @@ function setupResponsiveNavbar() {
   const navbar = document.querySelector(".navbar");
 
   if (!navbar) return;
+
+  ensureMostUsedNavbarSection(navbar);
 
   const navMenu = buildNavbarMenu(navbar);
 
@@ -435,6 +453,8 @@ function setupResponsiveNavbar() {
 
 initFaKit();
 setupResponsiveNavbar();
+setupMostUsedTools();
+setupToolSubmitTracking();
 setupTextareaTabHandlers("textarea:not([readonly])");
 applyActionsLabels();
 applyActionIcons("button, .btn:not(.nav-links a)");
