@@ -5,6 +5,8 @@ import {
   temporarilyChangeText,
 } from "../utils.js";
 
+import * as acorn from "https://cdn.jsdelivr.net/npm/acorn@8.17.0/dist/acorn.mjs";
+
 const jmInput = document.querySelector("[data-jm-input]");
 const jmOutput = document.querySelector("[data-jm-output]");
 const jmStatus = document.querySelector("[data-jm-status]");
@@ -116,7 +118,11 @@ function shouldKeepSpace(previousChar, nextChar) {
   if (!previousChar || !nextChar) return false;
   if (isIdentifierChar(previousChar) && isIdentifierChar(nextChar)) return true;
   if (isIdentifierChar(previousChar) && nextChar === "/") return true;
-  if ((previousChar === "+" && nextChar === "+") || (previousChar === "-" && nextChar === "-")) return true;
+  if (
+    (previousChar === "+" && nextChar === "+") ||
+    (previousChar === "-" && nextChar === "-")
+  )
+    return true;
   if (previousChar === "/" && nextChar === "/") return true;
   return false;
 }
@@ -225,7 +231,10 @@ function minifyJavaScript(source) {
 
     if (char === "/" && nextChar === "*") {
       index += 2;
-      while (index < source.length && !(source[index] === "*" && source[index + 1] === "/")) {
+      while (
+        index < source.length &&
+        !(source[index] === "*" && source[index + 1] === "/")
+      ) {
         index += 1;
       }
       index += 1;
@@ -284,7 +293,9 @@ function toBase64Bytes(bytes) {
 
 function encodeEncryptedString(value, key) {
   const bytes = new TextEncoder().encode(value);
-  const encryptedBytes = bytes.map((byte, index) => byte ^ ((key + index * 17) & 255));
+  const encryptedBytes = bytes.map(
+    (byte, index) => byte ^ ((key + index * 17) & 255),
+  );
 
   return toBase64Bytes(encryptedBytes);
 }
@@ -332,7 +343,12 @@ function replaceStringLiterals(code) {
       continue;
     }
 
-    if (char === "/" && code[index + 1] !== "/" && code[index + 1] !== "*" && canStartRegex(output)) {
+    if (
+      char === "/" &&
+      code[index + 1] !== "/" &&
+      code[index + 1] !== "*" &&
+      canStartRegex(output)
+    ) {
       const token = readRegex(code, index);
       output += token.value;
       index = token.index;
@@ -365,7 +381,12 @@ function obfuscateNumbers(code) {
       continue;
     }
 
-    if (char === "/" && code[index + 1] !== "/" && code[index + 1] !== "*" && canStartRegex(output)) {
+    if (
+      char === "/" &&
+      code[index + 1] !== "/" &&
+      code[index + 1] !== "*" &&
+      canStartRegex(output)
+    ) {
       const token = readRegex(code, index);
       output += token.value;
       index = token.index;
@@ -430,12 +451,68 @@ function renameIdentifiers(code) {
   return renamedCode;
 }
 
+function addDeadCode(codeInNeed) {
+  const deadCodeSnippets = [
+    `if (false && 0x02 < 0x9E && typeof(i) === "number") var xc_5 = 3 + (_0xK+_0xJ*0x11) * 0.2183`,
+    `if (0 || null || undefined) createNewMinifierInstance()`,
+    `if (1 === 2) var __data = "user-agent"`,
+    `if (typeof undefined !== "undefined") this.window.find("tools")`,
+    `var _0xClass = 0x41 ^ 0x41`,
+    `void 0x1337`,
+    `for (let i = 0; i < 0; i++) { _0xS(0x99) }`,
+    `while (false) { _0xS(0x99) }`,
+    `var _x = true ? 0x00 : 0x00`,
+    `var _gb = Math.floor(0.9999) * 0`,
+    `var _mx = [][0x00]`,
+    `void +!![]`,
+    `void ~~0xFF`,
+    `var _y = (Math.random() > 2) ? null : null`,
+    `var _kk__kipu = (function(){ return 0x00 || false; })()`,
+    `var _vm = true ? 0x00 : -1`,
+  ];
+
+  function randomDeadCode() {
+    return (
+      deadCodeSnippets[Math.floor(Math.random() * deadCodeSnippets.length)] +
+      ";"
+    );
+  }
+
+  const ast = acorn.parse(codeInNeed, { ecmaVersion: 2020 });
+
+  const insertions = [];
+
+  function collectStatements(body) {
+    for (const node of body) {
+      insertions.push({ offset: node.end });
+
+      if (node.type === "FunctionDeclaration" && node.body?.body) {
+        collectStatements(node.body.body);
+      }
+    }
+  }
+
+  collectStatements(ast.body);
+  insertions.sort((a, b) => b.offset - a.offset);
+
+  let result = codeInNeed;
+  for (const { offset } of insertions) {
+    result = result.slice(0, offset) + randomDeadCode() + result.slice(offset);
+  }
+
+  return result;
+}
+
 function buildStringDecoder(stringTable, key) {
   if (!stringTable.length) return "";
 
-  const encodedStrings = stringTable.map((value) => encodeEncryptedString(value, key));
+  const encodedStrings = stringTable.map((value) =>
+    encodeEncryptedString(value, key),
+  );
 
-  return `const _0xA=${JSON.stringify(encodedStrings)};const _0xK=${key};const _0xC={};function _0xS(_0xI){if(_0xC[_0xI])return _0xC[_0xI];const _0xB=Uint8Array.from(atob(_0xA[_0xI]),(_0xD,_0xJ)=>_0xD.charCodeAt(0)^((_0xK+_0xJ*0x11)&0xff));return _0xC[_0xI]=new TextDecoder().decode(_0xB);}`;
+  let clean = `const _xk7 = {"=": !true, "%": [0].length};const _0xA=${JSON.stringify(encodedStrings)};let tx=[TextDecoder,TextDecoder.prototype.decode];const _0xK=${key};const _0xC={};function _0xS(_0xI){if(_0xC[_0xI])return _0xC[_0xI];const _0xB=Uint8Array.from(atob(_0xA[_0xI]),(_0xD,_0xJ)=>_0xD.charCodeAt(0)^((_0xK+_0xJ*0x11)&0xff));delete _xk7["="];return _0xC[_0xI]=tx[0x01].call(new tx[0x00](),_0xB);}`;
+
+  return addDeadCode(clean);
 }
 
 function obfuscateJavaScript(code) {
@@ -456,6 +533,7 @@ function validateJavaScript(code) {
 }
 
 function updateStats(inputLength, outputLength) {
+  if (obfuscateCheckbox?.checked) return;
   if (jmBefore) jmBefore.textContent = String(inputLength);
   if (jmAfter) jmAfter.textContent = String(outputLength);
 
@@ -466,7 +544,10 @@ function updateStats(inputLength, outputLength) {
     return;
   }
 
-  const reduction = Math.max(0, Math.round((1 - outputLength / inputLength) * 100));
+  const reduction = Math.max(
+    0,
+    Math.round((1 - outputLength / inputLength) * 100),
+  );
   jmRatio.textContent = `(${reduction}% réduit)`;
 }
 
@@ -493,14 +574,17 @@ function minifyInput() {
     updateStats(value.length, output.length);
     setJmStatus(
       shouldObfuscate
-        ? "JavaScript minifié, strings chiffrées et obfusqué avec succès."
+        ? "Javascript obfusqué avec succès."
         : "JavaScript minifié avec succès.",
       "success",
     );
   } catch (error) {
     jmOutput.value = "";
     updateStats(value.length, 0);
-    setJmStatus("JavaScript invalide ou impossible à minifier proprement.", "error");
+    setJmStatus(
+      "JavaScript invalide ou impossible à minifier proprement.",
+      "error",
+    );
   }
 }
 
