@@ -4,6 +4,9 @@ const { TOOLS_FILE } = require("../../config/paths");
 
 const router = express.Router();
 const TOOL_USAGE_TABLE = "tool_usage_counts";
+const TOOL_USAGE_LIMIT_WINDOW_MS = 60 * 60 * 1000;
+const TOOL_USAGE_LIMIT_MAX_CLICKS = 5;
+const toolUsageRateLimits = new Map();
 const SUPABASE_REST_HEADERS = {
   apikey: "",
   Authorization: "",
@@ -54,6 +57,23 @@ function mapMostUsedTools(tools, usageRows = []) {
     .map((tool) => ({ ...tool, submitCount: 0 }));
 
   return [...rankedTools, ...fallbackTools].slice(0, 3);
+}
+
+function isToolUsageRateLimited(req, toolId) {
+  const now = Date.now();
+  const key = `${req.ip || "anonymous"}:${toolId}`;
+  const clicks = (toolUsageRateLimits.get(key) || []).filter(
+    (timestamp) => now - timestamp < TOOL_USAGE_LIMIT_WINDOW_MS,
+  );
+
+  if (clicks.length >= TOOL_USAGE_LIMIT_MAX_CLICKS) {
+    toolUsageRateLimits.set(key, clicks);
+    return true;
+  }
+
+  clicks.push(now);
+  toolUsageRateLimits.set(key, clicks);
+  return false;
 }
 
 function getSupabaseConfig() {
@@ -222,6 +242,15 @@ router.post("/api/tools/:toolId/submit", async (req, res) => {
       success: true,
       disabled: true,
       message: "Le comptage des submits Supabase est désactivé.",
+    });
+  }
+
+  if (isToolUsageRateLimited(req, toolId)) {
+    return res.json({
+      success: true,
+      rateLimited: true,
+      toolId,
+      message: "Limite atteinte : 5 actions comptabilisées par tool et par heure.",
     });
   }
 
