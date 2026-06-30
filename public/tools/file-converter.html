@@ -5,7 +5,7 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>File Converter - SoraTools</title>
     <meta name="description"
-      content="Convertis des images, vidéos, audios, documents Word et PDF depuis SoraTools.">
+      content="Convertis et compresse des images, vidéos, audios, PDF et documents Office depuis SoraTools.">
     <link rel="icon" type="image/png" href="/assets/logo.png">
     <link rel="shortcut icon" type="image/png" href="/assets/logo.png">
     <link rel="stylesheet" href="/css/global.css">
@@ -38,9 +38,9 @@
         <div class="section-heading">
           <p class="eyebrow">Fichiers</p>
           <h1>File Converter</h1>
-          <p>Importe un fichier, choisis le type de conversion et télécharge le
-            résultat. Images, vidéos, audios, Word → PDF et PDF → Word sont pris
-            en charge.</p>
+          <p>Importe un fichier, choisis une conversion ou une compression, puis
+            télécharge le résultat. Images, vidéos, audios, Word, Excel,
+            PowerPoint et PDF sont pris en charge.</p>
         </div>
 
         <form class="fc-tool" data-fc-form>
@@ -55,7 +55,15 @@
           </label>
 
           <div class="fc-grid">
-            <label class="field" data-label="Type de fichier à convertir">
+            <label class="field" data-label="Action à effectuer">
+              <span>Mode</span>
+              <select data-fc-mode name="mode">
+                <option value="convert">Convertir</option>
+                <option value="compress">Compresser sans convertir</option>
+              </select>
+            </label>
+
+            <label class="field" data-label="Type de fichier à traiter">
               <span>Type</span>
               <select data-fc-category name="category">
                 <option value="auto">Auto-détection</option>
@@ -66,7 +74,8 @@
               </select>
             </label>
 
-            <label class="field" data-label="Format de sortie">
+            <label class="field" data-fc-output-field
+              data-label="Format de sortie">
               <span>Format de sortie</span>
               <select data-fc-output name="outputFormat" required></select>
             </label>
@@ -74,7 +83,7 @@
 
           <div class="fc-actions">
             <button type="submit" data-fc-convert
-              data-label="Convertir le fichier">Convertir</button>
+              data-label="Lancer le traitement du fichier">Lancer</button>
             <button type="button" data-fc-reset
               data-label="Réinitialiser le convertisseur">Vider</button>
           </div>
@@ -86,7 +95,7 @@
           <div class="fc-result" aria-live="polite">
             <p data-fc-status>En attente d'un fichier.</p>
             <a href="#" data-fc-download hidden>Télécharger le fichier
-              converti</a>
+              traité</a>
           </div>
         </form>
       </section>
@@ -99,16 +108,21 @@
       </div>
 
       <p>
-        Les images sont converties côté serveur avec Sharp. Les vidéos et audios
-        passent par FFmpeg. Les documents Word sont convertis en PDF avec
+        Les images sont converties avec Sharp. Les vidéos et audios passent par
+        FFmpeg. Les fichiers Word, Excel et PowerPoint sont convertis en PDF avec
         LibreOffice lorsqu'il est installé sur la machine serveur.
       </p>
 
       <p>
-        La conversion PDF → Word génère un fichier <code>.docx</code> à partir
-        du
-        texte extrait du PDF. Elle est pratique pour récupérer le contenu, mais
-        ne conserve pas parfaitement la mise en page d'origine.
+        Les conversions PDF → Word, PDF → Excel et PDF → PowerPoint génèrent des
+        fichiers éditables à partir du texte extrait du PDF. Elles sont pratiques
+        pour récupérer le contenu, mais ne conservent pas parfaitement la mise en
+        page d'origine.
+      </p>
+
+      <p>
+        La compression garde le même format. Elle compresse les images, audios,
+        vidéos et PDF. Pour les PDF, Ghostscript doit être installé côté serveur.
       </p>
     </section>
 
