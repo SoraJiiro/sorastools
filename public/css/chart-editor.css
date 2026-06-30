@@ -152,7 +152,7 @@
 .ce-editor-shell {
   display: grid;
   grid-template-columns: 132px minmax(0, 1fr);
-  min-height: 420px;
+  min-height: 720px;
   overflow: hidden;
   border: 1px solid var(--border);
   border-radius: 20px;
@@ -182,13 +182,17 @@
 }
 
 .ce-timeline-wrap {
+  max-height: 720px;
   overflow: auto;
   cursor: crosshair;
+  background: #0d1117;
+  scroll-behavior: smooth;
 }
 
 .ce-timeline-wrap canvas {
   display: block;
-  min-width: 100%;
+  margin: 0 auto;
+  max-width: none;
   background: radial-gradient(circle at top, rgba(255, 122, 0, 0.08), transparent 35%), #0d1117;
 }
 
