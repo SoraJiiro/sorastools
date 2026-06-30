@@ -84,10 +84,10 @@
     "id": "js-minifier",
     "name": "JS Minifier",
     "category": "Dev",
-    "description": "Minifie du JavaScript avec Terser / minify.",
+    "description": "Minifie du JavaScript et ajoute une obfuscation légère en option.",
     "icon": "<i class='fa-brands fa-square-js'></i>",
-    "url": "#",
-    "status": "soon"
+    "url": "/tools/js-minifier",
+    "status": "ready"
   },
   {
     "id": "template-generator",
