@@ -27,76 +27,76 @@
           data-label="Retourner à l'accueil SoraTools"><img class="logo-img"
             src="/assets/logo.png" alt aria-hidden="true">SoraTools</a>
         <div class="nav-links">
-          <a href="/#tools" data-label="Aller au catalogue des Tools">Accueil
-            <a href="/suggest"
-              data-label="Aller aux suggestions de tools">Suggest</a>
-            <a href="/contact" data-label="Aller à la page contact">Contact</a>
-          </div>
-        </nav>
-      </header>
-
-      <main>
-        <div class="section-heading">
-          <p class="eyebrow">Contact</p>
-          <h1>Envoyer un message</h1>
-          <p>Une question, un retour ou un problème ? Envoie un message ici ! Je
-            lis vos messages régulièrement.</p>
+          <a href="/#tools" data-label="Aller au catalogue des Tools">Accueil</a>
+          <a href="/suggest"
+            data-label="Aller aux suggestions de tools">Suggest</a>
+          <a href="/contact" data-label="Aller à la page contact">Contact</a>
         </div>
+      </nav>
+    </header>
 
-        <section class="section form-section" id="contact">
-          <div class="form-card">
-            <form class="form" data-contact-form>
-              <div class="form-grid">
-                <label class="form-field">
-                  <span>Nom</span>
-                  <input type="text" data-contact-name name="name"
-                    maxlength="60"
-                    autocomplete="name" placeholder="Ex : Sora" required>
-                </label>
+    <main>
+      <div class="section-heading">
+        <p class="eyebrow">Contact</p>
+        <h1>Envoyer un message</h1>
+        <p>Une question, un retour ou un problème ? Envoie un message ici ! Je
+          lis vos messages régulièrement.</p>
+      </div>
 
-                <label class="form-field">
-                  <span>Sujet</span>
-                  <input type="text" data-contact-subject name="subject"
-                    maxlength="100" placeholder="Ex : Bug sur un tool" required>
-                </label>
+      <section class="section form-section" id="contact">
+        <div class="form-card">
+          <form class="form" data-contact-form>
+            <div class="form-grid">
+              <label class="form-field">
+                <span>Nom</span>
+                <input type="text" data-contact-name name="name"
+                  maxlength="60"
+                  autocomplete="name" placeholder="Ex : Sora" required>
+              </label>
+
+              <label class="form-field">
+                <span>Sujet</span>
+                <input type="text" data-contact-subject name="subject"
+                  maxlength="100" placeholder="Ex : Bug sur un tool" required>
+              </label>
+            </div>
+
+            <label class="form-field">
+              <span>Message</span>
+              <textarea data-contact-message name="message" maxlength="2000"
+                placeholder="Écris ton message..." required></textarea>
+            </label>
+
+            <div class="form-captcha">
+              <div class="form-field">
+                <span class="form-captcha-label">Captcha</span>
+                <div class="form-captcha-question"
+                  data-contact-captcha-question>...</div>
               </div>
 
               <label class="form-field">
-                <span>Message</span>
-                <textarea data-contact-message name="message" maxlength="2000"
-                  placeholder="Écris ton message..." required></textarea>
+                <span>Réponse</span>
+                <input type="number" data-contact-captcha
+                  placeholder="Résultat"
+                  required>
               </label>
+            </div>
 
-              <div class="form-captcha">
-                <div class="form-field">
-                  <span class="form-captcha-label">Captcha</span>
-                  <div class="form-captcha-question"
-                    data-contact-captcha-question>...</div>
-                </div>
+            <div class="form-actions">
+              <button type="submit" data-contact-submit
+                data-label="Envoyer le message">Envoyer</button>
+              <p class="contact-cooldown" data-contact-cooldown></p>
+            </div>
 
-                <label class="form-field">
-                  <span>Réponse</span>
-                  <input type="number" data-contact-captcha
-                    placeholder="Résultat"
-                    required>
-                </label>
-              </div>
+            <p class="form-status" data-contact-status>En attente.</p>
+          </form>
+        </div>
+      </section>
+    </main>
 
-              <div class="form-actions">
-                <button type="submit" data-contact-submit
-                  data-label="Envoyer le message">Envoyer</button>
-                <p class="contact-cooldown" data-contact-cooldown></p>
-              </div>
-
-              <p class="form-status" data-contact-status>En attente.</p>
-            </form>
-          </div>
-        </section>
-      </main>
-
-      <footer class="site-footer">
-        <p>&copy; 2026 SoraTools. Tous droits réservés.</p>
-        <p>Contact</p>
-      </footer>
-    </body>
-  </html>
+    <footer class="site-footer">
+      <p>&copy; 2026 SoraTools. Tous droits réservés.</p>
+      <p>Contact</p>
+    </footer>
+  </body>
+</html>
