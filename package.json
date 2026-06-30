@@ -26,6 +26,8 @@
     "marked": "^13.0.3",
     "multer": "latest",
     "pdf-parse": "^1.1.1",
-    "sharp": "^0.33.5"
+    "pptxgenjs": "^3.12.0",
+    "sharp": "^0.33.5",
+    "xlsx": "^0.18.5"
   }
 }
