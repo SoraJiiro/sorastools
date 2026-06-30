@@ -15,6 +15,7 @@ const undoButton = document.querySelector("[data-ce-undo]");
 const clearButton = document.querySelector("[data-ce-clear]");
 const exportButton = document.querySelector("[data-ce-export]");
 const snapSelect = document.querySelector("[data-ce-snap]");
+const modifierSelect = document.querySelector("[data-ce-modifier]");
 const zoomInput = document.querySelector("[data-ce-zoom]");
 const timelineWrap = document.querySelector("[data-ce-timeline-wrap]");
 const canvas = document.querySelector("[data-ce-canvas]");
@@ -26,11 +27,12 @@ const noteButtons = document.querySelectorAll("[data-ce-note]");
 const ctx = canvas?.getContext("2d");
 const HIGHWAY = {
   width: 760,
-  top: 92,
-  bottomPadding: 140,
+  height: 720,
+  top: 54,
+  bottom: 650,
   laneStart: 160,
   laneWidth: 82,
-  hitLineOffset: 120,
+  noteRadius: 15,
 };
 const LANES = [
   { id: 0, label: "G", name: "Vert", color: "#39d353" },
@@ -40,6 +42,12 @@ const LANES = [
   { id: 4, label: "O", name: "Orange", color: "#ff9b3d" },
   { id: 5, label: "SP", name: "Star Power", color: "#9b7bff" },
 ];
+const MODIFIER_LABELS = {
+  normal: "",
+  "force-hopo": "HOPO",
+  "force-strum": "STRUM",
+  tap: "TAP",
+};
 
 const state = {
   notes: [],
@@ -63,6 +71,10 @@ function getDuration() {
   return Math.max(player?.duration || 0, 30);
 }
 
+function getCurrentTime() {
+  return player?.currentTime || 0;
+}
+
 function getSnapSeconds() {
   const snap = Number(snapSelect?.value) || 16;
   return (60 / getBpm()) * (4 / snap);
@@ -77,11 +89,11 @@ function tickToSeconds(tick) {
 }
 
 function secondsToY(seconds) {
-  return HIGHWAY.top + seconds * state.pixelsPerSecond;
+  return HIGHWAY.bottom - (seconds - getCurrentTime()) * state.pixelsPerSecond;
 }
 
 function yToSeconds(y) {
-  return Math.max(0, (y - HIGHWAY.top) / state.pixelsPerSecond);
+  return Math.max(0, getCurrentTime() + (HIGHWAY.bottom - y) / state.pixelsPerSecond);
 }
 
 function getLaneX(noteType) {
@@ -103,6 +115,10 @@ function setCeStatus(message, type = "default") {
   setStatus(statusElement, message, type);
 }
 
+function getModifier() {
+  return modifierSelect?.value || "normal";
+}
+
 function saveUndo() {
   state.undoStack.push(JSON.stringify(state.notes));
   if (state.undoStack.length > 80) state.undoStack.shift();
@@ -110,24 +126,24 @@ function saveUndo() {
 
 function updateStats() {
   if (noteCount) noteCount.textContent = String(state.notes.length);
-  if (timeElement) timeElement.textContent = formatTime(player?.currentTime || 0);
+  if (timeElement) timeElement.textContent = formatTime(getCurrentTime());
 }
 
 function resizeCanvas() {
   if (!canvas) return;
 
-  const height = Math.max(1100, Math.ceil(getDuration() * state.pixelsPerSecond) + HIGHWAY.top + HIGHWAY.bottomPadding);
   canvas.width = HIGHWAY.width;
-  canvas.height = height;
+  canvas.height = HIGHWAY.height;
 }
 
 function getNoteAt(x, y) {
   return [...state.notes]
     .reverse()
     .find((note) => {
-      const noteX = getLaneX(note.type);
+      const isStarPower = note.type === 5;
+      const noteX = isStarPower ? HIGHWAY.laneStart + HIGHWAY.laneWidth * 5 + 52 : getLaneX(note.type);
       const noteY = secondsToY(tickToSeconds(note.tick));
-      return Math.abs(noteX - x) <= 18 && Math.abs(noteY - y) <= 18;
+      return Math.abs(noteX - x) <= 20 && Math.abs(noteY - y) <= 20;
     });
 }
 
@@ -138,10 +154,10 @@ function drawBackground() {
   ctx.fillStyle = "#0d1117";
   ctx.fillRect(0, 0, canvas.width, canvas.height);
 
-  const gradient = ctx.createLinearGradient(0, 0, 0, canvas.height);
-  gradient.addColorStop(0, "rgba(255, 122, 0, 0.16)");
-  gradient.addColorStop(0.25, "rgba(255, 122, 0, 0.03)");
-  gradient.addColorStop(1, "rgba(0, 0, 0, 0)");
+  const gradient = ctx.createLinearGradient(0, HIGHWAY.top, 0, HIGHWAY.bottom);
+  gradient.addColorStop(0, "rgba(255, 255, 255, 0.02)");
+  gradient.addColorStop(0.7, "rgba(255, 122, 0, 0.08)");
+  gradient.addColorStop(1, "rgba(255, 122, 0, 0.18)");
   ctx.fillStyle = gradient;
   ctx.fillRect(0, 0, canvas.width, canvas.height);
 }
@@ -154,15 +170,15 @@ function drawHighwayFrame() {
   const right = left + laneTotalWidth;
 
   ctx.fillStyle = "rgba(255, 255, 255, 0.025)";
-  ctx.fillRect(left, HIGHWAY.top - 46, laneTotalWidth, canvas.height - HIGHWAY.top + 8);
+  ctx.fillRect(left, HIGHWAY.top, laneTotalWidth, HIGHWAY.bottom - HIGHWAY.top + 28);
 
   for (let laneIndex = 0; laneIndex <= 5; laneIndex += 1) {
     const x = left + laneIndex * HIGHWAY.laneWidth;
     ctx.strokeStyle = laneIndex === 0 || laneIndex === 5 ? "rgba(255, 122, 0, 0.28)" : "rgba(255, 255, 255, 0.11)";
     ctx.lineWidth = laneIndex === 0 || laneIndex === 5 ? 2 : 1;
     ctx.beginPath();
-    ctx.moveTo(x, HIGHWAY.top - 46);
-    ctx.lineTo(x, canvas.height - 40);
+    ctx.moveTo(x, HIGHWAY.top);
+    ctx.lineTo(x, HIGHWAY.bottom + 28);
     ctx.stroke();
   }
 
@@ -171,34 +187,54 @@ function drawHighwayFrame() {
     ctx.fillStyle = lane.color;
     ctx.font = "bold 18px Consolas, monospace";
     ctx.textAlign = "center";
-    ctx.fillText(lane.label, x, 42);
+    ctx.fillText(lane.label, x, 30);
   });
 
   ctx.textAlign = "start";
   ctx.strokeStyle = "rgba(255, 255, 255, 0.22)";
   ctx.lineWidth = 2;
-  ctx.strokeRect(left, HIGHWAY.top - 46, laneTotalWidth, canvas.height - HIGHWAY.top + 6);
+  ctx.strokeRect(left, HIGHWAY.top, laneTotalWidth, HIGHWAY.bottom - HIGHWAY.top + 28);
 
-  ctx.fillStyle = "rgba(255, 122, 0, 0.08)";
-  ctx.fillRect(left, Math.max(HIGHWAY.top, canvas.height - HIGHWAY.hitLineOffset), laneTotalWidth, 6);
-  ctx.fillStyle = "rgba(255, 255, 255, 0.65)";
+  ctx.fillStyle = "rgba(255, 122, 0, 0.15)";
+  ctx.fillRect(left, HIGHWAY.bottom, laneTotalWidth, 7);
+  ctx.strokeStyle = "rgba(255, 255, 255, 0.9)";
+  ctx.lineWidth = 2;
+  ctx.beginPath();
+  ctx.moveTo(left - 16, HIGHWAY.bottom);
+  ctx.lineTo(right + 16, HIGHWAY.bottom);
+  ctx.stroke();
+
+  ctx.fillStyle = "rgba(255, 255, 255, 0.68)";
   ctx.font = "bold 12px Consolas, monospace";
-  ctx.fillText("HIT LINE", right + 16, Math.max(HIGHWAY.top + 4, canvas.height - HIGHWAY.hitLineOffset + 3));
+  ctx.fillText("HIT LINE", right + 16, HIGHWAY.bottom + 1);
+
+  ctx.fillStyle = "rgba(155, 123, 255, 0.18)";
+  ctx.fillRect(right + 28, HIGHWAY.top, 48, HIGHWAY.bottom - HIGHWAY.top + 28);
+  ctx.fillStyle = "#9b7bff";
+  ctx.font = "bold 13px Consolas, monospace";
+  ctx.fillText("SP", right + 42, 30);
 }
 
 function drawGrid() {
   if (!ctx || !canvas) return;
 
-  const duration = getDuration();
+  const currentTime = getCurrentTime();
+  const visibleBefore = (HIGHWAY.height - HIGHWAY.bottom) / state.pixelsPerSecond;
+  const visibleAfter = (HIGHWAY.bottom - HIGHWAY.top) / state.pixelsPerSecond;
+  const startTime = Math.max(0, currentTime - visibleBefore - 1);
+  const endTime = Math.min(getDuration() + 2, currentTime + visibleAfter + 1);
   const beatSeconds = 60 / getBpm();
   const snapSeconds = getSnapSeconds();
+  const firstSnap = Math.floor(startTime / snapSeconds) * snapSeconds;
   const left = HIGHWAY.laneStart;
   const right = HIGHWAY.laneStart + HIGHWAY.laneWidth * 5;
 
   ctx.font = "12px Consolas, monospace";
   ctx.textBaseline = "middle";
 
-  for (let seconds = 0; seconds <= duration + 1; seconds += snapSeconds) {
+  for (let seconds = firstSnap; seconds <= endTime; seconds += snapSeconds) {
+    if (seconds < 0) continue;
+
     const y = Math.round(secondsToY(seconds));
     const isBeat = Math.abs((seconds / beatSeconds) - Math.round(seconds / beatSeconds)) < 0.001;
 
@@ -216,14 +252,27 @@ function drawGrid() {
   }
 }
 
+function drawNoteModifier(note, x, y) {
+  const label = MODIFIER_LABELS[note.modifier || "normal"];
+  if (!label) return;
+
+  ctx.fillStyle = note.modifier === "tap" ? "#9b7bff" : "#ffffff";
+  ctx.font = "bold 10px Consolas, monospace";
+  ctx.textAlign = "center";
+  ctx.fillText(label, x, y + 28);
+  ctx.textAlign = "start";
+}
+
 function drawNotes() {
   if (!ctx) return;
 
   state.notes.forEach((note) => {
+    const y = secondsToY(tickToSeconds(note.tick));
+    if (y < HIGHWAY.top - 60 || y > HIGHWAY.height + 60) return;
+
     const lane = LANES[note.type] || LANES[0];
     const isStarPower = note.type === 5;
     const x = isStarPower ? HIGHWAY.laneStart + HIGHWAY.laneWidth * 5 + 52 : getLaneX(note.type);
-    const y = secondsToY(tickToSeconds(note.tick));
     const isSelected = note.id === state.selectedId;
 
     if (note.length > 0 && !isStarPower) {
@@ -233,17 +282,17 @@ function drawNotes() {
       ctx.globalAlpha = 0.55;
       ctx.beginPath();
       ctx.moveTo(x, y);
-      ctx.lineTo(x, y + sustainHeight);
+      ctx.lineTo(x, y - sustainHeight);
       ctx.stroke();
       ctx.globalAlpha = 1;
     }
 
     ctx.beginPath();
-    ctx.arc(x, y, isStarPower ? 13 : 15, 0, Math.PI * 2);
-    ctx.fillStyle = lane.color;
+    ctx.arc(x, y, isStarPower ? 13 : HIGHWAY.noteRadius, 0, Math.PI * 2);
+    ctx.fillStyle = note.modifier === "tap" ? "#9b7bff" : lane.color;
     ctx.fill();
-    ctx.lineWidth = isSelected ? 4 : 2;
-    ctx.strokeStyle = isSelected ? "#fff" : "rgba(0, 0, 0, 0.72)";
+    ctx.lineWidth = isSelected ? 4 : note.modifier === "force-hopo" ? 3 : 2;
+    ctx.strokeStyle = isSelected ? "#fff" : note.modifier === "force-strum" ? "#ffcc66" : "rgba(0, 0, 0, 0.72)";
     ctx.stroke();
 
     if (isStarPower) {
@@ -252,34 +301,31 @@ function drawNotes() {
       ctx.textAlign = "center";
       ctx.fillText("SP", x, y + 1);
       ctx.textAlign = "start";
+    } else {
+      drawNoteModifier(note, x, y);
     }
   });
 }
 
 function drawPlayhead() {
-  if (!ctx || !player || !canvas) return;
-  const y = secondsToY(player.currentTime);
+  if (!ctx || !canvas) return;
   const left = HIGHWAY.laneStart - 24;
   const right = HIGHWAY.laneStart + HIGHWAY.laneWidth * 5 + 24;
 
   ctx.strokeStyle = "#ffffff";
   ctx.lineWidth = 3;
   ctx.beginPath();
-  ctx.moveTo(left, y);
-  ctx.lineTo(right, y);
+  ctx.moveTo(left, HIGHWAY.bottom);
+  ctx.lineTo(right, HIGHWAY.bottom);
   ctx.stroke();
 
   ctx.fillStyle = "#ffffff";
   ctx.beginPath();
-  ctx.moveTo(left - 12, y);
-  ctx.lineTo(left, y - 8);
-  ctx.lineTo(left, y + 8);
+  ctx.moveTo(left - 12, HIGHWAY.bottom);
+  ctx.lineTo(left, HIGHWAY.bottom - 8);
+  ctx.lineTo(left, HIGHWAY.bottom + 8);
   ctx.closePath();
   ctx.fill();
-
-  if (timelineWrap && y > timelineWrap.scrollTop + timelineWrap.clientHeight - 160) {
-    timelineWrap.scrollTop = Math.max(0, y - timelineWrap.clientHeight + 180);
-  }
 }
 
 function render() {
@@ -320,6 +366,7 @@ function addNoteAt(seconds, forcedLane = null) {
   const snappedSeconds = Math.max(0, Math.round(seconds / snapSeconds) * snapSeconds);
   const tick = secondsToTick(snappedSeconds);
   const type = state.selectedNote === 5 ? 5 : forcedLane ?? state.selectedNote;
+  const modifier = type === 5 ? "normal" : getModifier();
   const existing = state.notes.find((note) => note.tick === tick && note.type === type);
 
   saveUndo();
@@ -333,12 +380,13 @@ function addNoteAt(seconds, forcedLane = null) {
       id: crypto.randomUUID(),
       tick,
       type,
+      modifier,
       length: 0,
     };
     state.notes.push(note);
     state.notes.sort((a, b) => a.tick - b.tick || a.type - b.type);
     state.selectedId = note.id;
-    setCeStatus(`${LANES[type]?.name || "Note"} ajoutée.`, "success");
+    setCeStatus(`${LANES[type]?.name || "Note"} ajoutée${modifier !== "normal" ? ` (${MODIFIER_LABELS[modifier]})` : ""}.`, "success");
   }
 
   render();
@@ -421,6 +469,12 @@ function buildChart() {
 
   regularNotes.forEach((note) => {
     lines.push(`  ${note.tick} = N ${note.type} ${note.length || 0}`);
+    if (["force-hopo", "force-strum"].includes(note.modifier)) {
+      lines.push(`  ${note.tick} = N 5 0`);
+    }
+    if (note.modifier === "tap") {
+      lines.push(`  ${note.tick} = N 6 0`);
+    }
   });
 
   spNotes.forEach((note) => {
@@ -464,6 +518,7 @@ function setupCanvasClick(event) {
   if (clickedNote) {
     state.selectedId = clickedNote.id;
     setSelectedNote(clickedNote.type);
+    if (modifierSelect && clickedNote.modifier) modifierSelect.value = clickedNote.modifier;
     setCeStatus("Note sélectionnée.");
     render();
     return;
@@ -471,8 +526,9 @@ function setupCanvasClick(event) {
 
   const isInsideLane = x >= HIGHWAY.laneStart && x <= HIGHWAY.laneStart + HIGHWAY.laneWidth * 5;
   const isStarPowerColumn = x > HIGHWAY.laneStart + HIGHWAY.laneWidth * 5;
+  const isFutureArea = y <= HIGHWAY.bottom + 20;
 
-  if (!isInsideLane && !isStarPowerColumn) return;
+  if ((!isInsideLane && !isStarPowerColumn) || !isFutureArea) return;
 
   const lane = isStarPowerColumn ? 5 : getLaneFromX(x);
   if (lane === 5) setSelectedNote(5);
@@ -489,6 +545,18 @@ function setupKeyboard(event) {
 
   if (event.key.toLowerCase() === "s") {
     setSelectedNote(5);
+    event.preventDefault();
+  }
+
+  if (event.key.toLowerCase() === "h" && modifierSelect) {
+    modifierSelect.value = modifierSelect.value === "force-hopo" ? "normal" : "force-hopo";
+    setCeStatus(`Modifier : ${modifierSelect.options[modifierSelect.selectedIndex].textContent}.`);
+    event.preventDefault();
+  }
+
+  if (event.key.toLowerCase() === "t" && modifierSelect) {
+    modifierSelect.value = modifierSelect.value === "tap" ? "normal" : "tap";
+    setCeStatus(`Modifier : ${modifierSelect.options[modifierSelect.selectedIndex].textContent}.`);
     event.preventDefault();
   }
 
@@ -517,7 +585,6 @@ if (canvas && ctx) {
     if (!player) return;
     player.pause();
     player.currentTime = 0;
-    timelineWrap.scrollTop = 0;
     render();
   });
   undoButton?.addEventListener("click", undo);
@@ -527,14 +594,16 @@ if (canvas && ctx) {
     state.pixelsPerSecond = Number(zoomInput.value) || 130;
     render();
   });
-  [bpmInput, resolutionInput, snapSelect].forEach((input) => input?.addEventListener("input", render));
+  [bpmInput, resolutionInput, snapSelect, modifierSelect].forEach((input) => input?.addEventListener("input", render));
   player?.addEventListener("play", startLoop);
   player?.addEventListener("pause", () => {
     stopLoop();
     render();
   });
+  player?.addEventListener("timeupdate", render);
   player?.addEventListener("loadedmetadata", render);
   document.addEventListener("keydown", setupKeyboard);
 
+  if (timelineWrap) timelineWrap.scrollTop = 0;
   render();
 }
