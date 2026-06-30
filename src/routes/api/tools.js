@@ -1,6 +1,9 @@
 const express = require("express");
 const readJsonFile = require("../../utils/readJsonFile");
-const { runSupabaseRequest, sendWebResponse } = require("../../utils/supabaseRequestHandler");
+const {
+  runSupabaseRequest,
+  sendWebResponse,
+} = require("../../utils/supabaseRequestHandler");
 const { TOOLS_FILE } = require("../../config/paths");
 
 const router = express.Router();
@@ -16,9 +19,11 @@ async function getTools() {
 }
 
 function shouldPreventSubmitCount() {
-  return String(process.env.PREVENT_COUNT_SUBMIT_SUPA || "")
-    .trim()
-    .toLowerCase() === "true";
+  return (
+    String(process.env.PREVENT_SUBMIT_COUNT_SUPA || "")
+      .trim()
+      .toLowerCase() === "true"
+  );
 }
 
 function getReadyTools(tools) {
@@ -133,7 +138,9 @@ router.get("/api/tools/most-used", async (req, res) => {
 router.post("/api/tools/:toolId/submit", async (req, res) => {
   const tools = await getTools();
   const toolId = req.params.toolId;
-  const tool = tools.find((item) => item.id === toolId && item.status === "ready");
+  const tool = tools.find(
+    (item) => item.id === toolId && item.status === "ready",
+  );
 
   if (!tool) {
     return res.status(404).json({
