@@ -19,6 +19,7 @@ const downloadButton = document.querySelector("[data-jm-download]");
 const swapButton = document.querySelector("[data-jm-swap]");
 const clearButton = document.querySelector("[data-jm-clear]");
 const obfuscateCheckbox = document.querySelector("[data-jm-obfuscate]");
+const moduleCheckbox = document.querySelector("[data-jm-module]");
 
 const BEFORE_REGEX_TOKENS = new Set([
   "(",
@@ -91,6 +92,9 @@ const RESERVED_WORDS = new Set([
   "false",
   "null",
   "undefined",
+  "require",
+  "module",
+  "exports",
 ]);
 
 function setJmStatus(message, type = "default") {
@@ -99,10 +103,6 @@ function setJmStatus(message, type = "default") {
 
 function isIdentifierChar(char = "") {
   return /[A-Za-z0-9_$]/.test(char);
-}
-
-function isIdentifierStart(char = "") {
-  return /[A-Za-z_$]/.test(char);
 }
 
 function isWhitespace(char = "") {
@@ -281,6 +281,18 @@ function hasModuleSyntax(code) {
   return /(^|[;\n])\s*(import|export)\s/m.test(code);
 }
 
+function shouldUseModuleMode(code) {
+  return Boolean(moduleCheckbox?.checked) || hasModuleSyntax(code);
+}
+
+function parseJavaScript(code, moduleMode = false) {
+  return acorn.parse(code, {
+    ecmaVersion: "latest",
+    sourceType: moduleMode ? "module" : "script",
+    allowHashBang: true,
+  });
+}
+
 function toBase64Bytes(bytes) {
   let binary = "";
 
@@ -451,7 +463,50 @@ function renameIdentifiers(code) {
   return renamedCode;
 }
 
-function addDeadCode(codeInNeed) {
+function protectModuleDeclarations(code) {
+  const placeholders = [];
+  let protectedCode = code;
+
+  try {
+    const ast = parseJavaScript(code, true);
+    const nodesToProtect = ast.body
+      .filter((node) =>
+        [
+          "ImportDeclaration",
+          "ExportAllDeclaration",
+          "ExportDefaultDeclaration",
+          "ExportNamedDeclaration",
+        ].includes(node.type),
+      )
+      .sort((a, b) => b.start - a.start);
+
+    nodesToProtect.forEach((node, index) => {
+      const placeholder = `__JM_${node.type === "ImportDeclaration" ? "IMPORT" : "EXPORT"}_${index}__`;
+      const original = protectedCode.slice(node.start, node.end);
+      const replacement = `${placeholder};`;
+
+      placeholders.push({ placeholder, original });
+      protectedCode =
+        protectedCode.slice(0, node.start) +
+        replacement +
+        protectedCode.slice(node.end);
+    });
+  } catch (error) {
+    return { code, placeholders };
+  }
+
+  return { code: protectedCode, placeholders };
+}
+
+function restoreModuleDeclarations(code, placeholders) {
+  return placeholders.reduce(
+    (result, { placeholder, original }) =>
+      result.replaceAll(`${placeholder};`, original).replaceAll(placeholder, original),
+    code,
+  );
+}
+
+function addDeadCode(codeInNeed, moduleMode = false) {
   const deadCodeSnippets = [
     `if (false && 0x02 < 0x9E && typeof(i) === "number") var xc_5 = 3 + (_0xK+_0xJ*0x11) * 0.2183`,
     `if (0 || null || undefined) createNewMinifierInstance()`,
@@ -478,12 +533,20 @@ function addDeadCode(codeInNeed) {
     );
   }
 
-  const ast = acorn.parse(codeInNeed, { ecmaVersion: 2020 });
-
+  const ast = parseJavaScript(codeInNeed, moduleMode);
   const insertions = [];
 
   function collectStatements(body) {
     for (const node of body) {
+      if (
+        node.type === "ImportDeclaration" ||
+        node.type === "ExportAllDeclaration" ||
+        node.type === "ExportDefaultDeclaration" ||
+        node.type === "ExportNamedDeclaration"
+      ) {
+        continue;
+      }
+
       insertions.push({ offset: node.end });
 
       if (node.type === "FunctionDeclaration" && node.body?.body) {
@@ -503,33 +566,50 @@ function addDeadCode(codeInNeed) {
   return result;
 }
 
-function buildStringDecoder(stringTable, key) {
+function buildStringDecoder(stringTable, key, moduleMode = false) {
   if (!stringTable.length) return "";
 
   const encodedStrings = stringTable.map((value) =>
     encodeEncryptedString(value, key),
   );
 
-  let clean = `const _xk7 = {"=": !true, "%": [0].length};const _0xA=${JSON.stringify(encodedStrings)};let tx=[TextDecoder,TextDecoder.prototype.decode];const _0xK=${key};const _0xC={};function _0xS(_0xI){if(_0xC[_0xI])return _0xC[_0xI];const _0xB=Uint8Array.from(atob(_0xA[_0xI]),(_0xD,_0xJ)=>_0xD.charCodeAt(0)^((_0xK+_0xJ*0x11)&0xff));delete _xk7["="];return _0xC[_0xI]=tx[0x01].call(new tx[0x00](),_0xB);}`;
+  const clean = `const _xk7 = {"=": !true, "%": [0].length};const _0xA=${JSON.stringify(encodedStrings)};let tx=[TextDecoder,TextDecoder.prototype.decode];const _0xK=${key};const _0xC={};function _0xS(_0xI){if(_0xC[_0xI])return _0xC[_0xI];const _0xB=Uint8Array.from(atob(_0xA[_0xI]),(_0xD,_0xJ)=>_0xD.charCodeAt(0)^((_0xK+_0xJ*0x11)&0xff));delete _xk7["="];return _0xC[_0xI]=tx[0x01].call(new tx[0x00](),_0xB);}`;
 
-  return addDeadCode(clean);
+  return addDeadCode(clean, moduleMode);
 }
 
-function obfuscateJavaScript(code) {
+function insertModuleDecoder(code, decoder) {
+  if (!decoder) return code;
+
+  const importBlockMatch = code.match(/^((?:__JM_IMPORT_\d+__;\s*)+)/);
+  if (!importBlockMatch) return `${decoder};${code}`;
+
+  const importBlock = importBlockMatch[1];
+  return `${importBlock}${decoder};${code.slice(importBlock.length)}`;
+}
+
+function obfuscateJavaScript(code, moduleMode = false) {
   const stringKey = Math.floor(Math.random() * 155) + 71;
-  const stringsResult = replaceStringLiterals(code);
+  const moduleResult = moduleMode
+    ? protectModuleDeclarations(code)
+    : { code, placeholders: [] };
+  const stringsResult = replaceStringLiterals(moduleResult.code);
   const withHexNumbers = obfuscateNumbers(stringsResult.code);
   const withRenamedIdentifiers = renameIdentifiers(withHexNumbers);
-  const decoder = buildStringDecoder(stringsResult.stringTable, stringKey);
-  const protectedCode = `${decoder}${decoder ? ";" : ""}${withRenamedIdentifiers}`;
+  const decoder = buildStringDecoder(stringsResult.stringTable, stringKey, moduleMode);
 
-  return `(()=>{${protectedCode}})();`;
+  if (!moduleMode) {
+    const protectedCode = `${decoder}${decoder ? ";" : ""}${withRenamedIdentifiers}`;
+    return `(()=>{${protectedCode}})();`;
+  }
+
+  const moduleCode = insertModuleDecoder(withRenamedIdentifiers, decoder);
+  return restoreModuleDeclarations(moduleCode, moduleResult.placeholders);
 }
 
-function validateJavaScript(code) {
+function validateJavaScript(code, moduleMode = false) {
   if (!code.trim()) return;
-  if (hasModuleSyntax(code)) return;
-  new Function(code);
+  parseJavaScript(code, moduleMode);
 }
 
 function updateStats(inputLength, outputLength) {
@@ -562,20 +642,23 @@ function minifyInput() {
   }
 
   try {
+    const moduleMode = shouldUseModuleMode(value);
     const minified = minifyJavaScript(value);
-    validateJavaScript(minified);
+    validateJavaScript(minified, moduleMode);
 
     const shouldObfuscate = Boolean(obfuscateCheckbox?.checked);
-    const output = shouldObfuscate ? obfuscateJavaScript(minified) : minified;
+    const output = shouldObfuscate
+      ? obfuscateJavaScript(minified, moduleMode)
+      : minified;
 
-    validateJavaScript(output);
+    validateJavaScript(output, moduleMode);
 
     jmOutput.value = output;
     updateStats(value.length, output.length);
     setJmStatus(
       shouldObfuscate
-        ? "Javascript obfusqué avec succès."
-        : "JavaScript minifié avec succès.",
+        ? `JavaScript obfusqué avec succès${moduleMode ? " en mode module" : ""}.`
+        : `JavaScript minifié avec succès${moduleMode ? " en mode module" : ""}.`,
       "success",
     );
   } catch (error) {
@@ -614,6 +697,7 @@ function setupJsMinifier() {
 
   minifyButton?.addEventListener("click", minifyInput);
   obfuscateCheckbox?.addEventListener("change", minifyInput);
+  moduleCheckbox?.addEventListener("change", minifyInput);
   clearButton?.addEventListener("click", clearValues);
   swapButton?.addEventListener("click", swapValues);
 
