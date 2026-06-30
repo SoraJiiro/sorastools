@@ -6,6 +6,7 @@ import {
 
 const HIGHLIGHT_STYLE_HREF = "/vendor/highlight.js/styles/github-dark.min.css";
 const HIGHLIGHT_SCRIPT_SRC = "/vendor/highlight.js/highlight.min.js";
+const NAVBAR_MOBILE_QUERY = "(max-width: 720px)";
 let highlightJsPromise = null;
 
 function hasHighlightableCode(root = document) {
@@ -90,6 +91,12 @@ function injectResponsiveNavbarStyles() {
   const style = document.createElement("style");
   style.dataset.responsiveNavbarStyle = "";
   style.textContent = `
+    .nav-menu {
+      display: flex;
+      align-items: center;
+      gap: 18px;
+    }
+
     .nav-toggle {
       display: none;
       border: 1px solid var(--border);
@@ -154,11 +161,24 @@ function injectResponsiveNavbarStyles() {
       width: 20px;
     }
 
-    body.nav-open .nav-category {
-      display: block;
+    @media (min-width: 721px) {
+      .nav-menu {
+        position: static;
+        width: auto;
+        height: auto;
+        padding: 0;
+        background: transparent;
+        border: 0;
+        box-shadow: none;
+        transform: none;
+      }
+
+      .nav-category {
+        display: none !important;
+      }
     }
 
-    @media (max-width: 980px) {
+    @media (max-width: 720px) {
       .navbar {
         position: relative;
         display: flex !important;
@@ -173,7 +193,7 @@ function injectResponsiveNavbarStyles() {
         flex: 0 0 auto;
       }
 
-      .nav-links {
+      .nav-menu {
         position: fixed;
         top: 0;
         right: 0;
@@ -184,7 +204,7 @@ function injectResponsiveNavbarStyles() {
         flex-direction: column;
         align-items: stretch;
         justify-content: flex-start;
-        gap: 8px;
+        gap: 10px;
         padding: 92px 22px 22px;
         background: linear-gradient(
           180deg,
@@ -195,10 +215,27 @@ function injectResponsiveNavbarStyles() {
         box-shadow: -24px 0 70px rgba(0, 0, 0, 0.5);
         transform: translateX(105%);
         transition: transform var(--transition);
+        overflow-y: auto;
       }
 
-      body.nav-open .nav-links {
+      body.nav-open .nav-menu {
         transform: translateX(0);
+      }
+
+      .nav-category {
+        display: block;
+        margin: 16px 0 2px;
+      }
+
+      .nav-category:first-child {
+        margin-top: 0;
+      }
+
+      .nav-links {
+        display: flex !important;
+        flex-direction: column;
+        align-items: stretch;
+        gap: 8px;
       }
 
       .nav-links a {
@@ -219,15 +256,6 @@ function injectResponsiveNavbarStyles() {
       .nav-links a::before,
       .nav-links a::after {
         display: none;
-      }
-    }
-
-    @media (min-width: 721px) and (max-width: 980px) {
-      .site-header,
-      main,
-      .tech-explanation,
-      .site-footer {
-        width: min(1120px, calc(100% - 48px));
       }
     }
   `;
@@ -324,24 +352,51 @@ function applyActionIcons(selector = "button, .btn, .nav-links a") {
   });
 }
 
+function buildNavbarMenu(navbar) {
+  let navMenu = navbar.querySelector("[data-nav-menu]");
+
+  if (navMenu) return navMenu;
+
+  const navItems = [...navbar.children].filter((child) =>
+    child.matches(".nav-category, .nav-links"),
+  );
+
+  if (!navItems.length) return null;
+
+  navMenu = document.createElement("div");
+  navMenu.className = "nav-menu";
+  navMenu.dataset.navMenu = "";
+
+  navbar.insertBefore(navMenu, navItems[0]);
+  navItems.forEach((item) => navMenu.appendChild(item));
+
+  return navMenu;
+}
+
 function setupResponsiveNavbar() {
   const navbar = document.querySelector(".navbar");
-  const navCategories = document.querySelectorAll(".nav-category");
-  const navLinks = document.querySelectorAll(".nav-links");
 
-  if (!navbar || !navLinks || !navCategories) return;
+  if (!navbar) return;
+
+  const navMenu = buildNavbarMenu(navbar);
+
+  if (!navMenu) return;
 
   injectResponsiveNavbarStyles();
 
   if (navbar.querySelector("[data-nav-toggle]")) return;
 
+  const mobileMedia = window.matchMedia(NAVBAR_MOBILE_QUERY);
   const toggleButton = document.createElement("button");
   toggleButton.type = "button";
   toggleButton.className = "nav-toggle";
   toggleButton.dataset.navToggle = "";
   toggleButton.dataset.label = "Ouvrir ou fermer le menu";
+  toggleButton.setAttribute("aria-controls", "nav-menu");
   toggleButton.setAttribute("aria-expanded", "false");
   toggleButton.innerHTML = "<span></span>";
+
+  navMenu.id = navMenu.id || "nav-menu";
 
   const overlay = document.createElement("div");
   overlay.className = "navbar-overlay";
@@ -356,6 +411,8 @@ function setupResponsiveNavbar() {
   }
 
   function toggleMenu() {
+    if (!mobileMedia.matches) return;
+
     const isOpen = document.body.classList.toggle("nav-open");
     toggleButton.setAttribute("aria-expanded", String(isOpen));
   }
@@ -363,18 +420,16 @@ function setupResponsiveNavbar() {
   toggleButton.addEventListener("click", toggleMenu);
   overlay.addEventListener("click", closeMenu);
 
-  navLinks.forEach((navLink) => {
-    navLink.addEventListener("click", (event) => {
-      if (event.target.closest("a")) closeMenu();
-    });
+  navMenu.addEventListener("click", (event) => {
+    if (event.target.closest("a")) closeMenu();
   });
 
   window.addEventListener("keydown", (event) => {
     if (event.key === "Escape") closeMenu();
   });
 
-  window.addEventListener("resize", () => {
-    if (window.innerWidth > 980) closeMenu();
+  mobileMedia.addEventListener("change", (event) => {
+    if (!event.matches) closeMenu();
   });
 }
 
