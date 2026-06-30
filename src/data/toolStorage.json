@@ -90,13 +90,13 @@
     "status": "ready"
   },
   {
-    "id": "template-generator",
-    "name": "Template Generator",
-    "category": "Générateurs",
-    "description": "Génère des templates HTML, README, Express ou .env.",
-    "icon": "<i class='fa-solid fa-file-code'></i>",
-    "url": "#",
-    "status": "soon"
+    "id": "chart-editor",
+    "name": "Chart Editor",
+    "category": "Musique",
+    "description": "Crée et exporte des charts Clone Hero au format .chart, avec audio, timeline et notes synchronisées.",
+    "icon": "<i class='fa-solid fa-guitar'></i>",
+    "url": "/tools/chart-editor",
+    "status": "ready"
   },
   {
     "id": "file-converter",
