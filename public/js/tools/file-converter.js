@@ -5,8 +5,10 @@ const dropzone = document.querySelector("[data-fc-dropzone]");
 const fileInput = document.querySelector("[data-fc-file]");
 const fileName = document.querySelector("[data-fc-file-name]");
 const fileMeta = document.querySelector("[data-fc-file-meta]");
+const modeSelect = document.querySelector("[data-fc-mode]");
 const categorySelect = document.querySelector("[data-fc-category]");
 const outputSelect = document.querySelector("[data-fc-output]");
+const outputField = document.querySelector("[data-fc-output-field]");
 const convertButton = document.querySelector("[data-fc-convert]");
 const resetButton = document.querySelector("[data-fc-reset]");
 const statusElement = document.querySelector("[data-fc-status]");
@@ -22,6 +24,8 @@ const OUTPUT_FORMATS = {
     { value: "mp3", label: "MP3" },
     { value: "pdf", label: "PDF" },
     { value: "docx", label: "DOCX" },
+    { value: "xlsx", label: "XLSX" },
+    { value: "pptx", label: "PPTX" },
   ],
   image: [
     { value: "jpg", label: "JPG" },
@@ -51,8 +55,10 @@ const OUTPUT_FORMATS = {
     { value: "webm", label: "WEBM audio" },
   ],
   document: [
-    { value: "pdf", label: "PDF (Word → PDF)" },
+    { value: "pdf", label: "PDF (Word/Excel/PowerPoint → PDF)" },
     { value: "docx", label: "DOCX (PDF → Word)" },
+    { value: "xlsx", label: "XLSX (PDF → Excel)" },
+    { value: "pptx", label: "PPTX (PDF → PowerPoint)" },
   ],
 };
 
@@ -101,6 +107,19 @@ function clearDownload() {
 function fillOutputFormats() {
   if (!outputSelect || !categorySelect) return;
 
+  const isCompression = modeSelect?.value === "compress";
+
+  if (outputField) {
+    outputField.hidden = isCompression;
+  }
+
+  outputSelect.required = !isCompression;
+
+  if (isCompression) {
+    outputSelect.innerHTML = "";
+    return;
+  }
+
   const formats = OUTPUT_FORMATS[categorySelect.value] || OUTPUT_FORMATS.auto;
   outputSelect.innerHTML = formats
     .map((format) => `<option value="${format.value}">${format.label}</option>`)
@@ -139,13 +158,15 @@ async function convertFile(event) {
     return;
   }
 
+  const isCompression = modeSelect?.value === "compress";
   const formData = new FormData();
   formData.append("file", file);
+  formData.append("mode", isCompression ? "compress" : "convert");
   formData.append("category", categorySelect?.value || "auto");
   formData.append("outputFormat", outputSelect?.value || "");
 
   setLoading(true);
-  setFcStatus("Conversion en cours...", "warning");
+  setFcStatus(isCompression ? "Compression en cours..." : "Conversion en cours...", "warning");
 
   try {
     const response = await fetch("/api/file-converter/convert", {
@@ -155,7 +176,7 @@ async function convertFile(event) {
 
     if (!response.ok) {
       const error = await response.json().catch(() => null);
-      throw new Error(error?.message || "Conversion impossible.");
+      throw new Error(error?.message || (isCompression ? "Compression impossible." : "Conversion impossible."));
     }
 
     const blob = await response.blob();
@@ -168,7 +189,7 @@ async function convertFile(event) {
     downloadLink.textContent = `Télécharger ${filename}`;
     downloadLink.click();
 
-    setFcStatus("Conversion terminée.", "success");
+    setFcStatus(isCompression ? "Compression terminée." : "Conversion terminée.", "success");
   } catch (error) {
     setFcStatus(error.message, "error");
   } finally {
@@ -179,6 +200,7 @@ async function convertFile(event) {
 if (form) {
   fillOutputFormats();
 
+  modeSelect?.addEventListener("change", fillOutputFormats);
   categorySelect?.addEventListener("change", fillOutputFormats);
   fileInput?.addEventListener("change", updateFileLabel);
   form.addEventListener("submit", convertFile);
