@@ -70,6 +70,10 @@ router.get("/tools/js-minifier", (req, res) => {
   sendPublicFile(res, "tools", "js-minifier.html");
 });
 
+router.get("/tools/file-converter", (req, res) => {
+  sendPublicFile(res, "tools", "file-converter.html");
+});
+
 router.use((req, res) => {
   res.status(404);
   sendPublicFile(res, "404.html");
