@@ -66,6 +66,10 @@ router.get("/tools/clip-path-generator", (req, res) => {
   sendPublicFile(res, "tools", "clip-path-generator.html");
 });
 
+router.get("/tools/js-minifier", (req, res) => {
+  sendPublicFile(res, "tools", "js-minifier.html");
+});
+
 router.use((req, res) => {
   res.status(404);
   sendPublicFile(res, "404.html");
