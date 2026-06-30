@@ -1,0 +1,11 @@
+.hljs-keyword {
+  color: #ff7b72 !important;
+}
+
+.hljs-string {
+  color: #00e25a !important;
+}
+
+.hljs-title.function_ {
+  font-style: italic !important;
+}

@@ -133,6 +133,15 @@
   color: #ff6b6b;
 }
 
+.contact-cooldown,
+.suggest-cooldown {
+  font-size: 0.875rem;
+  font-style: italic;
+  color: var(--muted);
+  display: inline-block;
+  margin: 0;
+}
+
 @media (max-width: 760px) {
   .form-grid,
   .form-captcha {

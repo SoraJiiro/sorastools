@@ -39,14 +39,13 @@ function injectResponsiveNavbarStyles() {
   style.textContent = `
     .nav-toggle {
       display: none;
-      width: 46px;
-      height: 46px;
       border: 1px solid var(--border);
       border-radius: 14px;
       background: rgba(255, 255, 255, 0.04);
       color: var(--text);
       cursor: pointer;
       position: relative;
+      padding: 6px;
       z-index: 1201;
     }
 
@@ -58,7 +57,7 @@ function injectResponsiveNavbarStyles() {
       width: 20px;
       height: 2px;
       margin: 5px auto;
-      border-radius: 999px;
+      border-radius: 65px;
       background: currentColor;
       transition:
         transform var(--transition),
@@ -93,11 +92,13 @@ function injectResponsiveNavbarStyles() {
     }
 
     body.nav-open .nav-toggle::before {
-      transform: translateY(7px) rotate(45deg);
+      transform: translateY(5px) translateX(2px) rotate(45deg);
+      width: 20px;
     }
 
     body.nav-open .nav-toggle::after {
-      transform: translateY(-7px) rotate(-45deg);
+      transform: translateY(-5px) translateX(2px) rotate(-45deg);
+      width: 20px;
     }
 
     @media (max-width: 980px) {
@@ -239,7 +240,8 @@ function getActionIcon(element) {
   if (/copier|copy/.test(text)) return "\uf0c5";
   if (/telecharger|download|exporter|export/.test(text)) return "\uf019";
   if (/generer|generate/.test(text)) return "\ue2ca";
-  if (/convertir|convert|encoder|decoder|inverser|traduire/.test(text)) return "\uf362";
+  if (/convertir|convert|encoder|decoder|inverser|traduire/.test(text))
+    return "\uf362";
   if (/reinitialiser|reset/.test(text)) return "\uf2ea";
   if (/effacer|vider|clear|supprimer|delete/.test(text)) return "\uf1f8";
   if (/ajouter|add/.test(text)) return "\u002b";
@@ -339,5 +341,5 @@ initFaKit();
 setupResponsiveNavbar();
 setupTextareaTabHandlers("textarea:not([readonly])");
 applyActionsLabels();
-applyActionIcons();
+applyActionIcons("button, .btn:not(.nav-links a)");
 setupHighlightJs();
