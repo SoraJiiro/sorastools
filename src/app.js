@@ -5,6 +5,7 @@ const express = require("express");
 const { NODE_MODULES_DIR, PUBLIC_DIR } = require("./config/paths");
 const toolsApiRoutes = require("./routes/api/tools");
 const markdownApiRoutes = require("./routes/api/markdown");
+const fileConverterApiRoutes = require("./routes/api/fileConverter");
 const pageRoutes = require("./routes/pages");
 
 const app = express();
@@ -20,6 +21,7 @@ app.use(
 
 app.use(toolsApiRoutes);
 app.use(markdownApiRoutes);
+app.use(fileConverterApiRoutes);
 app.use(pageRoutes);
 
 app.listen(PORT, () => {
