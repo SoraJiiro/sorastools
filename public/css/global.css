@@ -27,6 +27,11 @@ html {
   background: var(--bg);
 }
 
+html,
+body {
+  overflow-x: hidden;
+}
+
 body {
   margin: 0;
   font-family: "Roboto Condensed", sans-serif;

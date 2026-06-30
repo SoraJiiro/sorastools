@@ -22,7 +22,7 @@ async function getTools() {
 function shouldPreventSubmitCount() {
   return (
     String(
-      process.env.PREVENT_COUNT_SUBMIT_SUPA ||
+      process.env.PREVENT_SUBMIT_COUNT_SUPA ||
         process.env.PREVENT_SUBMIT_COUNT_SUPA ||
         "",
     )
@@ -111,7 +111,9 @@ async function getSupabaseMostUsedTools(tools) {
   const data = await readSupabaseJson(response);
 
   if (!response.ok) {
-    throw new Error(data?.message || "Impossible de charger les stats Supabase.");
+    throw new Error(
+      data?.message || "Impossible de charger les stats Supabase.",
+    );
   }
 
   return mapMostUsedTools(tools, Array.isArray(data) ? data : []);
@@ -127,7 +129,9 @@ async function incrementSupabaseToolUsage(toolId) {
   const data = await readSupabaseJson(response);
 
   if (!response.ok) {
-    throw new Error(data?.message || "Impossible d'incrémenter les stats Supabase.");
+    throw new Error(
+      data?.message || "Impossible d'incrémenter les stats Supabase.",
+    );
   }
 
   const usageRow = Array.isArray(data) ? data[0] : data;
@@ -150,7 +154,8 @@ router.get("/api/tools/most-used", async (req, res) => {
     return res.json({
       success: true,
       fallback: true,
-      message: error.message || "Supabase n'est pas encore configuré pour les stats.",
+      message:
+        error.message || "Supabase n'est pas encore configuré pour les stats.",
       tools: mapMostUsedTools(tools),
     });
   }
@@ -185,7 +190,8 @@ router.post("/api/tools/:toolId/submit", async (req, res) => {
     return res.status(503).json({
       success: false,
       fallback: true,
-      message: error.message || "Supabase n'est pas encore configuré pour les stats.",
+      message:
+        error.message || "Supabase n'est pas encore configuré pour les stats.",
     });
   }
 });
