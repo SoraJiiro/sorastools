@@ -21,11 +21,7 @@ async function getTools() {
 
 function shouldPreventSubmitCount() {
   return (
-    String(
-      process.env.PREVENT_SUBMIT_COUNT_SUPA ||
-        process.env.PREVENT_SUBMIT_COUNT_SUPA ||
-        "",
-    )
+    String(process.env.PREVENT_SUBMIT_COUNT_SUPA || "")
       .trim()
       .toLowerCase() === "true"
   );
@@ -62,9 +58,11 @@ function mapMostUsedTools(tools, usageRows = []) {
 
 function getSupabaseConfig() {
   const url = (process.env.SUPABASE_URL || "").replace(/\/$/, "");
+  const serviceRoleKey = process.env.SUPABASE_SERVICE_ROLE_KEY || "";
   const secretKey = process.env.SUPABASE_SECRET_KEY || "";
+  const anonKey = process.env.SUPABASE_ANON_KEY || "";
   const publishableKey = process.env.SUPABASE_PUBLISHABLE_KEY || "";
-  const apiKey = secretKey || publishableKey;
+  const apiKey = serviceRoleKey || secretKey || anonKey || publishableKey;
 
   if (!url || !apiKey) {
     throw new Error(
@@ -95,6 +93,10 @@ async function readSupabaseJson(response) {
   } catch (error) {
     return { message: text };
   }
+}
+
+function logSupabaseStatsError(context, error) {
+  console.warn(`[SoraTools] Stats Supabase ignorées (${context}) :`, error.message);
 }
 
 async function getSupabaseMostUsedTools(tools) {
@@ -151,6 +153,8 @@ router.get("/api/tools/most-used", async (req, res) => {
     const mostUsedTools = await getSupabaseMostUsedTools(tools);
     return res.json({ success: true, tools: mostUsedTools });
   } catch (error) {
+    logSupabaseStatsError("most-used", error);
+
     return res.json({
       success: true,
       fallback: true,
@@ -187,6 +191,8 @@ router.post("/api/tools/:toolId/submit", async (req, res) => {
     const submitCount = await incrementSupabaseToolUsage(toolId);
     return res.json({ success: true, toolId, submitCount });
   } catch (error) {
+    logSupabaseStatsError(`submit ${toolId}`, error);
+
     return res.json({
       success: true,
       fallback: true,
