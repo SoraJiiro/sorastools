@@ -25,21 +25,11 @@
           data-label="Retourner à l'accueil SoraTools"><img class="logo-img"
             src="/assets/logo.png" alt aria-hidden="true">SoraTools</a>
         <div class="nav-links">
-          <a href="/#tools" data-label="Aller au catalogue des tools">Tools</a>
+          <a href="/#tools"
+            data-label="Aller au catalogue des Tools">Accueil</a>
           <a href="/suggest"
             data-label="Aller aux suggestions de tools">Suggest</a>
-          <a href="/tools/color-picker"
-            data-label="Ouvrir le Color Picker">Color Picker</a>
-          <a href="/tools/json-formatter"
-            data-label="Ouvrir le JSON Formatter">JSON</a>
-          <a href="/tools/regex-tester"
-            data-label="Ouvrir le Regex Tester">Regex</a>
-          <a href="/tools/md-previewer"
-            data-label="Ouvrir le Markdown Previewer">Markdown</a>
-          <a href="/tools/base64"
-            data-label="Ouvrir le Base64 Encoder">Base64</a>
-          <a href="/tools/js-minifier"
-            data-label="Ouvrir le JS Minifier">JS Minifier</a>
+          <a href="/contact" data-label="Aller à la page contact">Contact</a>
         </div>
       </nav>
     </header>
@@ -49,7 +39,8 @@
         <div class="section-heading">
           <p class="eyebrow">Dev</p>
           <h1>JS Minifier</h1>
-          <p>Colle ton JavaScript, minifie-le et active l'obfuscation légère si
+          <p>Colle ton JavaScript, minifie-le et active l'obfuscation légère
+            si
             tu veux rendre le code moins lisible.</p>
         </div>
 
@@ -67,20 +58,24 @@
               data-label="Vider les champs JavaScript">Vider</button>
           </div>
 
-          <label class="jm-option" data-label="Activer l'obfuscation JavaScript">
+          <label class="jm-option"
+            data-label="Activer l'obfuscation JavaScript">
             <input type="checkbox" data-jm-obfuscate>
             <span>Ajouter une obfuscation légère</span>
           </label>
 
-          <label class="jm-option" data-label="Garder la compatibilité module JavaScript">
+          <label class="jm-option"
+            data-label="Garder la compatibilité module JavaScript">
             <input type="checkbox" data-jm-module>
             <span>Module ?</span>
           </label>
 
           <div class="jm-editor-grid">
-            <label class="field jm-field" data-label="Champ JavaScript source">
+            <label class="field jm-field"
+              data-label="Champ JavaScript source">
               <span>Input JS</span>
-              <textarea data-jm-input data-label="Coller ou écrire du JavaScript"
+              <textarea data-jm-input
+                data-label="Coller ou écrire du JavaScript"
                 spellcheck="false">import { hello } from "./hello.js";
 
 const name = "SoraTools";
@@ -89,7 +84,8 @@ hello(name);</textarea>
                 sortir du focus</p>
             </label>
 
-            <label class="field jm-field" data-label="Résultat JavaScript minifié">
+            <label class="field jm-field"
+              data-label="Résultat JavaScript minifié">
               <span>Résultat</span>
               <textarea data-jm-output data-label="JavaScript minifié"
                 spellcheck="false" readonly></textarea>
@@ -114,7 +110,8 @@ hello(name);</textarea>
 
       <p>
         La minification retire les commentaires et les espaces inutiles pour
-        réduire la taille du fichier JavaScript. Le résultat est plus compact et
+        réduire la taille du fichier JavaScript. Le résultat est plus compact
+        et
         plus rapide à transférer.
       </p>
 
@@ -127,7 +124,8 @@ hello(name);</textarea>
       <p>
         L'option « Module ? » conserve les déclarations <code>import</code> et
         <code>export</code> au niveau racine, valide le code en mode module et
-        évite le wrapper d'exécution pour préserver les modules ES et les usages
+        évite le wrapper d'exécution pour préserver les modules ES et les
+        usages
         CommonJS comme <code>require</code>, <code>module.exports</code> ou
         <code>exports</code>.
       </p>

@@ -28,27 +28,11 @@
           data-label="Retourner à l'accueil SoraTools"><img class="logo-img"
             src="/assets/logo.png" alt aria-hidden="true">SoraTools</a>
         <div class="nav-links">
-          <a href="/#tools" data-label="Aller au catalogue des tools">Tools</a>
+          <a href="/#tools"
+            data-label="Aller au catalogue des Tools">Accueil</a>
           <a href="/suggest"
             data-label="Aller aux suggestions de tools">Suggest</a>
-          <a href="/tools/color-picker"
-            data-label="Ouvrir le Color Picker">Color Picker</a>
-          <a href="/tools/json-formatter"
-            data-label="Ouvrir le JSON Formatter">JSON</a>
-          <a href="/tools/regex-tester"
-            data-label="Ouvrir le Regex Tester">Regex</a>
-          <a href="/tools/md-previewer"
-            data-label="Ouvrir le Markdown Previewer">Markdown</a>
-          <a href="/tools/base64"
-            data-label="Ouvrir le Base64 Encoder">Base64</a>
-          <a href="/tools/binary"
-            data-label="Ouvrir le Binary Translator">Binary</a>
-          <a href="/tools/hexadecimal"
-            data-label="Ouvrir le Hexadecimal Translator">Hex</a>
-          <a href="/tools/time-calculator"
-            data-label="Ouvrir le Time Calculator">Time</a>
-          <a href="/tools/clip-path-generator"
-            data-label="Ouvrir le CSS Clip-Path Generator">Clip-Path</a>
+          <a href="/contact" data-label="Aller à la page contact">Contact</a>
         </div>
       </nav>
     </header>
@@ -65,7 +49,8 @@
 
         <div class="clip-tool">
           <div class="clip-toolbar">
-            <select data-clip-preset data-label="Choisir une forme prédéfinie">
+            <select data-clip-preset
+              data-label="Choisir une forme prédéfinie">
               <option value="custom">Custom</option>
               <option value="triangle">Triangle</option>
               <option value="diamond">Losange</option>
@@ -93,7 +78,8 @@
             <section class="clip-panel">
               <h2>Éditeur</h2>
               <div class="clip-editor-wrap">
-                <svg class="clip-editor" data-clip-editor viewBox="0 0 100 100"
+                <svg class="clip-editor" data-clip-editor
+                  viewBox="0 0 100 100"
                   preserveAspectRatio="none" role="img"
                   aria-label="Éditeur visuel de polygon clip-path">
                   <polygon class="clip-polygon" data-clip-polygon></polygon>
@@ -102,7 +88,8 @@
               </div>
               <p class="clip-status" data-clip-status>En attente.</p>
               <p class="textarea-notice">Clique dans la grille pour ajouter un
-                point. Glisse un point pour le déplacer. Clic droit sur un point
+                point. Glisse un point pour le déplacer. Clic droit sur un
+                point
                 pour le supprimer.</p>
             </section>
 
@@ -146,10 +133,12 @@
       </div>
 
       <p>
-        La propriété CSS <code>clip-path</code> permet de découper un élément en
+        La propriété CSS <code>clip-path</code> permet de découper un élément
+        en
         suivant une forme. Avec <code class="language-css">polygon()</code>,
         chaque point est défini
-        par une coordonnée <code class="language-css">X% Y%</code> dans la zone
+        par une coordonnée <code class="language-css">X% Y%</code> dans la
+        zone
         de l'élément.
         Clip-path est souvent utilisé pour créer des formes personnalisées qui
         seraient normalement impossible à faire avec les propriétés CSS
@@ -157,7 +146,8 @@
       </p>
 
       <p>
-        Ce générateur crée automatiquement le CSS à partir des points placés sur
+        Ce générateur crée automatiquement le CSS à partir des points placés
+        sur
         la grille. Plus tu ajoutes de points, plus la forme peut être précise.
       </p>
     </section>

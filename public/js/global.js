@@ -10,7 +10,9 @@ let highlightJsPromise = null;
 
 function hasHighlightableCode(root = document) {
   return Boolean(
-    root.querySelector("pre code, code[class*='language-'], code[data-highlight]"),
+    root.querySelector(
+      "pre code, code[class*='language-'], code[data-highlight]",
+    ),
   );
 }
 
@@ -55,7 +57,9 @@ function highlightCode(root = document) {
   if (!window.hljs) return;
 
   root
-    .querySelectorAll("pre code, code[class*='language-'], code[data-highlight]")
+    .querySelectorAll(
+      "pre code, code[class*='language-'], code[data-highlight]",
+    )
     .forEach((code) => {
       code.removeAttribute("data-highlighted");
       window.hljs.highlightElement(code);
@@ -314,24 +318,6 @@ function applyActionIcons(selector = "button, .btn, .nav-links a") {
 
     element.dataset.actionIcon = icon;
   });
-}
-
-function ensureContactLink(navLinks) {
-  if (!navLinks || navLinks.querySelector('a[href="/contact"]')) return;
-
-  const contactLink = document.createElement("a");
-  contactLink.href = "/contact";
-  contactLink.dataset.label = "Aller à la page contact";
-  contactLink.textContent = "Contact";
-
-  const suggestLink = navLinks.querySelector('a[href="/suggest"]');
-
-  if (suggestLink) {
-    suggestLink.insertAdjacentElement("afterend", contactLink);
-    return;
-  }
-
-  navLinks.appendChild(contactLink);
 }
 
 function setupResponsiveNavbar() {
