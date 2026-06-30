@@ -40,7 +40,7 @@
     "name": "Base64 Encoder",
     "category": "Dev",
     "description": "Encode ou décode rapidement une chaîne en Base64.",
-    "icon": "<i class='fa-solid fa-square-binary'></i>",
+    "icon": "<i class='fa-solid fa-square-barcode'></i>",
     "url": "/tools/base64",
     "status": "ready"
   },
