@@ -37,7 +37,7 @@
         <div class="section-heading">
           <p class="eyebrow">Musique</p>
           <h1>Chart Editor</h1>
-          <p>Crée une chart Clone Hero simple, place les notes sur une timeline synchronisée avec l'audio, puis exporte le fichier <code>.chart</code>.</p>
+          <p>Crée une chart Clone Hero simple, place les notes sur une highway verticale synchronisée avec l'audio, puis exporte le fichier <code>.chart</code>.</p>
         </div>
 
         <div class="ce-tool">
@@ -90,6 +90,15 @@
               </select>
             </label>
             <label class="field ce-small-field">
+              <span>Modifier</span>
+              <select data-ce-modifier>
+                <option value="normal" selected>Normal</option>
+                <option value="force-hopo">HOPO forcé</option>
+                <option value="force-strum">Strum forcé</option>
+                <option value="tap">Tap note</option>
+              </select>
+            </label>
+            <label class="field ce-small-field">
               <span>Zoom</span>
               <input type="range" data-ce-zoom min="70" max="260" value="130">
             </label>
@@ -98,8 +107,10 @@
           <div class="ce-help">
             <span><kbd>1</kbd>-<kbd>5</kbd> choisit la couleur</span>
             <span><kbd>S</kbd> Star Power</span>
+            <span><kbd>H</kbd> HOPO forcé</span>
+            <span><kbd>T</kbd> Tap note</span>
             <span><kbd>Suppr</kbd> supprime la note sélectionnée</span>
-            <span>Clic sur la timeline pour placer une note</span>
+            <span>Clic au-dessus de la hit line pour placer une note future</span>
           </div>
 
           <div class="ce-editor-shell">
@@ -112,7 +123,7 @@
               <button type="button" class="ce-note-btn" data-ce-note="5">Star Power</button>
             </div>
             <div class="ce-timeline-wrap" data-ce-timeline-wrap>
-              <canvas data-ce-canvas width="1800" height="420"></canvas>
+              <canvas data-ce-canvas width="760" height="720"></canvas>
             </div>
           </div>
 
@@ -130,7 +141,7 @@
         <h2 class="subtitle">Comment ça marche ?</h2>
       </div>
       <p>Un fichier <code>.chart</code> décrit les notes, le tempo, les sections et les événements d'une musique pour des jeux comme Clone Hero. L'audio reste séparé : le fichier exporté contient la structure de la chart, pas le morceau lui-même.</p>
-      <p>Cette première version vise l'édition rapide : notes guitare/basse, BPM constant, Star Power, lecture synchronisée et export propre. Des options plus avancées peuvent être ajoutées progressivement.</p>
+      <p>Cette première version vise l'édition rapide : notes guitare/basse, BPM constant, Star Power, HOPO forcés, strums forcés, tap notes, lecture synchronisée et export propre.</p>
     </section>
 
     <footer class="site-footer">
