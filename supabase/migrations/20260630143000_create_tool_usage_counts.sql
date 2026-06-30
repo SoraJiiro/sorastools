@@ -16,7 +16,7 @@ create policy "Tool usage counts are readable"
   using (true);
 
 create or replace function public.increment_tool_usage(p_tool_id text)
-returns table(tool_id text, submit_count bigint)
+returns table(result_tool_id text, result_submit_count bigint)
 language plpgsql
 security definer
 set search_path = public
