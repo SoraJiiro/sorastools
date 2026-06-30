@@ -4,31 +4,80 @@ import {
   initFaKit,
 } from "./utils.js";
 
+const HIGHLIGHT_STYLE_HREF = "/vendor/highlight.js/styles/github-dark.min.css";
+const HIGHLIGHT_SCRIPT_SRC = "/vendor/highlight.js/highlight.min.js";
+let highlightJsPromise = null;
+
+function hasHighlightableCode(root = document) {
+  return Boolean(
+    root.querySelector("pre code, code[class*='language-'], code[data-highlight]"),
+  );
+}
+
+function ensureHighlightStyle() {
+  if (document.querySelector(`link[href='${HIGHLIGHT_STYLE_HREF}']`)) return;
+
+  const link = document.createElement("link");
+  link.rel = "stylesheet";
+  link.href = HIGHLIGHT_STYLE_HREF;
+  document.head.appendChild(link);
+}
+
+function loadHighlightJs() {
+  if (window.hljs) return Promise.resolve(window.hljs);
+  if (highlightJsPromise) return highlightJsPromise;
+
+  ensureHighlightStyle();
+
+  const existingScript = document.querySelector("script[src*='highlight']");
+
+  highlightJsPromise = new Promise((resolve, reject) => {
+    if (existingScript) {
+      existingScript.addEventListener("load", () => resolve(window.hljs), {
+        once: true,
+      });
+      existingScript.addEventListener("error", reject, { once: true });
+      return;
+    }
+
+    const script = document.createElement("script");
+    script.src = HIGHLIGHT_SCRIPT_SRC;
+    script.defer = true;
+    script.addEventListener("load", () => resolve(window.hljs), { once: true });
+    script.addEventListener("error", reject, { once: true });
+    document.head.appendChild(script);
+  });
+
+  return highlightJsPromise;
+}
+
 function highlightCode(root = document) {
   if (!window.hljs) return;
 
-  root.querySelectorAll("pre code").forEach((code) => {
-    code.removeAttribute("data-highlighted");
-    window.hljs.highlightElement(code);
-  });
+  root
+    .querySelectorAll("pre code, code[class*='language-'], code[data-highlight]")
+    .forEach((code) => {
+      code.removeAttribute("data-highlighted");
+      window.hljs.highlightElement(code);
+    });
 }
 
 function setupHighlightJs() {
   window.applyHighlightJs = highlightCode;
 
-  document.addEventListener("soratools:content-updated", (event) => {
-    highlightCode(event.detail?.root || document);
-  });
+  function applyHighlighting(root = document) {
+    if (!hasHighlightableCode(root)) return;
 
-  const hljsScript = document.querySelector("script[src*='highlight']");
-
-  if (window.hljs) {
-    highlightCode();
-    return;
+    loadHighlightJs()
+      .then(() => highlightCode(root))
+      .catch(() => {});
   }
 
-  hljsScript?.addEventListener("load", () => highlightCode(), { once: true });
-  window.addEventListener("load", () => highlightCode(), { once: true });
+  document.addEventListener("soratools:content-updated", (event) => {
+    applyHighlighting(event.detail?.root || document);
+  });
+
+  applyHighlighting();
 }
 
 function injectResponsiveNavbarStyles() {
