@@ -15,6 +15,12 @@ async function getTools() {
   return [];
 }
 
+function shouldPreventSubmitCount() {
+  return String(process.env.PREVENT_COUNT_SUBMIT_SUPA || "")
+    .trim()
+    .toLowerCase() === "true";
+}
+
 function getReadyTools(tools) {
   return tools.filter((tool) => tool.status === "ready");
 }
@@ -133,6 +139,14 @@ router.post("/api/tools/:toolId/submit", async (req, res) => {
     return res.status(404).json({
       success: false,
       message: "Tool introuvable ou indisponible.",
+    });
+  }
+
+  if (shouldPreventSubmitCount()) {
+    return res.json({
+      success: true,
+      disabled: true,
+      message: "Le comptage des submits Supabase est désactivé.",
     });
   }
 
