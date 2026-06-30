@@ -1,0 +1,127 @@
+<!DOCTYPE html>
+<html lang="fr">
+  <head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>File Converter - SoraTools</title>
+    <meta name="description"
+      content="Convertis des images, vidéos, audios, documents Word et PDF depuis SoraTools.">
+    <link rel="icon" type="image/png" href="/assets/logo.png">
+    <link rel="shortcut icon" type="image/png" href="/assets/logo.png">
+    <link rel="stylesheet" href="/css/global.css">
+    <link rel="stylesheet" href="/css/file-converter.css">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link
+      href="https://fonts.googleapis.com/css2?family=Intel+One+Mono:ital,wght@0,300..700;1,300..700&family=Roboto+Condensed:ital,wght@0,100..900;1,100..900&family=Science+Gothic:wght@100..900&display=swap"
+      rel="stylesheet">
+    <script type="module" src="/js/tools/file-converter.js"></script>
+    <script type="module" src="/js/global.js"></script>
+  </head>
+  <body>
+    <header class="site-header">
+      <nav class="navbar">
+        <a class="logo" href="/"
+          data-label="Retourner à l'accueil SoraTools"><img class="logo-img"
+            src="/assets/logo.png" alt aria-hidden="true">SoraTools</a>
+        <div class="nav-links">
+          <a href="/#tools" data-label="Aller au catalogue des tools">Tools</a>
+          <a href="/suggest"
+            data-label="Aller aux suggestions de tools">Suggest</a>
+          <a href="/tools/color-picker"
+            data-label="Ouvrir le Color Picker">Color Picker</a>
+          <a href="/tools/json-formatter"
+            data-label="Ouvrir le JSON Formatter">JSON</a>
+          <a href="/tools/regex-tester"
+            data-label="Ouvrir le Regex Tester">Regex</a>
+          <a href="/tools/md-previewer"
+            data-label="Ouvrir le Markdown Previewer">Markdown</a>
+          <a href="/tools/base64"
+            data-label="Ouvrir le Base64 Encoder">Base64</a>
+          <a href="/tools/js-minifier"
+            data-label="Ouvrir le JS Minifier">JS Minifier</a>
+        </div>
+      </nav>
+    </header>
+
+    <main>
+      <section class="section tool-section" id="file-converter">
+        <div class="section-heading">
+          <p class="eyebrow">Fichiers</p>
+          <h1>File Converter</h1>
+          <p>Importe un fichier, choisis le type de conversion et télécharge le
+            résultat. Images, vidéos, audios, Word → PDF et PDF → Word sont pris
+            en charge.</p>
+        </div>
+
+        <form class="fc-tool" data-fc-form>
+          <label class="fc-dropzone" data-fc-dropzone
+            data-label="Déposer ou choisir un fichier à convertir">
+            <input type="file" data-fc-file required>
+            <span class="fc-dropzone-icon"><i class="fa-solid fa-cloud-arrow-up"></i></span>
+            <strong data-fc-file-name>Choisir un fichier</strong>
+            <small data-fc-file-meta>Glisse-dépose ou clique ici. Taille max serveur : 350 Mo.</small>
+          </label>
+
+          <div class="fc-grid">
+            <label class="field" data-label="Type de fichier à convertir">
+              <span>Type</span>
+              <select data-fc-category name="category">
+                <option value="auto">Auto-détection</option>
+                <option value="image">Image</option>
+                <option value="video">Vidéo</option>
+                <option value="audio">Audio</option>
+                <option value="document">Document</option>
+              </select>
+            </label>
+
+            <label class="field" data-label="Format de sortie">
+              <span>Format de sortie</span>
+              <select data-fc-output name="outputFormat" required></select>
+            </label>
+          </div>
+
+          <div class="fc-actions">
+            <button type="submit" data-fc-convert
+              data-label="Convertir le fichier">Convertir</button>
+            <button type="button" data-fc-reset
+              data-label="Réinitialiser le convertisseur">Vider</button>
+          </div>
+
+          <div class="fc-progress" aria-hidden="true" data-fc-progress>
+            <span></span>
+          </div>
+
+          <div class="fc-result" aria-live="polite">
+            <p data-fc-status>En attente d'un fichier.</p>
+            <a href="#" data-fc-download hidden>Télécharger le fichier converti</a>
+          </div>
+        </form>
+      </section>
+    </main>
+
+    <section class="tech-explanation">
+      <div class="tech-explanation-heading">
+        <p class="tech-name">Conversion</p>
+        <h2 class="subtitle">Comment ça marche ?</h2>
+      </div>
+
+      <p>
+        Les images sont converties côté serveur avec Sharp. Les vidéos et audios
+        passent par FFmpeg. Les documents Word sont convertis en PDF avec
+        LibreOffice lorsqu'il est installé sur la machine serveur.
+      </p>
+
+      <p>
+        La conversion PDF → Word génère un fichier <code>.docx</code> à partir du
+        texte extrait du PDF. Elle est pratique pour récupérer le contenu, mais
+        ne conserve pas parfaitement la mise en page d'origine.
+      </p>
+    </section>
+
+    <footer class="site-footer">
+      <p>&copy; 2026 SoraTools - Tous droits réservés.</p>
+      <p class="location">File Converter</p>
+    </footer>
+  </body>
+</html>
