@@ -72,16 +72,19 @@
             <span>Ajouter une obfuscation légère</span>
           </label>
 
+          <label class="jm-option" data-label="Garder la compatibilité module JavaScript">
+            <input type="checkbox" data-jm-module>
+            <span>Module ?</span>
+          </label>
+
           <div class="jm-editor-grid">
             <label class="field jm-field" data-label="Champ JavaScript source">
               <span>Input JS</span>
               <textarea data-jm-input data-label="Coller ou écrire du JavaScript"
-                spellcheck="false">function hello(name) {
-  const message = "Hello " + name;
-  console.log(message);
-}
+                spellcheck="false">import { hello } from "./hello.js";
 
-hello("SoraTools");</textarea>
+const name = "SoraTools";
+hello(name);</textarea>
               <p class="textarea-notice">Appuyer sur <span>Échap</span> pour
                 sortir du focus</p>
             </label>
@@ -119,6 +122,14 @@ hello("SoraTools");</textarea>
         L'option d'obfuscation encode le code minifié dans un petit wrapper
         d'exécution. Elle rend le code moins lisible, mais ce n'est pas une
         protection forte : un code côté client peut toujours être inspecté.
+      </p>
+
+      <p>
+        L'option « Module ? » conserve les déclarations <code>import</code> et
+        <code>export</code> au niveau racine, valide le code en mode module et
+        évite le wrapper d'exécution pour préserver les modules ES et les usages
+        CommonJS comme <code>require</code>, <code>module.exports</code> ou
+        <code>exports</code>.
       </p>
     </section>
 
