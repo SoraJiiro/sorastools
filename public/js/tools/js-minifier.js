@@ -69,6 +69,7 @@ function getPreviousToken(output) {
 function shouldKeepSpace(previousChar, nextChar) {
   if (!previousChar || !nextChar) return false;
   if (isIdentifierChar(previousChar) && isIdentifierChar(nextChar)) return true;
+  if (isIdentifierChar(previousChar) && nextChar === "/") return true;
   if ((previousChar === "+" && nextChar === "+") || (previousChar === "-" && nextChar === "-")) return true;
   if (previousChar === "/" && nextChar === "/") return true;
   return false;
