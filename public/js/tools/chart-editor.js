@@ -24,13 +24,21 @@ const timeElement = document.querySelector("[data-ce-time]");
 const noteButtons = document.querySelectorAll("[data-ce-note]");
 
 const ctx = canvas?.getContext("2d");
+const HIGHWAY = {
+  width: 760,
+  top: 92,
+  bottomPadding: 140,
+  laneStart: 160,
+  laneWidth: 82,
+  hitLineOffset: 120,
+};
 const LANES = [
-  { id: 0, label: "G", color: "#39d353" },
-  { id: 1, label: "R", color: "#ff5d5d" },
-  { id: 2, label: "Y", color: "#ffd45a" },
-  { id: 3, label: "B", color: "#58a6ff" },
-  { id: 4, label: "O", color: "#ff9b3d" },
-  { id: 5, label: "SP", color: "#9b7bff" },
+  { id: 0, label: "G", name: "Vert", color: "#39d353" },
+  { id: 1, label: "R", name: "Rouge", color: "#ff5d5d" },
+  { id: 2, label: "Y", name: "Jaune", color: "#ffd45a" },
+  { id: 3, label: "B", name: "Bleu", color: "#58a6ff" },
+  { id: 4, label: "O", name: "Orange", color: "#ff9b3d" },
+  { id: 5, label: "SP", name: "Star Power", color: "#9b7bff" },
 ];
 
 const state = {
@@ -68,6 +76,23 @@ function tickToSeconds(tick) {
   return tick / getResolution() / (getBpm() / 60);
 }
 
+function secondsToY(seconds) {
+  return HIGHWAY.top + seconds * state.pixelsPerSecond;
+}
+
+function yToSeconds(y) {
+  return Math.max(0, (y - HIGHWAY.top) / state.pixelsPerSecond);
+}
+
+function getLaneX(noteType) {
+  return HIGHWAY.laneStart + noteType * HIGHWAY.laneWidth + HIGHWAY.laneWidth / 2;
+}
+
+function getLaneFromX(x) {
+  const lane = Math.floor((x - HIGHWAY.laneStart) / HIGHWAY.laneWidth);
+  return Math.max(0, Math.min(4, lane));
+}
+
 function formatTime(seconds = 0) {
   const minutes = Math.floor(seconds / 60);
   const remaining = seconds - minutes * 60;
@@ -91,68 +116,104 @@ function updateStats() {
 function resizeCanvas() {
   if (!canvas) return;
 
-  const width = Math.max(1800, Math.ceil(getDuration() * state.pixelsPerSecond) + 240);
-  canvas.width = width;
-  canvas.height = 420;
-}
-
-function getLaneY(noteType) {
-  return 78 + noteType * 54;
+  const height = Math.max(1100, Math.ceil(getDuration() * state.pixelsPerSecond) + HIGHWAY.top + HIGHWAY.bottomPadding);
+  canvas.width = HIGHWAY.width;
+  canvas.height = height;
 }
 
 function getNoteAt(x, y) {
   return [...state.notes]
     .reverse()
     .find((note) => {
-      const noteX = tickToSeconds(note.tick) * state.pixelsPerSecond;
-      const noteY = getLaneY(note.type);
-      return Math.abs(noteX - x) <= 12 && Math.abs(noteY - y) <= 16;
+      const noteX = getLaneX(note.type);
+      const noteY = secondsToY(tickToSeconds(note.tick));
+      return Math.abs(noteX - x) <= 18 && Math.abs(noteY - y) <= 18;
     });
 }
 
-function drawGrid() {
+function drawBackground() {
   if (!ctx || !canvas) return;
 
   ctx.clearRect(0, 0, canvas.width, canvas.height);
   ctx.fillStyle = "#0d1117";
   ctx.fillRect(0, 0, canvas.width, canvas.height);
 
+  const gradient = ctx.createLinearGradient(0, 0, 0, canvas.height);
+  gradient.addColorStop(0, "rgba(255, 122, 0, 0.16)");
+  gradient.addColorStop(0.25, "rgba(255, 122, 0, 0.03)");
+  gradient.addColorStop(1, "rgba(0, 0, 0, 0)");
+  ctx.fillStyle = gradient;
+  ctx.fillRect(0, 0, canvas.width, canvas.height);
+}
+
+function drawHighwayFrame() {
+  if (!ctx || !canvas) return;
+
+  const laneTotalWidth = HIGHWAY.laneWidth * 5;
+  const left = HIGHWAY.laneStart;
+  const right = left + laneTotalWidth;
+
+  ctx.fillStyle = "rgba(255, 255, 255, 0.025)";
+  ctx.fillRect(left, HIGHWAY.top - 46, laneTotalWidth, canvas.height - HIGHWAY.top + 8);
+
+  for (let laneIndex = 0; laneIndex <= 5; laneIndex += 1) {
+    const x = left + laneIndex * HIGHWAY.laneWidth;
+    ctx.strokeStyle = laneIndex === 0 || laneIndex === 5 ? "rgba(255, 122, 0, 0.28)" : "rgba(255, 255, 255, 0.11)";
+    ctx.lineWidth = laneIndex === 0 || laneIndex === 5 ? 2 : 1;
+    ctx.beginPath();
+    ctx.moveTo(x, HIGHWAY.top - 46);
+    ctx.lineTo(x, canvas.height - 40);
+    ctx.stroke();
+  }
+
+  LANES.slice(0, 5).forEach((lane) => {
+    const x = getLaneX(lane.id);
+    ctx.fillStyle = lane.color;
+    ctx.font = "bold 18px Consolas, monospace";
+    ctx.textAlign = "center";
+    ctx.fillText(lane.label, x, 42);
+  });
+
+  ctx.textAlign = "start";
+  ctx.strokeStyle = "rgba(255, 255, 255, 0.22)";
+  ctx.lineWidth = 2;
+  ctx.strokeRect(left, HIGHWAY.top - 46, laneTotalWidth, canvas.height - HIGHWAY.top + 6);
+
+  ctx.fillStyle = "rgba(255, 122, 0, 0.08)";
+  ctx.fillRect(left, Math.max(HIGHWAY.top, canvas.height - HIGHWAY.hitLineOffset), laneTotalWidth, 6);
+  ctx.fillStyle = "rgba(255, 255, 255, 0.65)";
+  ctx.font = "bold 12px Consolas, monospace";
+  ctx.fillText("HIT LINE", right + 16, Math.max(HIGHWAY.top + 4, canvas.height - HIGHWAY.hitLineOffset + 3));
+}
+
+function drawGrid() {
+  if (!ctx || !canvas) return;
+
   const duration = getDuration();
   const beatSeconds = 60 / getBpm();
   const snapSeconds = getSnapSeconds();
+  const left = HIGHWAY.laneStart;
+  const right = HIGHWAY.laneStart + HIGHWAY.laneWidth * 5;
 
   ctx.font = "12px Consolas, monospace";
   ctx.textBaseline = "middle";
 
   for (let seconds = 0; seconds <= duration + 1; seconds += snapSeconds) {
-    const x = Math.round(seconds * state.pixelsPerSecond);
+    const y = Math.round(secondsToY(seconds));
     const isBeat = Math.abs((seconds / beatSeconds) - Math.round(seconds / beatSeconds)) < 0.001;
-    ctx.strokeStyle = isBeat ? "rgba(255, 122, 0, 0.35)" : "rgba(255, 255, 255, 0.07)";
+
+    ctx.strokeStyle = isBeat ? "rgba(255, 122, 0, 0.36)" : "rgba(255, 255, 255, 0.07)";
     ctx.lineWidth = isBeat ? 2 : 1;
     ctx.beginPath();
-    ctx.moveTo(x, 38);
-    ctx.lineTo(x, canvas.height - 30);
+    ctx.moveTo(left, y);
+    ctx.lineTo(right, y);
     ctx.stroke();
 
     if (isBeat) {
-      ctx.fillStyle = "rgba(255, 255, 255, 0.55)";
-      ctx.fillText(formatTime(seconds), x + 4, 22);
+      ctx.fillStyle = "rgba(255, 255, 255, 0.58)";
+      ctx.fillText(formatTime(seconds), 34, y);
     }
   }
-
-  LANES.forEach((lane) => {
-    const y = getLaneY(lane.id);
-    ctx.strokeStyle = "rgba(255, 255, 255, 0.14)";
-    ctx.lineWidth = 1;
-    ctx.beginPath();
-    ctx.moveTo(0, y);
-    ctx.lineTo(canvas.width, y);
-    ctx.stroke();
-
-    ctx.fillStyle = lane.color;
-    ctx.font = "bold 14px Consolas, monospace";
-    ctx.fillText(lane.label, 12, y);
-  });
 }
 
 function drawNotes() {
@@ -160,19 +221,32 @@ function drawNotes() {
 
   state.notes.forEach((note) => {
     const lane = LANES[note.type] || LANES[0];
-    const x = tickToSeconds(note.tick) * state.pixelsPerSecond;
-    const y = getLaneY(note.type);
+    const isStarPower = note.type === 5;
+    const x = isStarPower ? HIGHWAY.laneStart + HIGHWAY.laneWidth * 5 + 52 : getLaneX(note.type);
+    const y = secondsToY(tickToSeconds(note.tick));
     const isSelected = note.id === state.selectedId;
 
+    if (note.length > 0 && !isStarPower) {
+      const sustainHeight = Math.max(4, tickToSeconds(note.length) * state.pixelsPerSecond);
+      ctx.strokeStyle = lane.color;
+      ctx.lineWidth = 8;
+      ctx.globalAlpha = 0.55;
+      ctx.beginPath();
+      ctx.moveTo(x, y);
+      ctx.lineTo(x, y + sustainHeight);
+      ctx.stroke();
+      ctx.globalAlpha = 1;
+    }
+
     ctx.beginPath();
-    ctx.arc(x, y, note.type === 5 ? 13 : 11, 0, Math.PI * 2);
+    ctx.arc(x, y, isStarPower ? 13 : 15, 0, Math.PI * 2);
     ctx.fillStyle = lane.color;
     ctx.fill();
     ctx.lineWidth = isSelected ? 4 : 2;
-    ctx.strokeStyle = isSelected ? "#fff" : "rgba(0, 0, 0, 0.65)";
+    ctx.strokeStyle = isSelected ? "#fff" : "rgba(0, 0, 0, 0.72)";
     ctx.stroke();
 
-    if (note.type === 5) {
+    if (isStarPower) {
       ctx.fillStyle = "#fff";
       ctx.font = "bold 10px Consolas, monospace";
       ctx.textAlign = "center";
@@ -183,23 +257,35 @@ function drawNotes() {
 }
 
 function drawPlayhead() {
-  if (!ctx || !player) return;
-  const x = player.currentTime * state.pixelsPerSecond;
+  if (!ctx || !player || !canvas) return;
+  const y = secondsToY(player.currentTime);
+  const left = HIGHWAY.laneStart - 24;
+  const right = HIGHWAY.laneStart + HIGHWAY.laneWidth * 5 + 24;
 
   ctx.strokeStyle = "#ffffff";
-  ctx.lineWidth = 2;
+  ctx.lineWidth = 3;
   ctx.beginPath();
-  ctx.moveTo(x, 32);
-  ctx.lineTo(x, canvas.height - 24);
+  ctx.moveTo(left, y);
+  ctx.lineTo(right, y);
   ctx.stroke();
 
-  if (timelineWrap && x > timelineWrap.scrollLeft + timelineWrap.clientWidth - 140) {
-    timelineWrap.scrollLeft = Math.max(0, x - timelineWrap.clientWidth * 0.35);
+  ctx.fillStyle = "#ffffff";
+  ctx.beginPath();
+  ctx.moveTo(left - 12, y);
+  ctx.lineTo(left, y - 8);
+  ctx.lineTo(left, y + 8);
+  ctx.closePath();
+  ctx.fill();
+
+  if (timelineWrap && y > timelineWrap.scrollTop + timelineWrap.clientHeight - 160) {
+    timelineWrap.scrollTop = Math.max(0, y - timelineWrap.clientHeight + 180);
   }
 }
 
 function render() {
   resizeCanvas();
+  drawBackground();
+  drawHighwayFrame();
   drawGrid();
   drawNotes();
   drawPlayhead();
@@ -229,11 +315,11 @@ function setSelectedNote(noteType) {
   });
 }
 
-function addNoteAt(seconds) {
+function addNoteAt(seconds, forcedLane = null) {
   const snapSeconds = getSnapSeconds();
   const snappedSeconds = Math.max(0, Math.round(seconds / snapSeconds) * snapSeconds);
   const tick = secondsToTick(snappedSeconds);
-  const type = state.selectedNote;
+  const type = state.selectedNote === 5 ? 5 : forcedLane ?? state.selectedNote;
   const existing = state.notes.find((note) => note.tick === tick && note.type === type);
 
   saveUndo();
@@ -252,7 +338,7 @@ function addNoteAt(seconds) {
     state.notes.push(note);
     state.notes.sort((a, b) => a.tick - b.tick || a.type - b.type);
     state.selectedId = note.id;
-    setCeStatus("Note ajoutée.", "success");
+    setCeStatus(`${LANES[type]?.name || "Note"} ajoutée.`, "success");
   }
 
   render();
@@ -309,24 +395,24 @@ function buildChart() {
     `  Name = \"${escapeChartString(titleInput?.value || "SoraTools Chart")}\"`,
     `  Artist = \"${escapeChartString(artistInput?.value || "Unknown Artist")}\"`,
     `  Charter = \"${escapeChartString(charterInput?.value || "SoraTools")}\"`,
-    `  Offset = 0`,
+    "  Offset = 0",
     `  Resolution = ${resolution}`,
-    `  Player2 = bass`,
-    `  Difficulty = 0`,
-    `  PreviewStart = 0`,
-    `  PreviewEnd = 0`,
-    `  Genre = \"rock\"`,
-    `  MediaType = \"cd\"`,
+    "  Player2 = bass",
+    "  Difficulty = 0",
+    "  PreviewStart = 0",
+    "  PreviewEnd = 0",
+    "  Genre = \"rock\"",
+    "  MediaType = \"cd\"",
     `  MusicStream = \"${escapeChartString(getAudioStreamName())}\"`,
     "}",
     "[SyncTrack]",
     "{",
-    `  0 = TS 4`,
+    "  0 = TS 4",
     `  0 = B ${bpmValue}`,
     "}",
     "[Events]",
     "{",
-    `  0 = E \"section Intro\"`,
+    "  0 = E \"section Intro\"",
     `  ${endTick} = E \"end\"`,
     "}",
     `[${difficulty}]`,
@@ -383,7 +469,14 @@ function setupCanvasClick(event) {
     return;
   }
 
-  addNoteAt(x / state.pixelsPerSecond);
+  const isInsideLane = x >= HIGHWAY.laneStart && x <= HIGHWAY.laneStart + HIGHWAY.laneWidth * 5;
+  const isStarPowerColumn = x > HIGHWAY.laneStart + HIGHWAY.laneWidth * 5;
+
+  if (!isInsideLane && !isStarPowerColumn) return;
+
+  const lane = isStarPowerColumn ? 5 : getLaneFromX(x);
+  if (lane === 5) setSelectedNote(5);
+  addNoteAt(yToSeconds(y), lane);
 }
 
 function setupKeyboard(event) {
@@ -424,6 +517,7 @@ if (canvas && ctx) {
     if (!player) return;
     player.pause();
     player.currentTime = 0;
+    timelineWrap.scrollTop = 0;
     render();
   });
   undoButton?.addEventListener("click", undo);
