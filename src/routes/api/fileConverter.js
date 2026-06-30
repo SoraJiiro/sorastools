@@ -1,11 +1,11 @@
 const crypto = require("crypto");
+const { spawn } = require("child_process");
 const fs = require("fs").promises;
 const os = require("os");
 const path = require("path");
 const util = require("util");
 
 const express = require("express");
-const ffmpeg = require("fluent-ffmpeg");
 const ffmpegStatic = require("ffmpeg-static");
 const libre = require("libreoffice-convert");
 const multer = require("multer");
@@ -15,10 +15,7 @@ const { Document, Packer, Paragraph, TextRun } = require("docx");
 
 const convertOffice = util.promisify(libre.convert);
 const router = express.Router();
-
-if (ffmpegStatic) {
-  ffmpeg.setFfmpegPath(ffmpegStatic);
-}
+const ffmpegPath = ffmpegStatic || "ffmpeg";
 
 const upload = multer({
   storage: multer.memoryStorage(),
@@ -145,22 +142,44 @@ async function convertImage(inputBuffer, outputExtension) {
   return pipeline.toFormat(sharpFormat, { quality: 90 }).toBuffer();
 }
 
+function buildFfmpegArgs(inputPath, outputPath, outputExtension, category) {
+  const args = ["-y", "-i", inputPath];
+
+  if (category === "audio") {
+    args.push("-vn");
+  }
+
+  if (category === "video" && ["mp4", "m4v", "mov"].includes(outputExtension)) {
+    args.push("-movflags", "+faststart");
+  }
+
+  args.push(outputPath);
+  return args;
+}
+
 function convertWithFfmpeg(inputPath, outputPath, outputExtension, category) {
   return new Promise((resolve, reject) => {
-    const command = ffmpeg(inputPath).output(outputPath).format(outputExtension);
+    const args = buildFfmpegArgs(inputPath, outputPath, outputExtension, category);
+    const ffmpegProcess = spawn(ffmpegPath, args, {
+      windowsHide: true,
+      stdio: ["ignore", "ignore", "pipe"],
+    });
 
-    if (category === "video" && ["mp4", "m4v", "mov"].includes(outputExtension)) {
-      command.outputOptions(["-movflags", "+faststart"]);
-    }
+    let stderr = "";
 
-    if (category === "audio") {
-      command.noVideo();
-    }
+    ffmpegProcess.stderr.on("data", (chunk) => {
+      stderr += chunk.toString();
+    });
 
-    command
-      .on("end", resolve)
-      .on("error", reject)
-      .run();
+    ffmpegProcess.on("error", reject);
+    ffmpegProcess.on("close", (code) => {
+      if (code === 0) {
+        resolve();
+        return;
+      }
+
+      reject(new Error(stderr.trim() || `FFmpeg a quitté avec le code ${code}.`));
+    });
   });
 }
 
