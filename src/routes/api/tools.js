@@ -83,6 +83,17 @@ function getSupabaseHeaders() {
   };
 }
 
+function getSupabaseEnvStatus() {
+  return {
+    preventSubmitCount: shouldPreventSubmitCount(),
+    hasUrl: Boolean(process.env.SUPABASE_URL),
+    hasServiceRoleKey: Boolean(process.env.SUPABASE_SERVICE_ROLE_KEY),
+    hasSecretKey: Boolean(process.env.SUPABASE_SECRET_KEY),
+    hasAnonKey: Boolean(process.env.SUPABASE_ANON_KEY),
+    hasPublishableKey: Boolean(process.env.SUPABASE_PUBLISHABLE_KEY),
+  };
+}
+
 async function readSupabaseJson(response) {
   const text = await response.text();
 
@@ -161,6 +172,33 @@ router.get("/api/tools/most-used", async (req, res) => {
       message:
         error.message || "Supabase n'est pas encore configuré pour les stats.",
       tools: mapMostUsedTools(tools),
+    });
+  }
+});
+
+router.get("/api/tools/debug/supabase", async (req, res) => {
+  const env = getSupabaseEnvStatus();
+
+  try {
+    const { url } = getSupabaseConfig();
+    const query = new URLSearchParams({ select: "tool_id,submit_count", limit: "1" });
+    const response = await fetch(`${url}/rest/v1/${TOOL_USAGE_TABLE}?${query}`, {
+      headers: getSupabaseHeaders(),
+    });
+    const data = await readSupabaseJson(response);
+
+    return res.json({
+      success: response.ok,
+      env,
+      supabaseStatus: response.status,
+      supabaseOk: response.ok,
+      data,
+    });
+  } catch (error) {
+    return res.json({
+      success: false,
+      env,
+      message: error.message,
     });
   }
 });
