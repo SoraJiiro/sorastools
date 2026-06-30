@@ -4,3 +4,4 @@ logs/
 src/.env
 .env.local
 .env
+OBF_SPECS.txt
