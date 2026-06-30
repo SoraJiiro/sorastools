@@ -1,25 +1,74 @@
 import { applyActionsLabels } from "./utils.js";
 
 const MOST_USED_SELECTOR = "[data-tools-most-used]";
-const SUBMIT_TRACKING_SELECTOR = [
-  "button",
-  "input[type='submit']",
-  "input[type='button']",
-  ".btn",
-].join(", ");
-const SUBMIT_ACTION_REGEX =
-  /\b(formatter|format|formater|minifier|minify|valider|validate|convertir|convert|encoder|decoder|décoder|traduire|translate|tester|test|generer|générer|calculer|calculate|picker|choisir|preview|previsualiser|prévisualiser)\b/i;
-const IGNORED_ACTION_REGEX =
-  /\b(copier|copy|telecharger|télécharger|download|vider|clear|reset|reinitialiser|réinitialiser|supprimer|delete|retour|back|ouvrir|open|contact|suggest)\b/i;
+const TOOL_ACTION_SELECTORS = {
+  "base64": [
+    "[data-b64-encode]",
+    "[data-b64-decode]",
+    "[data-b64-swap]",
+    "[data-b64-copy]",
+    "[data-b64-clear]",
+  ],
+  binary: [
+    "[data-binary-encode]",
+    "[data-binary-decode]",
+    "[data-binary-swap]",
+    "[data-binary-copy]",
+    "[data-binary-clear]",
+  ],
+  hexadecimal: [
+    "[data-hex-encode]",
+    "[data-hex-decode]",
+    "[data-hex-swap]",
+    "[data-hex-copy]",
+    "[data-hex-clear]",
+  ],
+  "json-formatter": [
+    "[data-json-format]",
+    "[data-json-minify]",
+    "[data-json-validate]",
+    "[data-json-copy]",
+    "[data-json-clear]",
+  ],
+  "js-minifier": [
+    "[data-jm-minify]",
+    "[data-jm-copy]",
+    "[data-jm-download]",
+    "[data-jm-swap]",
+    "[data-jm-clear]",
+  ],
+  "md-previewer": [
+    "[data-md-copy-markdown]",
+    "[data-md-copy-html]",
+    "[data-md-export-markdown]",
+    "[data-md-export-html]",
+    "[data-md-clear]",
+  ],
+  "regex-tester": ["[data-regex-copy]"],
+  "color-picker": [
+    "[data-copy='hex']",
+    "[data-copy='rgb']",
+    "[data-copy='hsl']",
+  ],
+  "time-calculator": [
+    "[data-time-duration-convert]",
+    "[data-time-duration-swap]",
+    "[data-time-duration-copy]",
+    "[data-time-duration-clear]",
+    "[data-time-timestamp-run]",
+    "[data-time-timestamp-now]",
+    "[data-time-timestamp-copy]",
+    "[data-time-timestamp-clear]",
+  ],
+  "clip-path-generator": [
+    "[data-clip-add-point]",
+    "[data-clip-remove-point]",
+    "[data-clip-copy]",
+    "[data-clip-reset]",
+  ],
+  "file-converter": ["[data-fc-convert]", "[data-fc-reset]"],
+};
 let mostUsedRefreshTimer = null;
-
-function normalizeText(value = "") {
-  return value
-    .toLowerCase()
-    .normalize("NFD")
-    .replace(/[\u0300-\u036f]/g, "")
-    .trim();
-}
 
 function escapeHtml(value = "") {
   return value
@@ -35,14 +84,18 @@ function getCurrentToolId() {
   return match ? decodeURIComponent(match[1]) : "";
 }
 
-function shouldTrackAction(element) {
-  const actionText = normalizeText(
-    `${element.textContent || ""} ${element.value || ""} ${element.dataset.label || ""}`,
-  );
+function getActionSelector(toolId) {
+  return TOOL_ACTION_SELECTORS[toolId]?.join(", ") || "";
+}
 
-  if (!actionText || IGNORED_ACTION_REGEX.test(actionText)) return false;
+function isTrackedActionClick(event, toolId) {
+  const selector = getActionSelector(toolId);
 
-  return SUBMIT_ACTION_REGEX.test(actionText);
+  if (!selector) return false;
+
+  const actionElement = event.target.closest(selector);
+
+  return Boolean(actionElement);
 }
 
 function renderMostUsedTools(containers, tools = []) {
@@ -115,13 +168,8 @@ export function setupToolSubmitTracking() {
   if (!toolId) return;
 
   document.addEventListener("click", (event) => {
-    const actionElement = event.target.closest(SUBMIT_TRACKING_SELECTOR);
-    if (!actionElement || !shouldTrackAction(actionElement)) return;
+    if (!isTrackedActionClick(event, toolId)) return;
 
-    recordToolSubmit(toolId);
-  });
-
-  document.addEventListener("submit", () => {
     recordToolSubmit(toolId);
   });
 }
