@@ -1,0 +1,141 @@
+<!DOCTYPE html>
+<html lang="fr">
+  <head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Chart Editor - SoraTools</title>
+    <meta name="description"
+      content="Crée et exporte des charts Clone Hero au format .chart directement dans le navigateur.">
+    <link rel="icon" type="image/png" href="/assets/logo.png">
+    <link rel="shortcut icon" type="image/png" href="/assets/logo.png">
+    <link rel="stylesheet" href="/css/global.css">
+    <link rel="stylesheet" href="/css/chart-editor.css">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link
+      href="https://fonts.googleapis.com/css2?family=Intel+One+Mono:ital,wght@0,300..700;1,300..700&family=Roboto+Condensed:ital,wght@0,100..900;1,100..900&family=Science+Gothic:wght@100..900&display=swap"
+      rel="stylesheet">
+    <script type="module" src="/js/tools/chart-editor.js"></script>
+    <script type="module" src="/js/global.js"></script>
+  </head>
+  <body>
+    <header class="site-header">
+      <nav class="navbar">
+        <a class="logo" href="/" data-label="Retourner à l'accueil SoraTools">
+          <img class="logo-img" src="/assets/logo.png" alt aria-hidden="true">SoraTools
+        </a>
+        <div class="nav-links">
+          <a href="/#tools" data-label="Aller au catalogue des tools">Tools</a>
+          <a href="/suggest" data-label="Aller aux suggestions de tools">Suggest</a>
+          <a href="/contact" data-label="Aller à la page contact">Contact</a>
+        </div>
+      </nav>
+    </header>
+
+    <main>
+      <section class="section tool-section" id="chart-editor">
+        <div class="section-heading">
+          <p class="eyebrow">Musique</p>
+          <h1>Chart Editor</h1>
+          <p>Crée une chart Clone Hero simple, place les notes sur une timeline synchronisée avec l'audio, puis exporte le fichier <code>.chart</code>.</p>
+        </div>
+
+        <div class="ce-tool">
+          <div class="ce-panel ce-meta-panel">
+            <label class="field"><span>Titre</span><input type="text" data-ce-title value="SoraTools Chart"></label>
+            <label class="field"><span>Artiste</span><input type="text" data-ce-artist value="Unknown Artist"></label>
+            <label class="field"><span>Charter</span><input type="text" data-ce-charter value="SoraTools"></label>
+            <label class="field"><span>BPM</span><input type="number" data-ce-bpm value="120" min="30" max="300" step="1"></label>
+            <label class="field"><span>Résolution</span><input type="number" data-ce-resolution value="192" min="96" max="960" step="24"></label>
+            <label class="field">
+              <span>Difficulté</span>
+              <select data-ce-difficulty>
+                <option value="EasySingle">Easy Guitar</option>
+                <option value="MediumSingle">Medium Guitar</option>
+                <option value="HardSingle">Hard Guitar</option>
+                <option value="ExpertSingle" selected>Expert Guitar</option>
+                <option value="EasyDoubleBass">Easy Bass</option>
+                <option value="MediumDoubleBass">Medium Bass</option>
+                <option value="HardDoubleBass">Hard Bass</option>
+                <option value="ExpertDoubleBass">Expert Bass</option>
+              </select>
+            </label>
+          </div>
+
+          <div class="ce-panel ce-audio-panel">
+            <label class="ce-audio-picker" data-label="Importer un fichier audio">
+              <input type="file" data-ce-audio accept="audio/*">
+              <span><i class="fa-solid fa-music"></i></span>
+              <strong data-ce-audio-name>Importer un audio</strong>
+              <small>MP3, OGG, WAV... Le fichier audio n'est pas inclus dans le .chart exporté.</small>
+            </label>
+            <audio controls data-ce-player></audio>
+          </div>
+
+          <div class="ce-panel ce-controls">
+            <button type="button" data-ce-play>Lecture / Pause</button>
+            <button type="button" data-ce-stop>Stop</button>
+            <button type="button" data-ce-undo>Undo</button>
+            <button type="button" data-ce-clear>Vider les notes</button>
+            <button type="button" data-ce-export>Exporter .chart</button>
+            <label class="field ce-small-field">
+              <span>Snap</span>
+              <select data-ce-snap>
+                <option value="4">1/4</option>
+                <option value="8">1/8</option>
+                <option value="12">1/12</option>
+                <option value="16" selected>1/16</option>
+                <option value="24">1/24</option>
+                <option value="32">1/32</option>
+              </select>
+            </label>
+            <label class="field ce-small-field">
+              <span>Zoom</span>
+              <input type="range" data-ce-zoom min="70" max="260" value="130">
+            </label>
+          </div>
+
+          <div class="ce-help">
+            <span><kbd>1</kbd>-<kbd>5</kbd> choisit la couleur</span>
+            <span><kbd>S</kbd> Star Power</span>
+            <span><kbd>Suppr</kbd> supprime la note sélectionnée</span>
+            <span>Clic sur la timeline pour placer une note</span>
+          </div>
+
+          <div class="ce-editor-shell">
+            <div class="ce-sidebar">
+              <button type="button" class="ce-note-btn is-active" data-ce-note="0">Vert</button>
+              <button type="button" class="ce-note-btn" data-ce-note="1">Rouge</button>
+              <button type="button" class="ce-note-btn" data-ce-note="2">Jaune</button>
+              <button type="button" class="ce-note-btn" data-ce-note="3">Bleu</button>
+              <button type="button" class="ce-note-btn" data-ce-note="4">Orange</button>
+              <button type="button" class="ce-note-btn" data-ce-note="5">Star Power</button>
+            </div>
+            <div class="ce-timeline-wrap" data-ce-timeline-wrap>
+              <canvas data-ce-canvas width="1800" height="420"></canvas>
+            </div>
+          </div>
+
+          <div class="ce-status-grid">
+            <p data-ce-status>Prêt.</p>
+            <p><strong data-ce-note-count>0</strong> notes · <strong data-ce-time>0:00.000</strong></p>
+          </div>
+        </div>
+      </section>
+    </main>
+
+    <section class="tech-explanation">
+      <div class="tech-explanation-heading">
+        <p class="tech-name">.chart</p>
+        <h2 class="subtitle">Comment ça marche ?</h2>
+      </div>
+      <p>Un fichier <code>.chart</code> décrit les notes, le tempo, les sections et les événements d'une musique pour des jeux comme Clone Hero. L'audio reste séparé : le fichier exporté contient la structure de la chart, pas le morceau lui-même.</p>
+      <p>Cette première version vise l'édition rapide : notes guitare/basse, BPM constant, Star Power, lecture synchronisée et export propre. Des options plus avancées peuvent être ajoutées progressivement.</p>
+    </section>
+
+    <footer class="site-footer">
+      <p>&copy; 2026 SoraTools - Tous droits réservés.</p>
+      <p class="location">Chart Editor</p>
+    </footer>
+  </body>
+</html>
