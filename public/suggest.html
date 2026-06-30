@@ -27,81 +27,81 @@
           data-label="Retourner à l'accueil SoraTools"><img class="logo-img"
             src="/assets/logo.png" alt aria-hidden="true">SoraTools</a>
         <div class="nav-links">
-          <a href="/#tools" data-label="Aller au catalogue des Tools">Accueil
-            <a href="/suggest"
-              data-label="Aller aux suggestions de Tools">Suggest</a>
-            <a href="/contact" data-label="Aller à la page contact">Contact</a>
-          </div>
-        </nav>
-      </header>
-
-      <main>
-        <div class="section-heading">
-          <p class="eyebrow">Suggestion</p>
-          <h1>Proposer un tool</h1>
-          <p>Une idée utile pour SoraTools ? Envoie-la ici ! Je regarde vos
-            retours régulièrement.</p>
+          <a href="/#tools" data-label="Aller au catalogue des Tools">Accueil</a>
+          <a href="/suggest"
+            data-label="Aller aux suggestions de Tools">Suggest</a>
+          <a href="/contact" data-label="Aller à la page contact">Contact</a>
         </div>
-        <section class="section form-section" id="suggest">
-          <div class="form-card">
-            <form class="form" data-suggest-form>
-              <div class="form-grid">
-                <label class="form-field">
-                  <span>Pseudo</span>
-                  <input type="text" data-suggest-pseudo name="pseudo"
-                    maxlength="40" autocomplete="nickname"
-                    placeholder="Ex : Sora" required>
-                  <p class="pseudo-notice">Votre pseudo sera crédité si le tool
-                    est ajouté au site.</p>
-                </label>
+      </nav>
+    </header>
 
-                <label class="form-field">
-                  <span>Nom du tool</span>
-                  <input type="text" data-suggest-tool name="tool_name"
-                    maxlength="80" placeholder="Ex : CSS Gradient Generator"
-                    required>
-                  <p class="tool-name-notice">Le nom du tool doit être unique et
-                    ne pas déjà exister sur le site.</p>
-                </label>
+    <main>
+      <div class="section-heading">
+        <p class="eyebrow">Suggestion</p>
+        <h1>Proposer un tool</h1>
+        <p>Une idée utile pour SoraTools ? Envoie-la ici ! Je regarde vos
+          retours régulièrement.</p>
+      </div>
+      <section class="section form-section" id="suggest">
+        <div class="form-card">
+          <form class="form" data-suggest-form>
+            <div class="form-grid">
+              <label class="form-field">
+                <span>Pseudo</span>
+                <input type="text" data-suggest-pseudo name="pseudo"
+                  maxlength="40" autocomplete="nickname"
+                  placeholder="Ex : Sora" required>
+                <p class="pseudo-notice">Votre pseudo sera crédité si le tool
+                  est ajouté au site.</p>
+              </label>
+
+              <label class="form-field">
+                <span>Nom du tool</span>
+                <input type="text" data-suggest-tool name="tool_name"
+                  maxlength="80" placeholder="Ex : CSS Gradient Generator"
+                  required>
+                <p class="tool-name-notice">Le nom du tool doit être unique et
+                  ne pas déjà exister sur le site.</p>
+              </label>
+            </div>
+
+            <label class="form-field">
+              <span>Description</span>
+              <textarea data-suggest-description name="description"
+                maxlength="1500"
+                placeholder="Décris le tool, les options voulues, le rendu attendu..."
+                required></textarea>
+            </label>
+
+            <div class="form-captcha">
+              <div class="form-field">
+                <span class="form-captcha-label">Captcha</span>
+                <div class="form-captcha-question"
+                  data-suggest-captcha-question>...</div>
               </div>
 
               <label class="form-field">
-                <span>Description</span>
-                <textarea data-suggest-description name="description"
-                  maxlength="1500"
-                  placeholder="Décris le tool, les options voulues, le rendu attendu..."
-                  required></textarea>
+                <span>Réponse</span>
+                <input type="number" data-suggest-captcha
+                  placeholder="Résultat" required>
               </label>
+            </div>
 
-              <div class="form-captcha">
-                <div class="form-field">
-                  <span class="form-captcha-label">Captcha</span>
-                  <div class="form-captcha-question"
-                    data-suggest-captcha-question>...</div>
-                </div>
+            <div class="form-actions">
+              <button type="submit" data-suggest-submit
+                data-label="Envoyer la suggestion">Envoyer</button>
+              <p class="suggest-cooldown" data-suggest-cooldown></p>
+            </div>
 
-                <label class="form-field">
-                  <span>Réponse</span>
-                  <input type="number" data-suggest-captcha
-                    placeholder="Résultat" required>
-                </label>
-              </div>
+            <p class="form-status" data-suggest-status>En attente.</p>
+          </form>
+        </div>
+      </section>
+    </main>
 
-              <div class="form-actions">
-                <button type="submit" data-suggest-submit
-                  data-label="Envoyer la suggestion">Envoyer</button>
-                <p class="suggest-cooldown" data-suggest-cooldown></p>
-              </div>
-
-              <p class="form-status" data-suggest-status>En attente.</p>
-            </form>
-          </div>
-        </section>
-      </main>
-
-      <footer class="site-footer">
-        <p>&copy; 2026 SoraTools. Tous droits réservés.</p>
-        <p>Suggest</p>
-      </footer>
-    </body>
-  </html>
+    <footer class="site-footer">
+      <p>&copy; 2026 SoraTools. Tous droits réservés.</p>
+      <p>Suggest</p>
+    </footer>
+  </body>
+</html>
