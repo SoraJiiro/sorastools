@@ -102,9 +102,9 @@
     "id": "file-converter",
     "name": "File Converter",
     "category": "Fichiers",
-    "description": "Convertis des fichiers image, texte ou données.",
+    "description": "Convertis des images, vidéos, audios, documents Word et PDF.",
     "icon": "<i class='fa-solid fa-file-import'></i>",
-    "url": "#",
-    "status": "soon"
+    "url": "/tools/file-converter",
+    "status": "ready"
   }
 ]
