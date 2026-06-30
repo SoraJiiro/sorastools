@@ -187,9 +187,10 @@ router.post("/api/tools/:toolId/submit", async (req, res) => {
     const submitCount = await incrementSupabaseToolUsage(toolId);
     return res.json({ success: true, toolId, submitCount });
   } catch (error) {
-    return res.status(503).json({
-      success: false,
+    return res.json({
+      success: true,
       fallback: true,
+      toolId,
       message:
         error.message || "Supabase n'est pas encore configuré pour les stats.",
     });
