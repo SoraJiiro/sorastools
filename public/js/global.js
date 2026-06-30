@@ -327,7 +327,6 @@ function setupResponsiveNavbar() {
   if (!navbar || !navLinks) return;
 
   injectResponsiveNavbarStyles();
-  ensureContactLink(navLinks);
 
   if (navbar.querySelector("[data-nav-toggle]")) return;
 
