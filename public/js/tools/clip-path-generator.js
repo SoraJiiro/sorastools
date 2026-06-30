@@ -16,7 +16,7 @@ const removeButton = document.querySelector("[data-clip-remove-point]");
 
 const MIN_POINTS = 3;
 let points = [];
-let activeIndex = null;
+let activeDrag = null;
 
 const presets = {
   triangle: [[50, 0], [100, 100], [0, 100]],
@@ -39,8 +39,28 @@ function clonePreset(name) {
   return presets[name].map(([x, y]) => ({ x, y }));
 }
 
+function clonePoints(sourcePoints = points) {
+  return sourcePoints.map((point) => ({ ...point }));
+}
+
 function clamp(value) {
   return Math.min(Math.max(value, 0), 100);
+}
+
+function clampMove(delta, min, max) {
+  return Math.min(Math.max(delta, -min), 100 - max);
+}
+
+function getPointsBounds(sourcePoints = points) {
+  const xValues = sourcePoints.map((point) => point.x);
+  const yValues = sourcePoints.map((point) => point.y);
+
+  return {
+    minX: Math.min(...xValues),
+    maxX: Math.max(...xValues),
+    minY: Math.min(...yValues),
+    maxY: Math.max(...yValues),
+  };
 }
 
 function formatCoord(value) {
@@ -56,6 +76,28 @@ function getCss() {
   return `.element {\n  clip-path: ${getClipPath()};\n}`;
 }
 
+function startDrag(event, dragData) {
+  event.preventDefault();
+  event.stopPropagation();
+
+  activeDrag = {
+    pointerId: event.pointerId,
+    ...dragData,
+  };
+
+  svg.setPointerCapture?.(event.pointerId);
+}
+
+function stopDrag() {
+  if (!activeDrag) return;
+
+  if (svg.hasPointerCapture?.(activeDrag.pointerId)) {
+    svg.releasePointerCapture(activeDrag.pointerId);
+  }
+
+  activeDrag = null;
+}
+
 function drawHandles() {
   handles.innerHTML = "";
 
@@ -69,9 +111,10 @@ function drawHandles() {
     circle.dataset.index = index;
 
     circle.addEventListener("pointerdown", (event) => {
-      event.preventDefault();
-      event.stopPropagation();
-      activeIndex = index;
+      startDrag(event, {
+        type: "point",
+        index,
+      });
     });
 
     circle.addEventListener("contextmenu", (event) => {
@@ -138,6 +181,36 @@ function resetTool() {
   setClipStatus("Générateur réinitialisé.", "success");
 }
 
+function movePointDrag(event) {
+  points[activeDrag.index] = eventToPoint(event);
+}
+
+function movePolygonDrag(event) {
+  const currentPoint = eventToPoint(event);
+  const rawDx = currentPoint.x - activeDrag.startPoint.x;
+  const rawDy = currentPoint.y - activeDrag.startPoint.y;
+  const dx = clampMove(rawDx, activeDrag.bounds.minX, activeDrag.bounds.maxX);
+  const dy = clampMove(rawDy, activeDrag.bounds.minY, activeDrag.bounds.maxY);
+
+  points = activeDrag.startPoints.map((point) => ({
+    x: point.x + dx,
+    y: point.y + dy,
+  }));
+}
+
+function handlePointerMove(event) {
+  if (!activeDrag || event.pointerId !== activeDrag.pointerId) return;
+
+  if (activeDrag.type === "point") {
+    movePointDrag(event);
+  } else if (activeDrag.type === "polygon") {
+    movePolygonDrag(event);
+  }
+
+  presetSelect.value = "custom";
+  updateTool();
+}
+
 function setupClipPathGenerator() {
   if (!svg || !polygon || !handles || !preview || !output) return;
 
@@ -165,22 +238,24 @@ function setupClipPathGenerator() {
     setClipStatus("CSS copié dans le presse-papiers.", "success");
   });
 
+  polygon.addEventListener("pointerdown", (event) => {
+    startDrag(event, {
+      type: "polygon",
+      startPoint: eventToPoint(event),
+      startPoints: clonePoints(),
+      bounds: getPointsBounds(),
+    });
+  });
+
   svg.addEventListener("pointerdown", (event) => {
-    if (event.target.classList.contains("clip-point")) return;
+    if (event.target.closest(".clip-point") || event.target === polygon) return;
     addPoint(eventToPoint(event));
   });
 
-  svg.addEventListener("pointermove", (event) => {
-    if (activeIndex === null) return;
-
-    points[activeIndex] = eventToPoint(event);
-    presetSelect.value = "custom";
-    updateTool();
-  });
-
-  window.addEventListener("pointerup", () => {
-    activeIndex = null;
-  });
+  svg.addEventListener("pointermove", handlePointerMove);
+  svg.addEventListener("pointerup", stopDrag);
+  svg.addEventListener("pointercancel", stopDrag);
+  window.addEventListener("pointerup", stopDrag);
 }
 
 setupClipPathGenerator();
