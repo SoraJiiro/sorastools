@@ -174,12 +174,16 @@ function getSelectedTextRange(textarea) {
 }
 
 export function textAreaTabHandler(event, textarea = event.currentTarget) {
-  if (
-    event.key !== "Tab" ||
-    !textarea ||
-    textarea.readOnly ||
-    textarea.disabled
-  ) {
+  if (!textarea || textarea.disabled) return;
+
+  if (event.key === "Escape") {
+    textarea.blur();
+    event.preventDefault();
+    event.stopPropagation();
+    return;
+  }
+
+  if (event.key !== "Tab" || textarea.readOnly) {
     return;
   }
 
