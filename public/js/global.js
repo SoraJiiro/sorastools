@@ -306,31 +306,17 @@ function injectActionIconStyles() {
       gap: 0.5em;
     }
 
-    [data-action-icon]::before,
-    .nav-links a[data-action-icon]::before {
-      content: attr(data-action-icon);
-      position: static;
-      display: inline-block;
+    [data-action-icon] [data-action-icon-el] {
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
       flex: 0 0 auto;
-      width: auto;
-      height: auto;
-      margin: 0;
-      opacity: 1;
-      transform: none;
-      color: currentColor;
-      background: transparent;
-      font-family: "Font Awesome 6 Free";
       font-size: 0.95em;
-      font-style: normal;
-      font-variant: normal;
-      font-weight: 900;
       line-height: 1;
-      text-rendering: auto;
-      -webkit-font-smoothing: antialiased;
     }
 
-    .nav-links a[data-action-icon]::after {
-      display: none;
+    .nav-links a[data-action-icon] {
+      justify-content: flex-start;
     }
   `;
 
@@ -351,19 +337,40 @@ function getActionIcon(element) {
   );
   const href = element.getAttribute("href") || "";
 
-  if (/envoyer|submit/.test(text)) return "\uf1d8";
-  if (/copier|copy/.test(text)) return "\uf0c5";
-  if (/telecharger|download|exporter|export/.test(text)) return "\uf019";
-  if (/generer|generate/.test(text)) return "\ue2ca";
+  if (/envoyer|submit/.test(text)) return "fa-paper-plane";
+  if (/copier|copy/.test(text)) return "fa-copy";
+  if (/telecharger|download|exporter|export/.test(text)) return "fa-download";
+  if (/generer|generate/.test(text)) return "fa-gears";
   if (/convertir|convert|encoder|decoder|inverser|traduire/.test(text))
-    return "\uf362";
-  if (/reinitialiser|reset/.test(text)) return "\uf2ea";
-  if (/effacer|vider|clear|supprimer|delete/.test(text)) return "\uf1f8";
-  if (/ajouter|add/.test(text)) return "\u002b";
-  if (/rechercher|search/.test(text)) return "\uf002";
-  if (/retour|back/.test(text) || href === "/") return "\uf060";
-  if (/contact/.test(text) || href === "/contact") return "\uf0e0";
-  if (/suggest|suggestion/.test(text) || href === "/suggest") return "\uf0eb";
+    return "fa-right-left";
+  if (/reinitialiser|reset/.test(text)) return "fa-rotate-left";
+  if (/effacer|vider|clear|supprimer|delete/.test(text)) return "fa-trash";
+  if (/ajouter|add/.test(text)) return "fa-plus";
+  if (/rechercher|search/.test(text)) return "fa-magnifying-glass";
+  if (/retour|back/.test(text)) return "fa-arrow-left";
+  if (href === "/") return "fa-house";
+  if (/contact/.test(text) || href === "/contact") return "fa-envelope";
+  if (/suggest|suggestion/.test(text) || href === "/suggest")
+    return "fa-lightbulb";
+  if (/valider|confirm|ok/.test(text)) return "fa-check";
+  if (/annuler|cancel/.test(text)) return "fa-xmark";
+  if (/precedent|previous/.test(text)) return "fa-chevron-left";
+  if (/suivant|next/.test(text)) return "fa-chevron-right";
+  if (/haut|top/.test(text)) return "fa-angles-up";
+  if (/bas|bottom/.test(text)) return "fa-angles-down";
+  if (/remplacer|replace/.test(text)) return "fa-right-left";
+  if (/ouvrir|open/.test(text)) return "fa-folder-open";
+  if (/fermer|close/.test(text)) return "fa-xmark";
+  if (/imprimer|print/.test(text)) return "fa-print";
+  if (/favoris|favori|bookmark/.test(text)) return "fa-bookmark";
+  if (/partager|share/.test(text)) return "fa-share-nodes";
+  if (/actualiser|refresh|reload/.test(text)) return "fa-rotate";
+  if (/parametres|settings/.test(text)) return "fa-gear";
+  if (/aide|help/.test(text)) return "fa-circle-question";
+  if (/quitter|exit/.test(text)) return "fa-right-from-bracket";
+  if (/formatter|format/.test(text)) return "fa-align-left";
+  if (/minifier/.test(text)) return "fa-compress";
+  if (/lancer|run/.test(text)) return "fa-play";
 
   return "";
 }
@@ -379,6 +386,19 @@ function applyActionIcons(selector = "button, .btn, .nav-links a") {
     if (!icon) return;
 
     element.dataset.actionIcon = icon;
+
+    const existingActionIcon = element.querySelector(
+      ":scope > [data-action-icon-el]",
+    );
+    const iconElement = existingActionIcon || document.createElement("i");
+
+    iconElement.dataset.actionIconEl = "";
+    iconElement.setAttribute("aria-hidden", "true");
+    iconElement.className = `fa-solid ${icon}`;
+
+    if (!existingActionIcon) {
+      element.prepend(iconElement);
+    }
   });
 }
 
@@ -488,5 +508,5 @@ setupMostUsedTools();
 setupToolSubmitTracking();
 setupTextareaTabHandlers("textarea:not([readonly])");
 applyActionsLabels();
-applyActionIcons("button, .btn:not(.nav-links a)");
+applyActionIcons("button:not([data-nav-toggle]), .btn:not(.nav-links a)");
 setupHighlightJs();
