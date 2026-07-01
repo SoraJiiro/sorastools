@@ -15,6 +15,10 @@
     <link
       href="https://fonts.googleapis.com/css2?family=Intel+One+Mono:ital,wght@0,300..700;1,300..700&family=Roboto+Condensed:ital,wght@0,100..900;1,100..900&family=Science+Gothic:wght@100..900&display=swap"
       rel="stylesheet">
+    <script
+      src="https://cdn.jsdelivr.net/npm/terser@5.39.0/dist/bundle.min.js"></script>
+    <script
+      src="https://cdn.jsdelivr.net/npm/javascript-obfuscator@4.1.1/dist/index.browser.js"></script>
     <script type="module" src="/js/tools/js-minifier.js"></script>
     <script type="module" src="/js/global.js"></script>
   </head>
@@ -62,6 +66,15 @@
             data-label="Activer l'obfuscation JavaScript">
             <input type="checkbox" data-jm-obfuscate>
             <span>Obfusquer ?</span>
+          </label>
+
+          <label class="jm-option jm-option-select"
+            data-label="Choisir le niveau d'obfuscation JavaScript">
+            <span>Niveau</span>
+            <select data-jm-obf-level>
+              <option value="balanced" selected>Équilibré</option>
+              <option value="strong">Fort</option>
+            </select>
           </label>
 
           <label class="jm-option"
@@ -119,6 +132,12 @@ hello(name);</textarea>
         L'option d'obfuscation encode le code minifié dans un petit wrapper
         d'exécution. Elle rend le code moins lisible, mais ce n'est pas une
         protection forte : un code côté client peut toujours être inspecté.
+      </p>
+
+      <p>
+        Le niveau « Équilibré » garde un bon compromis entre lisibilité,
+        performance et taille de sortie. Le niveau « Fort » pousse
+        l'obfuscation davantage et peut produire un fichier plus volumineux.
       </p>
 
       <p>

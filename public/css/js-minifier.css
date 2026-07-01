@@ -60,6 +60,24 @@
   cursor: pointer;
 }
 
+.jm-option-select {
+  gap: 8px;
+}
+
+.jm-option select {
+  border: 1px solid var(--border);
+  background: rgba(255, 255, 255, 0.06);
+  color: var(--text);
+  border-radius: 10px;
+  font-weight: 700;
+  padding: 8px 10px;
+}
+
+.jm-option select:disabled {
+  opacity: 0.55;
+  cursor: not-allowed;
+}
+
 .jm-editor-grid {
   display: grid;
   grid-template-columns: repeat(2, minmax(0, 1fr));
@@ -76,7 +94,7 @@
   padding: 18px;
   font-size: 1rem;
   outline: none;
-  font-family: Consolas, Monaco, "Courier New", monospace;
+  font-family: "Intel One Mono", monospace;
   line-height: 1.55;
   tab-size: 2;
   cursor: text;
@@ -87,7 +105,7 @@
 }
 
 .jm-field textarea[readonly] {
-  cursor: default;
+  cursor: text;
 }
 
 .jm-stats {

@@ -20,269 +20,12 @@ const swapButton = document.querySelector("[data-jm-swap]");
 const clearButton = document.querySelector("[data-jm-clear]");
 const obfuscateCheckbox = document.querySelector("[data-jm-obfuscate]");
 const moduleCheckbox = document.querySelector("[data-jm-module]");
+const obfuscationLevelSelect = document.querySelector("[data-jm-obf-level]");
 
-const BEFORE_REGEX_TOKENS = new Set([
-  "(",
-  "{",
-  "[",
-  "=",
-  ":",
-  ",",
-  ";",
-  "!",
-  "?",
-  "&",
-  "|",
-  "+",
-  "-",
-  "*",
-  "%",
-  "^",
-  "~",
-  "return",
-  "throw",
-  "case",
-  "delete",
-  "typeof",
-  "void",
-  "new",
-  "in",
-  "of",
-  "yield",
-  "await",
-]);
-
-const RESERVED_WORDS = new Set([
-  "break",
-  "case",
-  "catch",
-  "class",
-  "const",
-  "continue",
-  "debugger",
-  "default",
-  "delete",
-  "do",
-  "else",
-  "export",
-  "extends",
-  "finally",
-  "for",
-  "function",
-  "if",
-  "import",
-  "in",
-  "instanceof",
-  "let",
-  "new",
-  "return",
-  "super",
-  "switch",
-  "this",
-  "throw",
-  "try",
-  "typeof",
-  "var",
-  "void",
-  "while",
-  "with",
-  "yield",
-  "await",
-  "true",
-  "false",
-  "null",
-  "undefined",
-  "require",
-  "module",
-  "exports",
-]);
+let activeMinifyRunId = 0;
 
 function setJmStatus(message, type = "default") {
   setStatus(jmStatus, message, type);
-}
-
-function isIdentifierChar(char = "") {
-  return /[A-Za-z0-9_$]/.test(char);
-}
-
-function isWhitespace(char = "") {
-  return /\s/.test(char);
-}
-
-function getPreviousToken(output) {
-  const match = output.match(/([A-Za-z_$][\w$]*|\+\+|--|=>|\S)\s*$/);
-  return match ? match[1] : "";
-}
-
-function shouldKeepSpace(previousChar, nextChar) {
-  if (!previousChar || !nextChar) return false;
-  if (isIdentifierChar(previousChar) && isIdentifierChar(nextChar)) return true;
-  if (isIdentifierChar(previousChar) && nextChar === "/") return true;
-  if (
-    (previousChar === "+" && nextChar === "+") ||
-    (previousChar === "-" && nextChar === "-")
-  )
-    return true;
-  if (previousChar === "/" && nextChar === "/") return true;
-  return false;
-}
-
-function readString(source, startIndex, quote) {
-  let index = startIndex;
-  let result = quote;
-  index += 1;
-
-  while (index < source.length) {
-    const char = source[index];
-    result += char;
-
-    if (char === "\\") {
-      index += 1;
-      if (index < source.length) result += source[index];
-    } else if (char === quote) {
-      break;
-    }
-
-    index += 1;
-  }
-
-  return { value: result, index };
-}
-
-function readTemplate(source, startIndex) {
-  let index = startIndex;
-  let result = "`";
-  index += 1;
-
-  while (index < source.length) {
-    const char = source[index];
-    result += char;
-
-    if (char === "\\") {
-      index += 1;
-      if (index < source.length) result += source[index];
-    } else if (char === "`") {
-      break;
-    }
-
-    index += 1;
-  }
-
-  return { value: result, index };
-}
-
-function readRegex(source, startIndex) {
-  let index = startIndex;
-  let result = "/";
-  let inClass = false;
-  index += 1;
-
-  while (index < source.length) {
-    const char = source[index];
-    result += char;
-
-    if (char === "\\") {
-      index += 1;
-      if (index < source.length) result += source[index];
-    } else if (char === "[") {
-      inClass = true;
-    } else if (char === "]") {
-      inClass = false;
-    } else if (char === "/" && !inClass) {
-      index += 1;
-      while (/[a-z]/i.test(source[index] || "")) {
-        result += source[index];
-        index += 1;
-      }
-      index -= 1;
-      break;
-    }
-
-    index += 1;
-  }
-
-  return { value: result, index };
-}
-
-function canStartRegex(output) {
-  const previousToken = getPreviousToken(output);
-  return !previousToken || BEFORE_REGEX_TOKENS.has(previousToken);
-}
-
-function minifyJavaScript(source) {
-  let output = "";
-  let pendingSpace = false;
-
-  for (let index = 0; index < source.length; index += 1) {
-    const char = source[index];
-    const nextChar = source[index + 1];
-
-    if (isWhitespace(char)) {
-      pendingSpace = true;
-      continue;
-    }
-
-    if (char === "/" && nextChar === "/") {
-      index += 2;
-      while (index < source.length && source[index] !== "\n") index += 1;
-      pendingSpace = true;
-      continue;
-    }
-
-    if (char === "/" && nextChar === "*") {
-      index += 2;
-      while (
-        index < source.length &&
-        !(source[index] === "*" && source[index + 1] === "/")
-      ) {
-        index += 1;
-      }
-      index += 1;
-      pendingSpace = true;
-      continue;
-    }
-
-    const previousChar = output.at(-1) || "";
-
-    if (pendingSpace && shouldKeepSpace(previousChar, char)) {
-      output += " ";
-    }
-
-    pendingSpace = false;
-
-    if (char === '"' || char === "'") {
-      const token = readString(source, index, char);
-      output += token.value;
-      index = token.index;
-      continue;
-    }
-
-    if (char === "`") {
-      const token = readTemplate(source, index);
-      output += token.value;
-      index = token.index;
-      continue;
-    }
-
-    if (char === "/" && canStartRegex(output)) {
-      const token = readRegex(source, index);
-      output += token.value;
-      index = token.index;
-      continue;
-    }
-
-    output += char;
-  }
-
-  return output.trim();
-}
-
-function hasModuleSyntax(code) {
-  return /(^|[;\n])\s*(import|export)\s/m.test(code);
-}
-
-function shouldUseModuleMode(code) {
-  return Boolean(moduleCheckbox?.checked) || hasModuleSyntax(code);
 }
 
 function parseJavaScript(code, moduleMode = false) {
@@ -293,318 +36,126 @@ function parseJavaScript(code, moduleMode = false) {
   });
 }
 
-function toBase64Bytes(bytes) {
-  let binary = "";
-
-  bytes.forEach((byte) => {
-    binary += String.fromCharCode(byte);
-  });
-
-  return btoa(binary);
-}
-
-function encodeEncryptedString(value, key) {
-  const bytes = new TextEncoder().encode(value);
-  const encryptedBytes = bytes.map(
-    (byte, index) => byte ^ ((key + index * 17) & 255),
-  );
-
-  return toBase64Bytes(encryptedBytes);
-}
-
-function parseStringLiteral(literal) {
-  return Function(`"use strict";return(${literal});`)();
-}
-
-function getObfuscatedStringCall(index) {
-  return `_0xS(${index.toString(16)})`;
-}
-
-function replaceStringLiterals(code) {
-  const stringTable = [];
-  const stringIndexByValue = new Map();
-  let output = "";
-
-  for (let index = 0; index < code.length; index += 1) {
-    const char = code[index];
-
-    if (char === '"' || char === "'") {
-      const token = readString(code, index, char);
-
-      try {
-        const value = parseStringLiteral(token.value);
-
-        if (!stringIndexByValue.has(value)) {
-          stringIndexByValue.set(value, stringTable.length);
-          stringTable.push(value);
-        }
-
-        output += getObfuscatedStringCall(stringIndexByValue.get(value));
-      } catch (error) {
-        output += token.value;
-      }
-
-      index = token.index;
-      continue;
-    }
-
-    if (char === "`") {
-      const token = readTemplate(code, index);
-      output += token.value;
-      index = token.index;
-      continue;
-    }
-
-    if (
-      char === "/" &&
-      code[index + 1] !== "/" &&
-      code[index + 1] !== "*" &&
-      canStartRegex(output)
-    ) {
-      const token = readRegex(code, index);
-      output += token.value;
-      index = token.index;
-      continue;
-    }
-
-    output += char;
-  }
-
-  return { code: output, stringTable };
-}
-
-function obfuscateNumbers(code) {
-  let output = "";
-
-  for (let index = 0; index < code.length; index += 1) {
-    const char = code[index];
-
-    if (char === '"' || char === "'") {
-      const token = readString(code, index, char);
-      output += token.value;
-      index = token.index;
-      continue;
-    }
-
-    if (char === "`") {
-      const token = readTemplate(code, index);
-      output += token.value;
-      index = token.index;
-      continue;
-    }
-
-    if (
-      char === "/" &&
-      code[index + 1] !== "/" &&
-      code[index + 1] !== "*" &&
-      canStartRegex(output)
-    ) {
-      const token = readRegex(code, index);
-      output += token.value;
-      index = token.index;
-      continue;
-    }
-
-    if (/\d/.test(char)) {
-      const previousChar = code[index - 1] || "";
-      let rawNumber = char;
-      let nextIndex = index + 1;
-
-      while (/\d/.test(code[nextIndex] || "")) {
-        rawNumber += code[nextIndex];
-        nextIndex += 1;
-      }
-
-      const nextChar = code[nextIndex] || "";
-      const isSafeInteger =
-        !isIdentifierChar(previousChar) &&
-        previousChar !== "." &&
-        nextChar !== "." &&
-        !isIdentifierChar(nextChar);
-
-      if (isSafeInteger) {
-        output += `0x${Number(rawNumber).toString(16)}`;
-        index = nextIndex - 1;
-        continue;
-      }
-    }
-
-    output += char;
-  }
-
-  return output;
-}
-
-function collectDeclaredIdentifiers(code) {
-  const identifiers = new Set();
-  const declarationRegex = /\b(?:var|let|const|function)\s+([A-Za-z_$][\w$]*)/g;
-  let match;
-
-  while ((match = declarationRegex.exec(code))) {
-    if (!RESERVED_WORDS.has(match[1]) && !match[1].startsWith("_0x")) {
-      identifiers.add(match[1]);
-    }
-  }
-
-  return [...identifiers];
-}
-
-function renameIdentifiers(code) {
-  const identifiers = collectDeclaredIdentifiers(code);
-  let renamedCode = code;
-
-  identifiers.forEach((identifier, index) => {
-    const newName = `_0x${(index + 4919).toString(16)}`;
-    const escapedIdentifier = identifier.replace(/[.*+?^${}()|[\]\\]/g, "\\$&");
-    const regex = new RegExp(`\\b${escapedIdentifier}\\b`, "g");
-    renamedCode = renamedCode.replace(regex, newName);
-  });
-
-  return renamedCode;
-}
-
-function protectModuleDeclarations(code) {
-  const placeholders = [];
-  let protectedCode = code;
+function detectModuleMode(code) {
+  if (moduleCheckbox?.checked) return true;
 
   try {
-    const ast = parseJavaScript(code, true);
-    const nodesToProtect = ast.body
-      .filter((node) =>
-        [
-          "ImportDeclaration",
-          "ExportAllDeclaration",
-          "ExportDefaultDeclaration",
-          "ExportNamedDeclaration",
-        ].includes(node.type),
-      )
-      .sort((a, b) => b.start - a.start);
-
-    nodesToProtect.forEach((node, index) => {
-      const placeholder = `__JM_${node.type === "ImportDeclaration" ? "IMPORT" : "EXPORT"}_${index}__`;
-      const original = protectedCode.slice(node.start, node.end);
-      const replacement = `${placeholder};`;
-
-      placeholders.push({ placeholder, original });
-      protectedCode =
-        protectedCode.slice(0, node.start) +
-        replacement +
-        protectedCode.slice(node.end);
-    });
-  } catch (error) {
-    return { code, placeholders };
+    parseJavaScript(code, false);
+    return false;
+  } catch (scriptError) {
+    parseJavaScript(code, true);
+    return true;
   }
-
-  return { code: protectedCode, placeholders };
 }
 
-function restoreModuleDeclarations(code, placeholders) {
-  return placeholders.reduce(
-    (result, { placeholder, original }) =>
-      result.replaceAll(`${placeholder};`, original).replaceAll(placeholder, original),
-    code,
-  );
-}
+async function minifyJavaScript(code, moduleMode = false) {
+  const minify = globalThis.Terser?.minify;
 
-function addDeadCode(codeInNeed, moduleMode = false) {
-  const deadCodeSnippets = [
-    `if (false && 0x02 < 0x9E && typeof(i) === "number") var xc_5 = 3 + (_0xK+_0xJ*0x11) * 0.2183`,
-    `if (0 || null || undefined) createNewMinifierInstance()`,
-    `if (1 === 2) var __data = "user-agent"`,
-    `if (typeof undefined !== "undefined") this.window.find("tools")`,
-    `var _0xClass = 0x41 ^ 0x41`,
-    `void 0x1337`,
-    `for (let i = 0; i < 0; i++) { _0xS(0x99) }`,
-    `while (false) { _0xS(0x99) }`,
-    `var _x = true ? 0x00 : 0x00`,
-    `var _gb = Math.floor(0.9999) * 0`,
-    `var _mx = [][0x00]`,
-    `void +!![]`,
-    `void ~~0xFF`,
-    `var _y = (Math.random() > 2) ? null : null`,
-    `var _kk__kipu = (function(){ return 0x00 || false; })()`,
-    `var _vm = true ? 0x00 : -1`,
-  ];
-
-  function randomDeadCode() {
-    return (
-      deadCodeSnippets[Math.floor(Math.random() * deadCodeSnippets.length)] +
-      ";"
-    );
+  if (typeof minify !== "function") {
+    const error = new Error("MINIFIER_UNAVAILABLE");
+    error.code = "MINIFIER_UNAVAILABLE";
+    throw error;
   }
 
-  const ast = parseJavaScript(codeInNeed, moduleMode);
-  const insertions = [];
+  const result = await minify(code, {
+    ecma: 2020,
+    module: moduleMode,
+    compress: {
+      passes: 2,
+      module: moduleMode,
+      toplevel: !moduleMode,
+    },
+    mangle: {
+      toplevel: !moduleMode,
+    },
+    format: {
+      comments: false,
+    },
+  });
 
-  function collectStatements(body) {
-    for (const node of body) {
-      if (
-        node.type === "ImportDeclaration" ||
-        node.type === "ExportAllDeclaration" ||
-        node.type === "ExportDefaultDeclaration" ||
-        node.type === "ExportNamedDeclaration"
-      ) {
-        continue;
-      }
-
-      insertions.push({ offset: node.end });
-
-      if (node.type === "FunctionDeclaration" && node.body?.body) {
-        collectStatements(node.body.body);
-      }
-    }
+  if (!result.code?.trim()) {
+    throw new Error("MINIFY_EMPTY_RESULT");
   }
 
-  collectStatements(ast.body);
-  insertions.sort((a, b) => b.offset - a.offset);
+  return result.code.trim();
+}
 
-  let result = codeInNeed;
-  for (const { offset } of insertions) {
-    result = result.slice(0, offset) + randomDeadCode() + result.slice(offset);
+function getSelectedObfuscationLevel() {
+  return obfuscationLevelSelect?.value === "strong" ? "strong" : "balanced";
+}
+
+function getObfuscationLevelLabel(level) {
+  return level === "strong" ? "fort" : "équilibré";
+}
+
+function buildObfuscationOptions(level, moduleMode = false) {
+  const options = {
+    compact: true,
+    simplify: true,
+    identifierNamesGenerator: "hexadecimal",
+    numbersToExpressions: true,
+    stringArray: true,
+    stringArrayEncoding: ["base64"],
+    stringArrayThreshold: 1,
+    rotateStringArray: true,
+    shuffleStringArray: true,
+    splitStrings: true,
+    splitStringsChunkLength: 10,
+    transformObjectKeys: true,
+    renameGlobals: !moduleMode,
+    ignoreImports: moduleMode,
+    unicodeEscapeSequence: false,
+  };
+
+  if (level === "strong" && !moduleMode) {
+    return {
+      ...options,
+      controlFlowFlattening: true,
+      controlFlowFlatteningThreshold: 0.6,
+      deadCodeInjection: true,
+      deadCodeInjectionThreshold: 0.08,
+      selfDefending: true,
+      disableConsoleOutput: true,
+    };
   }
 
-  return result;
-}
-
-function buildStringDecoder(stringTable, key, moduleMode = false) {
-  if (!stringTable.length) return "";
-
-  const encodedStrings = stringTable.map((value) =>
-    encodeEncryptedString(value, key),
-  );
-
-  const clean = `const _xk7 = {"=": !true, "%": [0].length};const _0xA=${JSON.stringify(encodedStrings)};let tx=[TextDecoder,TextDecoder.prototype.decode];const _0xK=${key};const _0xC={};function _0xS(_0xI){if(_0xC[_0xI])return _0xC[_0xI];const _0xB=Uint8Array.from(atob(_0xA[_0xI]),(_0xD,_0xJ)=>_0xD.charCodeAt(0)^((_0xK+_0xJ*0x11)&0xff));delete _xk7["="];return _0xC[_0xI]=tx[0x01].call(new tx[0x00](),_0xB);}`;
-
-  return addDeadCode(clean, moduleMode);
-}
-
-function insertModuleDecoder(code, decoder) {
-  if (!decoder) return code;
-
-  const importBlockMatch = code.match(/^((?:__JM_IMPORT_\d+__;\s*)+)/);
-  if (!importBlockMatch) return `${decoder};${code}`;
-
-  const importBlock = importBlockMatch[1];
-  return `${importBlock}${decoder};${code.slice(importBlock.length)}`;
+  return {
+    ...options,
+    controlFlowFlattening: false,
+    deadCodeInjection: false,
+    selfDefending: false,
+    disableConsoleOutput: false,
+  };
 }
 
 function obfuscateJavaScript(code, moduleMode = false) {
-  const stringKey = Math.floor(Math.random() * 155) + 71;
-  const moduleResult = moduleMode
-    ? protectModuleDeclarations(code)
-    : { code, placeholders: [] };
-  const stringsResult = replaceStringLiterals(moduleResult.code);
-  const withHexNumbers = obfuscateNumbers(stringsResult.code);
-  const withRenamedIdentifiers = renameIdentifiers(withHexNumbers);
-  const decoder = buildStringDecoder(stringsResult.stringTable, stringKey, moduleMode);
+  const obfuscator = globalThis.JavaScriptObfuscator;
 
-  if (!moduleMode) {
-    const protectedCode = `${decoder}${decoder ? ";" : ""}${withRenamedIdentifiers}`;
-    return `(()=>{${protectedCode}})();`;
+  if (!obfuscator?.obfuscate) {
+    const error = new Error("OBFUSCATOR_UNAVAILABLE");
+    error.code = "OBFUSCATOR_UNAVAILABLE";
+    throw error;
   }
 
-  const moduleCode = insertModuleDecoder(withRenamedIdentifiers, decoder);
-  return restoreModuleDeclarations(moduleCode, moduleResult.placeholders);
+  const level = getSelectedObfuscationLevel();
+  const strongOptions = buildObfuscationOptions(level, moduleMode);
+
+  try {
+    return obfuscator.obfuscate(code, strongOptions).getObfuscatedCode();
+  } catch (firstError) {
+    const fallbackOptions = {
+      compact: true,
+      simplify: true,
+      identifierNamesGenerator: "hexadecimal",
+      stringArray: true,
+      stringArrayEncoding: ["base64"],
+      stringArrayThreshold: 1,
+      renameGlobals: !moduleMode,
+      ignoreImports: moduleMode,
+    };
+
+    return obfuscator.obfuscate(code, fallbackOptions).getObfuscatedCode();
+  }
 }
 
 function validateJavaScript(code, moduleMode = false) {
@@ -613,7 +164,6 @@ function validateJavaScript(code, moduleMode = false) {
 }
 
 function updateStats(inputLength, outputLength) {
-  if (obfuscateCheckbox?.checked) return;
   if (jmBefore) jmBefore.textContent = String(inputLength);
   if (jmAfter) jmAfter.textContent = String(outputLength);
 
@@ -624,14 +174,30 @@ function updateStats(inputLength, outputLength) {
     return;
   }
 
-  const reduction = Math.max(
-    0,
-    Math.round((1 - outputLength / inputLength) * 100),
+  const deltaPercent = Math.round(
+    ((outputLength - inputLength) / inputLength) * 100,
   );
-  jmRatio.textContent = `(${reduction}% réduit)`;
+
+  if (deltaPercent > 0) {
+    jmRatio.textContent = `(+${deltaPercent}% plus lourd)`;
+    return;
+  }
+
+  if (deltaPercent < 0) {
+    jmRatio.textContent = `(${Math.abs(deltaPercent)}% réduit)`;
+    return;
+  }
+
+  jmRatio.textContent = "(taille inchangée)";
 }
 
-function minifyInput() {
+function syncObfuscationControls() {
+  if (!obfuscationLevelSelect) return;
+  obfuscationLevelSelect.disabled = !obfuscateCheckbox?.checked;
+}
+
+async function minifyInput() {
+  const currentRunId = ++activeMinifyRunId;
   const value = jmInput.value;
 
   if (!value.trim()) {
@@ -642,28 +208,65 @@ function minifyInput() {
   }
 
   try {
-    const moduleMode = shouldUseModuleMode(value);
-    const minified = minifyJavaScript(value);
+    setJmStatus("Traitement en cours...", "default");
+
+    const moduleMode = detectModuleMode(value);
+    const minified = await minifyJavaScript(value, moduleMode);
     validateJavaScript(minified, moduleMode);
 
+    if (currentRunId !== activeMinifyRunId) return;
+
     const shouldObfuscate = Boolean(obfuscateCheckbox?.checked);
-    const output = shouldObfuscate
-      ? obfuscateJavaScript(minified, moduleMode)
-      : minified;
+    const obfuscationLevel = getSelectedObfuscationLevel();
+    let output = minified;
+    let obfuscationSkipped = false;
+
+    if (shouldObfuscate) {
+      try {
+        output = obfuscateJavaScript(minified, moduleMode);
+      } catch (obfuscationError) {
+        if (obfuscationError?.code === "OBFUSCATOR_UNAVAILABLE") {
+          obfuscationSkipped = true;
+        } else {
+          throw obfuscationError;
+        }
+      }
+    }
 
     validateJavaScript(output, moduleMode);
 
+    if (currentRunId !== activeMinifyRunId) return;
+
     jmOutput.value = output;
     updateStats(value.length, output.length);
+    if (obfuscationSkipped) {
+      setJmStatus(
+        "Obfuscateur indisponible: code minifié uniquement.",
+        "warning",
+      );
+      return;
+    }
+
     setJmStatus(
       shouldObfuscate
-        ? `JavaScript obfusqué avec succès${moduleMode ? " en mode module" : ""}.`
+        ? `JavaScript minifié puis obfusqué (${getObfuscationLevelLabel(obfuscationLevel)}${moduleMode ? ", mode module" : ""}).`
         : `JavaScript minifié avec succès${moduleMode ? " en mode module" : ""}.`,
       "success",
     );
   } catch (error) {
+    if (currentRunId !== activeMinifyRunId) return;
+
     jmOutput.value = "";
     updateStats(value.length, 0);
+
+    if (error?.code === "MINIFIER_UNAVAILABLE") {
+      setJmStatus(
+        "Le moteur de minification est indisponible pour le moment.",
+        "error",
+      );
+      return;
+    }
+
     setJmStatus(
       "JavaScript invalide ou impossible à minifier proprement.",
       "error",
@@ -693,11 +296,23 @@ function swapValues() {
 function setupJsMinifier() {
   if (!jmInput || !jmOutput) return;
 
-  minifyInput();
+  syncObfuscationControls();
+  void minifyInput();
 
-  minifyButton?.addEventListener("click", minifyInput);
-  obfuscateCheckbox?.addEventListener("change", minifyInput);
-  moduleCheckbox?.addEventListener("change", minifyInput);
+  minifyButton?.addEventListener("click", () => {
+    void minifyInput();
+  });
+  obfuscateCheckbox?.addEventListener("change", () => {
+    syncObfuscationControls();
+    void minifyInput();
+  });
+  moduleCheckbox?.addEventListener("change", () => {
+    void minifyInput();
+  });
+  obfuscationLevelSelect?.addEventListener("change", () => {
+    if (!obfuscateCheckbox?.checked) return;
+    void minifyInput();
+  });
   clearButton?.addEventListener("click", clearValues);
   swapButton?.addEventListener("click", swapValues);
 
