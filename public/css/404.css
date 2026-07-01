@@ -1,0 +1,61 @@
+#b404 footer.site-footer {
+  position: fixed;
+  bottom: 0;
+  left: 50%;
+  transform: translateX(-50%);
+  width: 92vw;
+}
+
+#b404::after {
+  content: "404";
+  position: fixed;
+  top: -64px;
+  right: 4px;
+  font-size: 12rem;
+  font-weight: 900;
+  font-family: "Science Gothic", sans-serif !important;
+  color: rgba(255, 122, 0, 0.18);
+}
+
+.not-found {
+  display: grid;
+  place-items: center;
+  min-height: 100vh;
+  padding: 24px;
+  text-align: center;
+}
+
+.not-found-card {
+  max-width: 520px;
+  padding: 36px;
+  background: var(--card);
+  border: 1px solid var(--border-orange);
+  border-radius: 24px;
+  box-shadow: var(--shadow);
+  position: relative;
+  overflow: hidden;
+}
+
+.not-found-card::before {
+  content: "";
+  position: absolute;
+  inset: 0;
+  pointer-events: none;
+  background: radial-gradient(
+    circle at bottom left,
+    rgba(255, 122, 0, 0.18),
+    transparent 19rem
+  );
+}
+
+.not-found-card::after {
+  content: "";
+  position: absolute;
+  inset: 0;
+  pointer-events: none;
+  background: radial-gradient(
+    circle at top right,
+    rgba(255, 122, 0, 0.18),
+    transparent 32rem
+  );
+}

@@ -7,8 +7,14 @@ import { setupMostUsedTools, setupToolSubmitTracking } from "./toolUsage.js";
 
 const HIGHLIGHT_STYLE_HREF = "/vendor/highlight.js/styles/github-dark.min.css";
 const HIGHLIGHT_SCRIPT_SRC = "/vendor/highlight.js/highlight.min.js";
-const NAVBAR_MOBILE_QUERY = "(max-width: 832px)";
+const NAVBAR_MOBILE_QUERY = "(max-width: 720px)";
 const MOST_USED_SELECTOR = "[data-tools-most-used]";
+const BASIC_LOCATIONS = {
+  "/": "Home",
+  "/contact": "Contact",
+  "/suggest": "Suggest",
+};
+
 let highlightJsPromise = null;
 
 function hasHighlightableCode(root = document) {
@@ -26,6 +32,28 @@ function ensureHighlightStyle() {
   link.rel = "stylesheet";
   link.href = HIGHLIGHT_STYLE_HREF;
   document.head.appendChild(link);
+}
+
+function setFooterLocation() {
+  const locationEl = document.querySelector(".location");
+  const path = window.location.pathname;
+  if (!locationEl) return;
+
+  if (path in BASIC_LOCATIONS) {
+    locationEl.textContent = BASIC_LOCATIONS[path];
+  } else {
+    const name =
+      document.querySelector(".section-heading h1")?.textContent?.trim() ||
+      "Unknown Location";
+    locationEl.textContent = name;
+  }
+}
+
+function updateFooterDate() {
+  const dateEl = document.querySelector("footer .date");
+  if (dateEl) {
+    dateEl.textContent = "2025 - " + new Date().getFullYear();
+  }
 }
 
 function loadHighlightJs() {
@@ -180,7 +208,7 @@ function injectResponsiveNavbarStyles() {
       }
     }
 
-    @media (max-width: 832px) {
+    @media (max-width: 720px) {
       .navbar {
         position: relative;
         display: flex !important;
@@ -452,6 +480,9 @@ function setupResponsiveNavbar() {
 }
 
 initFaKit();
+setFooterLocation();
+updateFooterDate();
+setInterval(updateFooterDate, 30000 * 3);
 setupResponsiveNavbar();
 setupMostUsedTools();
 setupToolSubmitTracking();

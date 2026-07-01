@@ -119,6 +119,7 @@
 .tool-card p {
   color: var(--muted);
   line-height: 1.55;
+  margin-bottom: 0;
   flex: 1;
 }
 
@@ -129,11 +130,42 @@
 
 .tool-card .internal-link.href--soon {
   cursor: not-allowed;
+  pointer-events: none;
   opacity: 0.62;
 }
 
 .tool-card--soon {
   opacity: 0.62;
+}
+
+.tool-card__dates {
+  position: absolute;
+  bottom: 6px;
+  left: 50%;
+  transform: translateX(-50%);
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  font-size: 0.78rem;
+  color: var(--muted);
+  width: 95%;
+}
+
+.upload-date,
+.update-date {
+  font-family: Ubuntu, monospace;
+  font-weight: 300;
+  font-style: italic;
+  letter-spacing: -1px;
+  cursor: help;
+}
+
+.upload-date {
+  margin-left: 6px;
+}
+
+.update-date {
+  margin-right: 6px;
 }
 
 .why,

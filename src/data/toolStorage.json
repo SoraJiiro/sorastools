@@ -6,7 +6,9 @@
     "description": "Choisis une couleur et convertis-la en HEX, RGB et HSL.",
     "icon": "<i class='fa-solid fa-palette'></i>",
     "url": "/tools/color-picker",
-    "status": "ready"
+    "status": "ready",
+    "createdAt": "2025-07-15",
+    "updatedAt": "2025-07-16"
   },
   {
     "id": "json-formatter",
@@ -15,7 +17,9 @@
     "description": "Formate, valide et minifie du JSON.",
     "icon": "<i class='fa-solid fa-check'></i>",
     "url": "/tools/json-formatter",
-    "status": "ready"
+    "status": "ready",
+    "createdAt": "2025-07-18",
+    "updatedAt": "2025-07-20"
   },
   {
     "id": "regex-tester",
@@ -24,7 +28,9 @@
     "description": "Teste une expression régulière sur un texte et affiche les correspondances.",
     "icon": "<i class='fa-solid fa-magnifying-glass'></i>",
     "url": "/tools/regex-tester",
-    "status": "ready"
+    "status": "ready",
+    "createdAt": "2025-07-22",
+    "updatedAt": "2025-07-22"
   },
   {
     "id": "md-previewer",
@@ -33,7 +39,9 @@
     "description": "Prévisualise du Markdown en HTML.",
     "icon": "<i class='fa-brands fa-markdown'></i><i class='fa-solid fa-angles-right'></i><i class='fa-brands fa-html5'></i>",
     "url": "/tools/md-previewer",
-    "status": "ready"
+    "status": "ready",
+    "createdAt": "2025-08-03",
+    "updatedAt": "2025-08-04"
   },
   {
     "id": "base64",
@@ -42,7 +50,9 @@
     "description": "Encode ou décode rapidement une chaîne en Base64.",
     "icon": "<i class='fa-solid fa-barcode'></i>",
     "url": "/tools/base64",
-    "status": "ready"
+    "status": "ready",
+    "createdAt": "2025-08-05",
+    "updatedAt": "2025-08-05"
   },
   {
     "id": "binary",
@@ -51,7 +61,9 @@
     "description": "Convertis du texte en binaire (base 2) ou traduis du binaire en texte.",
     "icon": "<i class='fa-solid fa-square-binary'></i>",
     "url": "/tools/binary",
-    "status": "ready"
+    "status": "ready",
+    "createdAt": "2025-11-22",
+    "updatedAt": "2025-11-23"
   },
   {
     "id": "hexadecimal",
@@ -60,7 +72,9 @@
     "description": "Convertis du texte en hexadécimal (base 16) ou traduis de l'hexadécimal en texte.",
     "icon": "<i class='fa-solid fa-hashtag'></i>",
     "url": "/tools/hexadecimal",
-    "status": "ready"
+    "status": "ready",
+    "createdAt": "2025-11-25",
+    "updatedAt": "2025-11-25"
   },
   {
     "id": "time-calculator",
@@ -69,7 +83,9 @@
     "description": "Convertis des durées et génère ou décode des timestamps Unix.",
     "icon": "<i class='fa-solid fa-clock'></i>",
     "url": "/tools/time-calculator",
-    "status": "ready"
+    "status": "ready",
+    "createdAt": "2025-11-01",
+    "updatedAt": "2025-12-03"
   },
   {
     "id": "clip-path-generator",
@@ -78,7 +94,9 @@
     "description": "Génère des clip-path CSS avec presets, points déplaçables et aperçu en direct.",
     "icon": "<i class='fa-solid fa-crop-simple'></i>",
     "url": "/tools/clip-path-generator",
-    "status": "ready"
+    "status": "ready",
+    "createdAt": "2026-04-01",
+    "updatedAt": "2026-06-26"
   },
   {
     "id": "js-minifier",
@@ -87,7 +105,9 @@
     "description": "Minifie du JavaScript et ajoute une obfuscation en option.",
     "icon": "<i class='fa-brands fa-square-js'></i>",
     "url": "/tools/js-minifier",
-    "status": "ready"
+    "status": "ready",
+    "createdAt": "2026-06-27",
+    "updatedAt": "2026-06-30"
   },
   {
     "id": "chart-editor",
@@ -105,6 +125,8 @@
     "description": "Convertis des images, vidéos, audios, documents Word et PDF.",
     "icon": "<i class='fa-solid fa-file-import'></i>",
     "url": "/tools/file-converter",
-    "status": "ready"
+    "status": "ready",
+    "createdAt": "2026-02-13",
+    "updatedAt": "2026-02-16"
   }
 ]
