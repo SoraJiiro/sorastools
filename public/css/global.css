@@ -19,6 +19,7 @@
   --font-fluid-base: clamp(0.98rem, 0.2vw + 0.92rem, 1.08rem);
   --font-fluid-small: clamp(0.86rem, 0.12vw + 0.82rem, 0.96rem);
   --font-fluid-large: clamp(1.02rem, 0.34vw + 0.92rem, 1.24rem);
+  --su-inc-clr: var(--bg-soft);
 }
 
 * {
@@ -110,6 +111,15 @@ body::before {
 
 ::-webkit-scrollbar-thumb:active {
   cursor: grabbing;
+}
+
+input[type="number"]::-webkit-inner-spin-button,
+input[type="number"]::-webkit-outer-spin-button {
+  display: none;
+}
+
+input[type="number"] {
+  appearance: textfield;
 }
 
 option,
@@ -604,7 +614,6 @@ code {
     visibility 0s linear 0.45s;
 }
 
-/* animated glow */
 [data-scroll-up-btn]::before {
   content: "";
   position: absolute;
@@ -636,6 +645,26 @@ code {
   transition:
     transform 0.35s cubic-bezier(0.22, 1, 0.36, 1),
     scale 0.35s;
+}
+
+[data-scroll-up-btn] div {
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  border-radius: 50%;
+  border: 2px dashed var(--su-inc-clr);
+  width: 42px;
+  height: 42px;
+  z-index: 3;
+  pointer-events: none;
+  transition: transform 2.5s ease;
+}
+
+[data-scroll-up-btn]:hover div {
+  transform: translate(-50%, -50%) rotate(360deg);
+  transform-origin: center;
+  transition: transform 2.5s ease;
 }
 
 [data-scroll-up-btn].is-visible {

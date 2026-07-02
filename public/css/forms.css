@@ -29,6 +29,7 @@
 .form-field {
   display: grid;
   gap: 8px;
+  position: relative;
 }
 
 .form-field span,
@@ -52,6 +53,41 @@
   font: inherit;
   border-radius: 14px;
   outline: none;
+}
+
+.inc-dec-btns-wrapper {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 5px;
+  position: absolute;
+  right: 3%;
+  bottom: 5%;
+}
+
+.number-input-btn {
+  background: transparent;
+  border: none;
+  color: var(--primary);
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 2px 4px;
+  transition:
+    color calc(var(--transition) - 0.1s) ease,
+    scale calc(var(--transition) - 0.1s) ease;
+}
+
+.number-input-btn:hover {
+  color: var(--primary-hover);
+  scale: 1.05;
+}
+
+.number-input-btn:focus-visible,
+.number-input-btn:focus {
+  outline: 2px solid var(--primary);
+  outline-offset: -2px;
 }
 
 .form-field textarea {

@@ -138,7 +138,8 @@ function setupScrollUpButton() {
   button.dataset.label = "Remonter en haut";
   button.setAttribute("aria-label", "Remonter en haut");
   button.setAttribute("title", "Remonter en haut");
-  button.innerHTML = '<i class="fa-solid fa-arrow-up" aria-hidden="true"></i>';
+  button.innerHTML =
+    '<div></div><i class="fa-solid fa-arrow-up" aria-hidden="true"></i>';
 
   document.body.appendChild(button);
 
@@ -327,6 +328,47 @@ function setupResponsiveNavbar() {
   });
 }
 
+function setupNumberInputButtons() {
+  const inputsContainers = document.querySelectorAll("label.form-field");
+  const numberInputsContainers = Array.from(inputsContainers).filter(
+    (container) => {
+      const input = container.querySelector("input[type='number']");
+      return input !== null;
+    },
+  );
+  numberInputsContainers.forEach((container) => {
+    const input = container.querySelector("input[type='number']"); // grab the actual input
+    const wrapper = document.createElement("div");
+    wrapper.className = "inc-dec-btns-wrapper";
+    const addButton = document.createElement("button");
+    const subButton = document.createElement("button");
+    let buttons = [addButton, subButton];
+    buttons.forEach((button, idx) => {
+      button.type = "button";
+      button.className = "number-input-btn";
+      button.setAttribute("aria-hidden", "true");
+      if (idx === 0) {
+        button.classList.add("add");
+        button.innerHTML = '<i class="fa-solid fa-caret-up"></i>';
+        button.addEventListener("click", () => {
+          input.value = Number(input.value || 0) + 1;
+          input.dispatchEvent(new Event("input", { bubbles: true }));
+        });
+      } else {
+        button.classList.add("sub");
+        button.innerHTML = '<i class="fa-solid fa-caret-down"></i>';
+        button.addEventListener("click", () => {
+          input.value = Number(input.value || 0) - 1;
+          input.dispatchEvent(new Event("input", { bubbles: true }));
+        });
+      }
+
+      wrapper.appendChild(button);
+    });
+    container.appendChild(wrapper);
+  });
+}
+
 initFaKit();
 setFooterLocation();
 updateFooterDate();
@@ -339,3 +381,4 @@ setupScrollUpButton();
 applyActionsLabels();
 applyActionIcons("button:not([data-nav-toggle]), .btn:not(.nav-links a)");
 setupHighlightJs();
+setupNumberInputButtons();
