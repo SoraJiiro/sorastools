@@ -1,0 +1,103 @@
+<!DOCTYPE html>
+<html lang="fr">
+    <head>
+        <meta charset="UTF-8">
+        <meta name="viewport" content="width=device-width, initial-scale=1.0">
+        <title>Username Lookup - SoraTools</title>
+        <meta
+            name="description"
+            content="Vérifie rapidement si un pseudo est déjà pris sur plusieurs plateformes et récupère l’URL associée.">
+        <link rel="icon" type="image/png" href="/assets/logo.png">
+        <link rel="shortcut icon" type="image/png" href="/assets/logo.png">
+        <link rel="stylesheet" href="/css/global.css">
+        <link rel="stylesheet" href="/css/username-lookup.css">
+        <link rel="preconnect" href="https://fonts.googleapis.com">
+        <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+        <link
+            href="https://fonts.googleapis.com/css2?family=Intel+One+Mono:ital,wght@0,300..700;1,300..700&family=Roboto+Condensed:ital,wght@0,100..900;1,100..900&family=Science+Gothic:wght@100..900&display=swap"
+            rel="stylesheet">
+        <script type="module" src="/js/tools/username-lookup.js"></script>
+        <script type="module" src="/js/global.js"></script>
+    </head>
+    <body>
+        <header class="site-header">
+            <nav class="navbar">
+                <a class="logo" href="/"
+                    data-label="Retourner à l'accueil SoraTools">
+                    <img class="logo-img" src="/assets/logo.png" alt
+                        aria-hidden="true">
+                    SoraTools
+                </a>
+                <div class="nav-links">
+                    <a href="/#tools"
+                        data-label="Aller au catalogue des Tools">Accueil</a>
+                    <a href="/suggest"
+                        data-label="Aller aux suggestions de tools">Suggest</a>
+                    <a href="/contact"
+                        data-label="Aller à la page contact">Contact</a>
+                </div>
+            </nav>
+        </header>
+
+        <main>
+            <section class="section tool-section" id="username-lookup">
+                <div class="section-heading">
+                    <p class="eyebrow">OSINT</p>
+                    <h1>Username Lookup</h1>
+                    <p>Entre un pseudo et vérifie sa disponibilité sur plusieurs
+                        réseaux en un clic.</p>
+                </div>
+
+                <div class="lookup-card">
+                    <form class="lookup-form" data-lookup-form>
+                        <label class="field"
+                            data-label="Champ du pseudo à rechercher">
+                            <span>Pseudo</span>
+                            <input
+                                type="text"
+                                name="username"
+                                data-lookup-username
+                                placeholder="ex: sorajiiro"
+                                autocomplete="off"
+                                spellcheck="false">
+                        </label>
+                        <button type="submit" class="btn"
+                            data-label="Lancer la recherche de pseudo">
+                            Vérifier
+                        </button>
+                    </form>
+
+                    <p class="lookup-status" data-lookup-status>En attente d’un
+                        pseudo.</p>
+                    <div class="lookup-results" data-lookup-results></div>
+                </div>
+            </section>
+        </main>
+
+        <section class="tech-explanation">
+            <div class="tech-explanation-heading">
+                <p class="tech-name">OSINT</p>
+                <h2 class="subtitle">Comment ça marche ?</h2>
+            </div>
+            <p>
+                Cet outil tente de vérifier si un pseudo correspond à une page
+                publique sur plusieurs plateformes populaires.
+                Le résultat indique si le pseudo semble déjà pris, s’il semble
+                disponible ou si la vérification a échoué pour une raison réseau
+                ou anti-bot.
+            </p>
+            <p>
+                À des fins de démonstration, la vérification repose sur les URL
+                publiques associées à chaque réseau.
+                Les résultats sont donc indicatifs et doivent être confirmés
+                manuellement pour des usages sensibles.
+            </p>
+        </section>
+
+        <footer class="site-footer">
+            <p>&copy; <span class="date"></span> SoraTools - Tous droits
+                réservés.</p>
+            <p class="location"></p>
+        </footer>
+    </body>
+</html>

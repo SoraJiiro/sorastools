@@ -116,7 +116,7 @@
     "description": "Crée et exporte des charts Clone Hero au format .chart, avec audio, timeline et notes synchronisées.",
     "icon": "<i class='fa-solid fa-guitar'></i>",
     "url": "/tools/chart-editor",
-    "status": "soon"
+    "status": "ready"
   },
   {
     "id": "file-converter",
@@ -128,5 +128,16 @@
     "status": "ready",
     "createdAt": "2026-02-13",
     "updatedAt": "2026-02-16"
+  },
+  {
+    "id": "username-lookup",
+    "name": "Username Lookup",
+    "category": "OSINT",
+    "description": "Vérifie rapidement si un pseudo est déjà pris sur plusieurs plateformes.",
+    "icon": "<i class='fa-solid fa-user-secret'></i>",
+    "url": "/tools/username-lookup",
+    "status": "soon",
+    "createdAt": "2026-08-02",
+    "updatedAt": "2026-08-02"
   }
 ]

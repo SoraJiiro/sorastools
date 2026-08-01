@@ -25,7 +25,10 @@ router.get("/api/emailjs-config", (req, res) => {
     success: true,
     publicKey: process.env.EMAILJS_PUBLIC_KEY || "",
     serviceId: process.env.EMAILJS_SERVICE_ID || "",
-    suggestTemplateId: process.env.EMAILJS_SUGGEST_TEMPLATE_ID || process.env.EMAILJS_TEMPLATE_ID || "",
+    suggestTemplateId:
+      process.env.EMAILJS_SUGGEST_TEMPLATE_ID ||
+      process.env.EMAILJS_TEMPLATE_ID ||
+      "",
     contactTemplateId: process.env.EMAILJS_CONTACT_TEMPLATE_ID || "",
   });
 });
@@ -72,6 +75,14 @@ router.get("/tools/js-minifier", (req, res) => {
 
 router.get("/tools/file-converter", (req, res) => {
   sendPublicFile(res, "tools", "file-converter.html");
+});
+
+router.get("/tools/username-lookup", (req, res) => {
+  sendPublicFile(res, "tools", "username-lookup.html");
+});
+
+router.get("/tools/chart-editor", (req, res) => {
+  sendPublicFile(res, "tools", "chart-editor.html");
 });
 
 router.use((req, res) => {
