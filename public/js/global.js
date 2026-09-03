@@ -207,8 +207,9 @@ function getActionIcon(element) {
   if (/formatter|format/.test(text)) return "fa-align-left";
   if (/minifier/.test(text)) return "fa-compress";
   if (/lancer|run/.test(text)) return "fa-play";
-
-  return "";
+  if (/arreter|stop/.test(text)) return "fa-stop";
+  if (/verifier|verify/.test(text)) return "fa-file-circle-check";
+  return null;
 }
 
 function applyActionIcons(selector = "button, .btn, .nav-links a") {

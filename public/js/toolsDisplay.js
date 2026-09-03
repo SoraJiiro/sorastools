@@ -77,7 +77,13 @@ async function displayTools() {
     allChildren.forEach((child) => {
       if (child.classList.contains("tool-card--soon")) {
         child.querySelector("a")?.setAttribute("tabindex", "-1");
+        return;
       }
+
+      child.addEventListener("click", () => {
+        child.querySelector("a").click();
+        console.log("clicked.");
+      });
     });
     allChildren.forEach((child) => toolsGrid.appendChild(child));
   } catch (error) {
