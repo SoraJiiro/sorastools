@@ -4,8 +4,8 @@
   gap: 18px;
   background: linear-gradient(
     180deg,
-    rgba(29, 35, 44, 0.92),
-    rgba(18, 22, 28, 0.92)
+    var(--surface-strong),
+    var(--surface-soft)
   );
   border: 1px solid var(--border);
   border-radius: 24px;
@@ -25,8 +25,8 @@
   justify-content: center;
   border: 0;
   border-radius: 999px;
-  background: linear-gradient(135deg, var(--primary), #ff5200);
-  color: #111;
+  background: linear-gradient(135deg, var(--primary), var(--primary-end));
+  color: var(--button-text);
   font-weight: 900;
   cursor: pointer;
   box-shadow: var(--orange-glow);
@@ -40,7 +40,7 @@
 .md-toolbar button:hover {
   transform: translateY(-2px);
   filter: brightness(1.1);
-  box-shadow: 0 0 45px rgba(255, 122, 0, 0.35);
+  box-shadow: 0 0 45px rgba(var(--accent-rgb), 0.35);
 }
 
 .md-editor-grid {
@@ -55,7 +55,7 @@
   min-height: 460px;
   height: 460px;
   border: 1px solid var(--border);
-  background: rgba(255, 255, 255, 0.04);
+  background: var(--surface-translucent);
   color: var(--text);
   padding: 18px;
   font-size: 1rem;

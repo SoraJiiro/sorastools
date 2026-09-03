@@ -14,7 +14,7 @@
   font-size: 12rem;
   font-weight: 900;
   font-family: "Science Gothic", sans-serif !important;
-  color: rgba(255, 122, 0, 0.18);
+  color: rgba(var(--accent-rgb), 0.18);
 }
 
 .not-found {
@@ -43,7 +43,7 @@
   pointer-events: none;
   background: radial-gradient(
     circle at bottom left,
-    rgba(255, 122, 0, 0.18),
+    rgba(var(--accent-rgb), 0.18),
     transparent 19rem
   );
 }
@@ -55,7 +55,7 @@
   pointer-events: none;
   background: radial-gradient(
     circle at top right,
-    rgba(255, 122, 0, 0.18),
+    rgba(var(--accent-rgb), 0.18),
     transparent 32rem
   );
 }

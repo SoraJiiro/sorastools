@@ -44,8 +44,8 @@
   min-height: 210px;
   background: linear-gradient(
     180deg,
-    rgba(29, 35, 44, 0.92),
-    rgba(18, 22, 28, 0.92)
+    var(--surface-strong),
+    var(--surface-soft)
   );
   border: 1px solid var(--border);
   border-radius: 24px;
@@ -63,7 +63,7 @@
   inset: 0;
   background: radial-gradient(
     circle at top right,
-    rgba(255, 122, 0, 0.14),
+    rgba(var(--accent-rgb), 0.14),
     transparent 42%
   );
   opacity: 0;
@@ -187,10 +187,10 @@
   background:
     radial-gradient(
       circle at top right,
-      rgba(255, 122, 0, 0.18),
+      rgba(var(--accent-rgb), 0.18),
       transparent 34%
     ),
-    linear-gradient(135deg, rgba(29, 35, 44, 0.92), rgba(18, 22, 28, 0.78));
+    linear-gradient(135deg, var(--surface-strong), var(--surface-soft));
   box-shadow: var(--shadow);
   backdrop-filter: blur(14px);
 }
@@ -235,7 +235,7 @@
   padding: 22px;
   border: 1px solid var(--border);
   border-radius: 20px;
-  background: rgba(255, 255, 255, 0.045);
+  background: var(--surface-translucent);
 }
 
 .why p:not(.eyebrow):not(.why-text) {
@@ -243,7 +243,7 @@
   padding: 22px;
   border-left: 3px solid var(--primary);
   border-radius: 0 18px 18px 0;
-  background: rgba(255, 122, 0, 0.06);
+  background: rgba(var(--accent-rgb), 0.06);
 }
 
 .future {
@@ -259,8 +259,8 @@
   border: 1px solid var(--border-orange);
   border-radius: 28px;
   background:
-    linear-gradient(135deg, rgba(255, 122, 0, 0.14), transparent 42%),
-    rgba(18, 22, 28, 0.86);
+    linear-gradient(135deg, rgba(var(--accent-rgb), 0.14), transparent 42%),
+    var(--surface-soft);
   box-shadow: var(--orange-glow), var(--shadow);
   backdrop-filter: blur(14px);
 }
@@ -273,7 +273,7 @@
 .future-text {
   padding: 20px 22px;
   border-radius: 20px;
-  background: rgba(3, 4, 5, 0.34);
+  background: var(--surface-translucent);
 }
 
 @media (max-width: 800px) {

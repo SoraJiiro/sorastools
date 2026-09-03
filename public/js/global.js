@@ -9,6 +9,7 @@ const HIGHLIGHT_STYLE_HREF = "/vendor/highlight.js/styles/github-dark.min.css";
 const HIGHLIGHT_SCRIPT_SRC = "/vendor/highlight.js/highlight.min.js";
 const NAVBAR_MOBILE_QUERY = "(max-width: 720px)";
 const MOST_USED_SELECTOR = "[data-tools-most-used]";
+const THEME_STORAGE_KEY = "soratools-theme";
 const BASIC_LOCATIONS = {
   "/": "Home",
   "/contact": "Contact",
@@ -16,6 +17,47 @@ const BASIC_LOCATIONS = {
 };
 
 let highlightJsPromise = null;
+
+function setupThemeToggle() {
+  const navbar = document.querySelector(".navbar");
+  const navMenu = navbar?.querySelector("[data-nav-menu]");
+  if (!navbar || !navMenu || navbar.querySelector("[data-theme-toggle]"))
+    return;
+
+  const savedTheme = localStorage.getItem(THEME_STORAGE_KEY);
+  const prefersLight = window.matchMedia(
+    "(prefers-color-scheme: light)",
+  ).matches;
+  const initialTheme = savedTheme || (prefersLight ? "light" : "dark");
+  document.documentElement.dataset.theme = initialTheme;
+
+  const button = document.createElement("button");
+  button.type = "button";
+  button.className = "theme-toggle";
+  button.dataset.themeToggle = "";
+  button.setAttribute("aria-live", "polite");
+  navMenu.appendChild(button);
+
+  function updateButton() {
+    const isLight = document.documentElement.dataset.theme === "light";
+    button.setAttribute(
+      "aria-label",
+      isLight ? "Activer le mode sombre" : "Activer le mode clair",
+    );
+    button.setAttribute("title", button.getAttribute("aria-label"));
+    button.innerHTML = `<i class="fa-solid ${isLight ? "fa-moon" : "fa-sun"}" aria-hidden="true"></i>`;
+  }
+
+  button.addEventListener("click", () => {
+    const nextTheme =
+      document.documentElement.dataset.theme === "light" ? "dark" : "light";
+    document.documentElement.dataset.theme = nextTheme;
+    localStorage.setItem(THEME_STORAGE_KEY, nextTheme);
+    updateButton();
+  });
+
+  updateButton();
+}
 
 function hasHighlightableCode(root = document) {
   return Boolean(
@@ -378,6 +420,7 @@ setFooterLocation();
 updateFooterDate();
 setInterval(updateFooterDate, 30000 * 3);
 setupResponsiveNavbar();
+setupThemeToggle();
 setupMostUsedTools();
 setupToolSubmitTracking();
 setupTextareaTabHandlers("textarea:not([readonly])");
