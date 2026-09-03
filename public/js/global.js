@@ -198,6 +198,34 @@ function setupScrollUpButton() {
   toggleVisibility();
 }
 
+function setupCursorGlow() {
+  const excludedSelector =
+    ".tool-section, .tool-card, .form-card, .not-found-card, .lookup-card, .card";
+
+  function updateGlow(event) {
+    if (event.pointerType === "touch") return;
+
+    const isExcluded = event.target.closest?.(excludedSelector);
+    document.body.classList.toggle("cursor-glow-visible", !isExcluded);
+
+    if (!isExcluded) {
+      document.body.style.setProperty("--cursor-x", `${event.clientX}px`);
+      document.body.style.setProperty("--cursor-y", `${event.clientY}px`);
+    }
+  }
+
+  window.addEventListener("pointermove", updateGlow, { passive: true });
+  window.addEventListener(
+    "pointerout",
+    (event) => {
+      if (!event.relatedTarget) {
+        document.body.classList.remove("cursor-glow-visible");
+      }
+    },
+    { passive: true },
+  );
+}
+
 function normalizeActionText(value = "") {
   return value
     .toLowerCase()
@@ -446,6 +474,7 @@ setupMostUsedTools();
 setupToolSubmitTracking();
 setupTextareaTabHandlers("textarea:not([readonly])");
 setupScrollUpButton();
+setupCursorGlow();
 applyActionsLabels();
 applyActionIcons("button:not([data-nav-toggle]), .btn:not(.nav-links a)");
 setupHighlightJs();

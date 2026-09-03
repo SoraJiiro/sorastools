@@ -93,6 +93,33 @@ body {
   min-height: 100vh;
 }
 
+body::after {
+  content: "";
+  position: fixed;
+  top: calc(var(--cursor-y, -999px) - 170px);
+  left: calc(var(--cursor-x, -999px) - 170px);
+  width: 340px;
+  height: 340px;
+  border-radius: 50%;
+  background: radial-gradient(
+    circle,
+    color-mix(in srgb, var(--primary) 24%, transparent),
+    color-mix(in srgb, var(--primary) 10%, transparent) 34%,
+    color-mix(in srgb, var(--primary) 3%, transparent) 56%,
+    transparent 72%
+  );
+  filter: blur(18px);
+  opacity: 0;
+  pointer-events: none;
+  transition: opacity var(--transition);
+  z-index: 10;
+  animation: cursorGlowMotion 6s linear infinite;
+}
+
+body.cursor-glow-visible::after {
+  opacity: 1;
+}
+
 body::before {
   content: "";
   position: fixed;
@@ -853,11 +880,29 @@ code {
   }
 }
 
+@keyframes cursorGlowMotion {
+  from {
+    transform: rotate(0deg) scale(0.88);
+  }
+
+  50% {
+    transform: rotate(180deg) scale(1.3);
+  }
+
+  to {
+    transform: rotate(360deg) scale(0.88);
+  }
+}
+
 @media (prefers-reduced-motion: reduce) {
   [data-scroll-up-btn],
   [data-scroll-up-btn].is-visible,
   [data-scroll-up-btn] i {
     transition: none;
+  }
+
+  body::after {
+    animation: none;
   }
 }
 
