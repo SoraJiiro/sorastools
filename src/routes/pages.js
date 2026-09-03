@@ -45,8 +45,8 @@ router.get("/tools/code-formatter", (req, res) => {
   sendPublicFile(res, "tools", "code-formatter.html");
 });
 
-router.get("/tools/crypt-hasher", (req, res) => {
-  sendPublicFile(res, "tools", "crypt-hasher.html");
+router.get("/tools/text-hasher", (req, res) => {
+  sendPublicFile(res, "tools", "text-hasher.html");
 });
 
 router.get("/tools/regex-tester", (req, res) => {

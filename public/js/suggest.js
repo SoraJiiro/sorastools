@@ -1,7 +1,7 @@
 import { setStatus } from "./utils.js";
 
 const COOLDOWN_MS = 30 * 60 * 1000;
-const COOLDOWN_KEY = "soraToolsSuggestLastSubmit";
+const COOLDOWN_KEY = "soraToolSuggestLastSubmit";
 
 const form = document.querySelector("[data-suggest-form]");
 const pseudoInput = document.querySelector("[data-suggest-pseudo]");

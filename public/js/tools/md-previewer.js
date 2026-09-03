@@ -28,7 +28,7 @@ function getExportDate() {
 }
 
 function getSafeFilename(extension) {
-  return `soratools-markdown-${getExportDate()}.${extension}`;
+  return `sorastool-markdown-${getExportDate()}.${extension}`;
 }
 
 function buildFullHtmlDocument(bodyContent) {
@@ -37,7 +37,7 @@ function buildFullHtmlDocument(bodyContent) {
   <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Export Markdown - SoraTools</title>
+    <title>Export Markdown - SoraTool</title>
     <style>
       body {
         max-width: 900px;
@@ -125,7 +125,7 @@ async function renderMarkdown() {
     lastHtml = data.html;
     mdPreview.innerHTML = lastHtml;
     document.dispatchEvent(
-      new CustomEvent("soratools:content-updated", {
+      new CustomEvent("sorastool:content-updated", {
         detail: { root: mdPreview },
       }),
     );

@@ -1,7 +1,7 @@
 import { setStatus } from "./utils.js";
 
 const COOLDOWN_MS = 30 * 60 * 1000;
-const COOLDOWN_KEY = "soraToolsContactLastSubmit";
+const COOLDOWN_KEY = "soraToolContactLastSubmit";
 
 const form = document.querySelector("[data-contact-form]");
 const nameInput = document.querySelector("[data-contact-name]");

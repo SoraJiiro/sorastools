@@ -19,18 +19,20 @@
     "url": "/tools/code-formatter",
     "status": "ready",
     "createdAt": "2026-09-03",
-    "updatedAt": "2026-09-03"
+    "updatedAt": "2026-09-03",
+    "credit": "Sora [le seul et l'unique]"
   },
   {
-    "id": "crypt-hasher",
+    "id": "text-hasher",
     "name": "Text Hasher",
     "category": "Dev",
     "description": "Hache un texte avec crypt() comme PHP en utilisant un SEL personnalisé.",
     "icon": "<i class='fa-solid fa-key'></i>",
-    "url": "/tools/crypt-hasher",
+    "url": "/tools/text-hasher",
     "status": "ready",
     "createdAt": "2026-09-03",
-    "updatedAt": "2026-09-03"
+    "updatedAt": "2026-09-03",
+    "credit": "R.D."
   },
   {
     "id": "regex-tester",

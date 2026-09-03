@@ -9,7 +9,7 @@ const HIGHLIGHT_STYLE_HREF = "/vendor/highlight.js/styles/github-dark.min.css";
 const HIGHLIGHT_SCRIPT_SRC = "/vendor/highlight.js/highlight.min.js";
 const NAVBAR_MOBILE_QUERY = "(max-width: 720px)";
 const MOST_USED_SELECTOR = "[data-tools-most-used]";
-const THEME_STORAGE_KEY = "soratools-theme";
+const THEME_STORAGE_KEY = "sorastool-theme";
 const BASIC_LOCATIONS = {
   "/": "Home",
   "/contact": "Contact",
@@ -161,7 +161,7 @@ function setupHighlightJs() {
       .catch(() => {});
   }
 
-  document.addEventListener("soratools:content-updated", (event) => {
+  document.addEventListener("sorastool:content-updated", (event) => {
     applyHighlighting(event.detail?.root || document);
   });
 
@@ -415,6 +415,27 @@ function setupNumberInputButtons() {
   });
 }
 
+async function giveCredit(toolId) {
+  const creditElement = document.querySelector(".tool-credit");
+
+  if (!creditElement) return;
+
+  try {
+    const response = await fetch("/api/tools");
+    const data = await response.json();
+
+    data.tools.forEach((tool) => {
+      if (tool.id === toolId && tool.credit) {
+        creditElement.innerHTML =
+          '<i class="fa-solid fa-person-praying"></i> Suggestion de ' +
+          tool.credit;
+      }
+    });
+  } catch (error) {
+    console.error("Erreur lors de la récupération des outils :", error);
+  }
+}
+
 initFaKit();
 setFooterLocation();
 updateFooterDate();
@@ -429,3 +450,4 @@ applyActionsLabels();
 applyActionIcons("button:not([data-nav-toggle]), .btn:not(.nav-links a)");
 setupHighlightJs();
 setupNumberInputButtons();
+giveCredit(window.location.pathname.split("/").pop() || "");

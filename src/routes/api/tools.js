@@ -127,7 +127,7 @@ async function readSupabaseJson(response) {
 }
 
 function logSupabaseStatsError(context, error) {
-  console.warn(`[SoraTools] Stats Supabase ignorées (${context}) :`, error.message);
+  console.warn(`[SoraTool] Stats Supabase ignorées (${context}) :`, error.message);
 }
 
 async function getSupabaseMostUsedTools(tools) {

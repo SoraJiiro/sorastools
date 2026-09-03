@@ -16,13 +16,13 @@ const regexMatches = document.querySelector("[data-regex-matches]");
 const regexPresets = {
   email: {
     pattern: "[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\\.[a-zA-Z]{2,}",
-    text: "Contact : support@soratools.dev ou admin@example.com",
+    text: "Contact : support@sorastool.dev ou admin@example.com",
     flags: ["g", "i"],
   },
   url: {
     pattern:
       "https?:\\/\\/(?:www\\.)?[a-zA-Z0-9.-]+\\.[a-zA-Z]{2,}(?:\\/[^\\s]*)?",
-    text: "Sites : https://soratools.dev et http://example.com/docs?page=1",
+    text: "Sites : https://sorastool.dev et http://example.com/docs?page=1",
     flags: ["g", "i"],
   },
   date: {
@@ -43,7 +43,7 @@ const regexPresets = {
   },
   string: {
     pattern: "(['\"])(?:(?!\\1).)*\\1",
-    text: "Strings : const name = \"SoraTools\"; const type = 'regex';",
+    text: "Strings : const name = \"SoraTool\"; const type = 'regex';",
     flags: ["g"],
   },
   int: {

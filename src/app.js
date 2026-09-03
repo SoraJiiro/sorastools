@@ -29,5 +29,5 @@ app.use(cryptApiRoutes);
 app.use(pageRoutes);
 
 app.listen(PORT, () => {
-  console.log(`SoraTools lancé sur http://localhost:${PORT}`);
+  console.log(`SoraTool lancé sur http://localhost:${PORT}`);
 });
