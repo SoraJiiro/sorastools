@@ -5,3 +5,4 @@ src/.env
 .env.local
 .env
 OBF_SPECS.txt
+lightmode_logo_img_prop.txt
