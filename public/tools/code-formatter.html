@@ -1,0 +1,131 @@
+<!DOCTYPE html>
+<html lang="fr">
+    <head>
+        <meta charset="UTF-8">
+        <meta name="viewport" content="width=device-width, initial-scale=1.0">
+        <title>Code Formatter - SoraTools</title>
+        <meta name="description"
+            content="Indente et vérifie du CSS, HTML, PHP, JSON, Java ou SQL.">
+        <link rel="icon" type="image/png" href="/assets/logo.png">
+        <link rel="shortcut icon" type="image/png" href="/assets/logo.png">
+        <link rel="stylesheet" href="/css/global.css">
+        <link rel="stylesheet" href="/css/code-formatter.css">
+        <link rel="preconnect" href="https://fonts.googleapis.com">
+        <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+        <link
+            href="https://fonts.googleapis.com/css2?family=Intel+One+Mono:ital,wght@0,300..700;1,300..700&family=Roboto+Condensed:ital,wght@0,100..900;1,100..900&family=Science+Gothic:wght@100..900&display=swap"
+            rel="stylesheet">
+        <script defer
+            src="https://cdnjs.cloudflare.com/ajax/libs/js-beautify/1.15.1/beautify.min.js"></script>
+        <script defer
+            src="https://cdn.jsdelivr.net/npm/sql-formatter@15.6.3/dist/sql-formatter.min.js"></script>
+        <script type="module" src="/js/tools/code-formatter.js"></script>
+        <script type="module" src="/js/global.js"></script>
+    </head>
+    <body>
+        <header class="site-header">
+            <nav class="navbar">
+                <a class="logo" href="/"
+                    data-label="Retourner à l'accueil SoraTools"><img
+                        class="logo-img" src="/assets/logo.png" alt
+                        aria-hidden="true">SoraTools</a>
+                <div class="nav-links">
+                    <a href="/#tools"
+                        data-label="Aller au catalogue des Tools">Accueil</a>
+                    <a href="/suggest"
+                        data-label="Aller aux suggestions de tools">Suggest</a>
+                    <a href="/contact"
+                        data-label="Aller à la page contact">Contact</a>
+                </div>
+            </nav>
+        </header>
+
+        <main>
+            <section class="section tool-section" id="code-formatter">
+                <div class="section-heading">
+                    <p class="eyebrow">Dev</p>
+                    <h1>Code Formatter</h1>
+                    <p>Indente et vérifie rapidement ton CSS, HTML, JSON, PHP,
+                        JSON, Java ou SQL.</p>
+                </div>
+
+                <div class="code-tool">
+                    <div class="code-controls">
+                        <label class="code-select"
+                            data-label="Choisir le langage du code">
+                            <span>Langage</span>
+                            <select data-code-language>
+                                <option value="css">CSS</option>
+                                <option value="html">HTML</option>
+                                <option value="json">JSON</option>
+                                <option value="php">PHP</option>
+                                <option value="java">Java</option>
+                                <option value="sql">SQL</option>
+                            </select>
+                        </label>
+                        <label class="code-select"
+                            data-label="Choisir la taille de l'indentation">
+                            <span>Indentation</span>
+                            <select data-code-indent>
+                                <option value="2">2 espaces</option>
+                                <option value="4" selected>4 espaces</option>
+                                <option value="tab">Tabulation</option>
+                            </select>
+                        </label>
+                    </div>
+
+                    <div class="code-toolbar">
+                        <button type="button" data-code-format
+                            data-label="Formater le code">Formatter</button>
+                        <button type="button" data-code-validate
+                            data-label="Vérifier le code">Vérifier</button>
+                        <button type="button" data-code-copy
+                            data-label="Copier le résultat">Copier</button>
+                        <button type="button" data-code-clear
+                            data-label="Vider les champs">Vider</button>
+                    </div>
+
+                    <div class="code-editor-grid">
+                        <label class="field code-field"
+                            data-label="Champ de saisie du code">
+                            <span>Input</span>
+                            <textarea data-code-input spellcheck="false"
+                                placeholder="Colle ton code ici..."></textarea>
+                            <p class="textarea-notice">Appuyer sur
+                                <span>Échap</span> pour sortir du focus</p>
+                        </label>
+                        <label class="field code-field"
+                            data-label="Résultat du code formaté">
+                            <span>Résultat</span>
+                            <textarea data-code-output spellcheck="false"
+                                readonly></textarea>
+                        </label>
+                    </div>
+
+                    <p class="code-status" data-code-status
+                        aria-live="polite">En attente de code.</p>
+                    <p class="code-hint">La vérification détecte les erreurs
+                        structurelles courantes. Pour une validation complète,
+                        utilise le compilateur ou le linter du langage.</p>
+                </div>
+            </section>
+        </main>
+
+        <section class="tech-explanation">
+            <div class="tech-explanation-heading">
+                <p class="tech-name">Code</p>
+                <h2 class="subtitle">Formatage local</h2>
+            </div>
+            <p>Le code est traité directement dans ton navigateur. Les
+                accolades, balises, commentaires et mots-clés sont utilisés pour
+                produire une indentation lisible sans envoyer ton contenu à un
+                serveur.</p>
+        </section>
+
+        <footer class="site-footer">
+            <p>&copy; <span class="date"></span> SoraTools - Tous droits
+                réservés.</p>
+            <p class="location"></p>
+        </footer>
+    </body>
+</html>

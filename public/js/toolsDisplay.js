@@ -10,6 +10,8 @@ function sortTools(a, b) {
   const aReady = a.classList.contains("tool-card--soon") ? 1 : 0;
   const bReady = b.classList.contains("tool-card--soon") ? 1 : 0;
 
+  if (aReady !== bReady) return aReady - bReady;
+
   if (aUpdateDate && bUpdateDate) {
     const aDate = new Date(aUpdateDate);
     const bDate = new Date(bUpdateDate);
@@ -23,8 +25,6 @@ function sortTools(a, b) {
     if (aDate > bDate) return -1;
     if (aDate < bDate) return 1;
   }
-
-  if (aReady !== bReady) return aReady - bReady;
 
   return 0;
 }

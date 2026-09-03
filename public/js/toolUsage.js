@@ -27,12 +27,11 @@ const TOOL_ACTION_SELECTORS = {
     "[data-hex-copy]",
     "[data-hex-clear]",
   ],
-  "json-formatter": [
-    "[data-json-format]",
-    "[data-json-minify]",
-    "[data-json-validate]",
-    "[data-json-copy]",
-    "[data-json-clear]",
+  "code-formatter": [
+    "[data-code-format]",
+    "[data-code-validate]",
+    "[data-code-copy]",
+    "[data-code-clear]",
   ],
   "js-minifier": [
     "[data-jm-minify]",

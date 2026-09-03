@@ -172,6 +172,9 @@ function getActionIcon(element) {
 
   if (/envoyer|submit/.test(text)) return "fa-paper-plane";
   if (/copier|copy/.test(text)) return "fa-copy";
+  if (/hasher|hash/.test(text)) return "fa-key";
+  if (/formatter|format|formater/.test(text)) return "fa-align-left";
+  if (/charger|load/.test(text)) return "fa-upload";
   if (/telecharger|download|exporter|export/.test(text)) return "fa-download";
   if (/generer|generate/.test(text)) return "fa-gears";
   if (/convertir|convert|encoder|decoder|inverser|traduire/.test(text))

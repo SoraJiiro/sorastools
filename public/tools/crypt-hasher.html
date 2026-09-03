@@ -1,0 +1,122 @@
+<!DOCTYPE html>
+<html lang="fr">
+    <head>
+        <meta charset="UTF-8">
+        <meta name="viewport" content="width=device-width, initial-scale=1.0">
+        <title>Text Hasher - SoraTools</title>
+        <meta name="description"
+            content="Hache un texte avec crypt() comme PHP en utilisant un SEL personnalisé.">
+        <link rel="icon" type="image/png" href="/assets/logo.png">
+        <link rel="shortcut icon" type="image/png" href="/assets/logo.png">
+        <link rel="stylesheet" href="/css/global.css">
+        <link rel="stylesheet" href="/css/crypt-hasher.css">
+        <link rel="preconnect" href="https://fonts.googleapis.com">
+        <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+        <link
+            href="https://fonts.googleapis.com/css2?family=Intel+One+Mono:ital,wght@0,300..700;1,300..700&family=Roboto+Condensed:ital,wght@0,100..900&family=Science+Gothic:wght@100..900&display=swap"
+            rel="stylesheet">
+        <script type="module" src="/js/tools/crypt-hasher.js"></script>
+        <script type="module" src="/js/global.js"></script>
+    </head>
+    <body>
+        <header class="site-header">
+            <nav class="navbar">
+                <a class="logo" href="/"
+                    data-label="Retourner à l'accueil SoraTools"><img
+                        class="logo-img" src="/assets/logo.png" alt
+                        aria-hidden="true">SoraTools</a>
+                <div class="nav-links">
+                    <a href="/#tools"
+                        data-label="Aller au catalogue des Tools">Accueil</a>
+                    <a href="/suggest"
+                        data-label="Aller aux suggestions de tools">Suggest</a>
+                    <a href="/contact"
+                        data-label="Aller à la page contact">Contact</a>
+                </div>
+            </nav>
+        </header>
+
+        <main>
+            <section class="section tool-section" id="crypt-hasher">
+                <div class="section-heading">
+                    <p class="eyebrow">Dev / Sécurité</p>
+                    <h1>Text Hasher</h1>
+                    <p>Hache un texte avec le même moteur que PHP et définis
+                        toi-même le SEL.</p>
+                </div>
+
+                <div class="crypt-tool">
+                    <div class="crypt-fields">
+                        <label class="field" data-label="Texte à hacher">
+                            <span>Texte</span>
+                            <input type="text" data-crypt-text
+                                autocomplete="off" placeholder="Texte à hacher">
+                            <small aria-hidden="true">&nbsp;</small>
+                        </label>
+                        <label class="field" data-label="SEL crypt PHP">
+                            <span>SEL</span>
+                            <input type="text" data-crypt-salt value="$6$salt$"
+                                autocomplete="off" spellcheck="false">
+                            <small>Exemples : <code>$1$sel$</code>,
+                                <code>$5$sel$</code>, <code>$6$sel$</code>,
+                                <code>$2y$12$sel</code></small>
+                        </label>
+                    </div>
+
+                    <div class="crypt-toolbar">
+                        <button type="button" data-crypt-hash
+                            data-label="Calculer le hash crypt PHP">Hasher</button>
+                        <button type="button" data-crypt-copy
+                            data-label="Copier le hash">Copier</button>
+                        <button type="button" data-crypt-clear
+                            data-label="Vider les champs">Vider</button>
+                    </div>
+
+                    <label class="field crypt-result"
+                        data-label="Hash crypt PHP obtenu">
+                        <span>Résultat</span>
+                        <textarea data-crypt-output readonly
+                            spellcheck="false"></textarea>
+                    </label>
+                    <label class="field crypt-result"
+                        data-label="Empreinte du hash PHP">
+                        <span>Empreinte (substr -32)</span>
+                        <input type="text" data-crypt-fingerprint readonly
+                            spellcheck="false">
+                    </label>
+                    <p class="crypt-status" data-crypt-status
+                        aria-live="polite">En attente.</p>
+                    <p class="crypt-warning">Le texte est transmis au serveur
+                        local pour appeler PHP crypt(). Ne l’utilise pas pour
+                        envoyer un vrai mot de passe sensible.</p>
+                </div>
+            </section>
+        </main>
+
+        <section class="tech-explanation">
+            <div class="tech-explanation-heading">
+                <p class="tech-name">PHP crypt()</p>
+                <h2 class="subtitle">Comment fonctionne le hachage ?</h2>
+            </div>
+            <p>Le hachage transforme ton texte en une empreinte de longueur
+                fixe. Contrairement au chiffrement, il n’est pas censé être
+                déchiffrable : on recalcule le hash pour vérifier une valeur.
+            </p>
+            <p>Avec <code>crypt()</code>, le <strong>SEL</strong> est placé au
+                début du résultat. Il indique l’algorithme et ses paramètres,
+                puis il est mélangé au texte avant le calcul. Le même texte
+                avec un SEL différent produit donc un hash différent.</p>
+            <p class="crypt-prefixes"><strong>Préfixes courants :</strong>
+                <code>$1$</code> MD5, <code>$5$</code> SHA-256,
+                <code>$6$</code> SHA-512 et <code>$2y$</code> bcrypt.
+                L’empreinte affichée ci-dessus correspond aux
+                <code>32</code> derniers caractères du hash complet.</p>
+        </section>
+
+        <footer class="site-footer">
+            <p>&copy; <span class="date"></span> SoraTools - Tous droits
+                réservés.</p>
+            <p class="location"></p>
+        </footer>
+    </body>
+</html>

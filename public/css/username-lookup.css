@@ -105,6 +105,11 @@
   color: var(--text-muted);
 }
 
+.lookup-result__meta {
+  font-size: 0.9rem;
+  color: var(--text-muted);
+}
+
 .lookup-result a {
   color: var(--accent);
   font-weight: 600;

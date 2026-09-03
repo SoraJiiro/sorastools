@@ -1,0 +1,130 @@
+.crypt-tool {
+  padding: 24px;
+  display: grid;
+  gap: 18px;
+  background: linear-gradient(
+    180deg,
+    rgba(29, 35, 44, 0.94),
+    rgba(18, 22, 28, 0.94)
+  );
+  border: 1px solid var(--border);
+  border-radius: 24px;
+  box-shadow: var(--shadow);
+}
+
+.crypt-fields {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 18px;
+}
+
+.crypt-fields input {
+  width: 100%;
+  border: 1px solid var(--border);
+  background: rgba(255, 255, 255, 0.04);
+  color: var(--text);
+  padding: 14px;
+  outline: none;
+  font:
+    1rem "Intel One Mono",
+    Consolas,
+    monospace;
+}
+
+.crypt-fields input:focus {
+  border-color: var(--border-orange);
+}
+.crypt-fields small {
+  min-height: 1.25em;
+  color: var(--muted);
+}
+.crypt-fields small code,
+.crypt-prefixes code {
+  color: var(--primary-light);
+  font-family: "Intel One Mono", Consolas, monospace;
+  font-weight: 800;
+}
+
+.crypt-toolbar {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 10px;
+}
+
+.crypt-toolbar button {
+  border: 0;
+  border-radius: 999px;
+  background: linear-gradient(135deg, var(--primary), #ff5200);
+  color: #111;
+  font-weight: 900;
+  cursor: pointer;
+  padding: 12px 16px;
+  transition:
+    transform var(--transition),
+    filter var(--transition);
+}
+
+.crypt-toolbar button:hover {
+  transform: translateY(-2px);
+  filter: brightness(1.1);
+}
+
+.crypt-result textarea {
+  width: 100%;
+  min-height: 110px;
+  border: 1px solid var(--border);
+  background: rgba(255, 255, 255, 0.04);
+  color: var(--text);
+  padding: 14px;
+  outline: none;
+  resize: vertical;
+  font:
+    1rem/1.55 "Intel One Mono",
+    Consolas,
+    monospace;
+}
+
+.crypt-status {
+  margin: 0;
+  color: var(--muted);
+  font-weight: 800;
+}
+.crypt-status[data-type="success"] {
+  color: #39d353;
+}
+.crypt-status[data-type="warning"] {
+  color: #ffcc66;
+}
+.crypt-status[data-type="error"] {
+  color: #ff6b6b;
+}
+.crypt-warning {
+  margin: 0;
+  color: var(--muted);
+  font-size: 0.9rem;
+}
+
+.crypt-prefixes {
+  padding-top: 8px;
+  border-top: 1px solid var(--border);
+}
+
+@media (max-width: 720px) {
+  .crypt-fields {
+    grid-template-columns: 1fr;
+  }
+}
+
+.crypt-result input {
+  width: 100%;
+  min-height: 110px;
+  border: 1px solid var(--border);
+  background: rgba(255, 255, 255, 0.04);
+  color: var(--text);
+  padding: 14px;
+  outline: none;
+  font:
+    1rem "Intel One Mono",
+    Consolas,
+    monospace;
+}

@@ -38,7 +38,15 @@ router.get("/tools/color-picker", (req, res) => {
 });
 
 router.get("/tools/json-formatter", (req, res) => {
-  sendPublicFile(res, "tools", "json-formatter.html");
+  res.redirect(301, "/tools/code-formatter");
+});
+
+router.get("/tools/code-formatter", (req, res) => {
+  sendPublicFile(res, "tools", "code-formatter.html");
+});
+
+router.get("/tools/crypt-hasher", (req, res) => {
+  sendPublicFile(res, "tools", "crypt-hasher.html");
 });
 
 router.get("/tools/regex-tester", (req, res) => {

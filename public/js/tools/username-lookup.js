@@ -5,6 +5,19 @@ const usernameInput = document.querySelector("[data-lookup-username]");
 const lookupStatus = document.querySelector("[data-lookup-status]");
 const lookupResults = document.querySelector("[data-lookup-results]");
 
+function getLabel(result = {}) {
+  if (result.status === "taken") return "Probable";
+  if (result.status === "available") return "Peu probable";
+  if (result.status === "uncertain") return "Incertain";
+  return "Inconnu";
+}
+
+function getClassName(result = {}) {
+  if (result.status === "taken") return "is-taken";
+  if (result.status === "available") return "is-available";
+  return "is-unknown";
+}
+
 function renderResults(results = []) {
   if (!lookupResults) return;
 
@@ -20,22 +33,8 @@ function renderResults(results = []) {
 
   lookupResults.innerHTML = sortedResults
     .map((result) => {
-      const label =
-        result.status === "taken"
-          ? "Probable"
-          : result.status === "available"
-            ? "Peu probable"
-            : result.status === "uncertain"
-              ? "Incertain"
-              : "Inconnu";
-      const className =
-        result.status === "taken"
-          ? "is-taken"
-          : result.status === "available"
-            ? "is-available"
-            : result.status === "uncertain"
-              ? "is-unknown"
-              : "is-unknown";
+      const label = getLabel(result);
+      const className = getClassName(result);
 
       return `
         <article class="lookup-result ${className}">
@@ -44,6 +43,9 @@ function renderResults(results = []) {
             <span>${label}</span>
           </div>
           <p>${result.message}</p>
+          <p class="lookup-result__meta">
+            Confiance : ${result.confidence ?? 0}% · ${result.reason || "Aucune raison fournie"}
+          </p>
           ${result.url ? `<a href="${result.url}" target="_blank" rel="noreferrer">Ouvrir la page</a>` : ""}
         </article>
       `;
