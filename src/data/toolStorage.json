@@ -112,6 +112,28 @@
     "updatedAt": "2026-06-26"
   },
   {
+    "id": "box-shadow-generator",
+    "name": "CSS Box Shadow Generator",
+    "category": "Design",
+    "description": "Génère des box-shadow CSS avec réglages précis et aperçu en direct.",
+    "icon": "<i class='fa-solid fa-cubes-stacked'></i>",
+    "url": "/tools/box-shadow-generator",
+    "status": "ready",
+    "createdAt": "2026-09-04",
+    "updatedAt": "2026-09-04"
+  },
+  {
+    "id": "gradient-generator",
+    "name": "CSS Gradient Generator",
+    "category": "Design",
+    "description": "Compose des gradients linéaires, radiaux et coniques avec preview.",
+    "icon": "<i class='fa-solid fa-lines-leaning'></i>",
+    "url": "/tools/gradient-generator",
+    "status": "ready",
+    "createdAt": "2026-09-04",
+    "updatedAt": "2026-09-04"
+  },
+  {
     "id": "js-minifier",
     "name": "JS Minifier",
     "category": "Dev",

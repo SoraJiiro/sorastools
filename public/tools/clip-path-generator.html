@@ -47,7 +47,7 @@
             presets, des points déplaçables et un aperçu en direct.</p>
         </div>
 
-        <div class="clip-tool">
+        <div class="clip-tool" id="tool-panel">
           <div class="clip-toolbar">
             <select data-clip-preset
               data-label="Choisir une forme prédéfinie">
@@ -117,8 +117,8 @@
 
               <label class="clip-field">
                 <span>CSS généré</span>
-                <textarea data-clip-output readonly
-                  spellcheck="false"></textarea>
+                <pre class="css-output"><code class="language-css"
+                  data-clip-output></code></pre>
               </label>
             </section>
           </div>

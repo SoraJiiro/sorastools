@@ -1,11 +1,11 @@
 <!doctype html>
 <html lang="fr">
-<head>
-  <meta charset="utf-8">
-  <meta name="viewport" content="width=device-width,initial-scale=1">
-  <title>Chart Editor</title>
-  <link rel="stylesheet" href="/assets/css/global.css">
-  <style>
+  <head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width,initial-scale=1">
+    <title>Chart Editor</title>
+    <link rel="stylesheet" href="/assets/css/global.css">
+    <style>
     body{background:#06121a;color:#dfeff6;font-family:Inter,Arial,Helvetica,sans-serif;margin:0}
     .container{padding:12px}
     .modal{position:fixed;inset:0;background:rgba(0,0,0,.6);display:flex;align-items:center;justify-content:center}
@@ -19,37 +19,39 @@
     .btn{padding:8px 12px;border-radius:6px;background:#0b3b4a;color:#eaf7fb;border:none;cursor:pointer}
     .note-type{padding:6px 8px;border-radius:6px;background:#06252b;color:#cfe}
   </style>
-</head>
-<body>
-  <div class="modal" id="metaModal">
-    <div class="card">
-      <h3>Nouvelle chanson</h3>
-      <div class="row"><label>Nom</label><input id="songName"></div>
-      <div class="row"><label>Artist</label><input id="artist"></div>
-      <div class="row"><label>Date</label><input id="date" type="date"></div>
-      <div class="row"><label>Album</label><input id="album"></div>
-      <div class="row"><label>Charter</label><input id="charter"></div>
-      <div class="row"><label>Fichier audio</label><input id="audioFile" type="file" accept="audio/*"></div>
-      <div style="text-align:right;margin-top:8px"><button class="btn" id="openBtn">Charger et ouvrir</button></div>
-    </div>
-  </div>
-
-  <div class="container">
-    <div class="toolbar">
-      <div>Song: <span id="metaDisplay">(aucune)</span></div>
-      <select id="noteType" class="note-type">
-        <option value="normal">Normal</option>
-        <option value="hopo">Hop-o</option>
-        <option value="tap">Tap</option>
-        <option value="open">Open</option>
-      </select>
-      <button id="saveBtn" class="btn">Exporter .chart</button>
+  </head>
+  <body>
+    <div class="modal" id="metaModal">
+      <div class="card">
+        <h3>Nouvelle chanson</h3>
+        <div class="row"><label>Nom</label><input id="songName"></div>
+        <div class="row"><label>Artist</label><input id="artist"></div>
+        <div class="row"><label>Date</label><input id="date" type="date"></div>
+        <div class="row"><label>Album</label><input id="album"></div>
+        <div class="row"><label>Charter</label><input id="charter"></div>
+        <div class="row"><label>Fichier audio</label><input id="audioFile"
+            type="file" accept="audio/*"></div>
+        <div style="text-align:right;margin-top:8px"><button class="btn"
+            id="openBtn">Charger et ouvrir</button></div>
+      </div>
     </div>
 
-    <div id="highwayWrap"><canvas id="highway"></canvas></div>
-    <audio id="audio" crossorigin="anonymous"></audio>
-  </div>
+    <div class="container" id="tool-panel">
+      <div class="toolbar">
+        <div>Song: <span id="metaDisplay">(aucune)</span></div>
+        <select id="noteType" class="note-type">
+          <option value="normal">Normal</option>
+          <option value="hopo">Hop-o</option>
+          <option value="tap">Tap</option>
+          <option value="open">Open</option>
+        </select>
+        <button id="saveBtn" class="btn">Exporter .chart</button>
+      </div>
 
-  <script src="/js/tools/chart-editor.js"></script>
-</body>
+      <div id="highwayWrap"><canvas id="highway"></canvas></div>
+      <audio id="audio" crossorigin="anonymous"></audio>
+    </div>
+
+    <script src="/js/tools/chart-editor.js"></script>
+  </body>
 </html>

@@ -1,0 +1,84 @@
+<!DOCTYPE html>
+<html lang="fr">
+    <head>
+        <meta charset="UTF-8">
+        <meta name="viewport" content="width=device-width, initial-scale=1.0">
+        <title>CSS Gradient Generator - SoraTool</title>
+        <meta name="description"
+            content="Génère des gradients CSS linéaires, radiaux et coniques avec aperçu en direct.">
+        <link rel="icon" type="image/png" href="/assets/logo.png">
+        <link rel="stylesheet" href="/css/global.css">
+        <link rel="stylesheet" href="/css/gradient-generator.css">
+        <link rel="preconnect" href="https://fonts.googleapis.com">
+        <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+        <link
+            href="https://fonts.googleapis.com/css2?family=Intel+One+Mono:ital,wght@0,300..700;1,300..700&family=Roboto+Condensed:ital,wght@0,100..900;1,100..900&family=Science+Gothic:wght@100..900&display=swap"
+            rel="stylesheet">
+        <script type="module" src="/js/tools/gradient-generator.js"></script>
+        <script type="module" src="/js/global.js"></script>
+    </head>
+    <body>
+        <header class="site-header"><nav class="navbar"><a class="logo" href="/"
+                    data-label="Retourner à l'accueil SoraTool"><img
+                        class="logo-img" src="/assets/logo.png" alt
+                        aria-hidden="true">SoraTool</a><div class="nav-links"><a
+                        href="/#tools"
+                        data-label="Aller au catalogue des Tools">Accueil</a><a
+                        href="/suggest"
+                        data-label="Aller aux suggestions de tools">Suggest</a><a
+                        href="/contact"
+                        data-label="Aller à la page contact">Contact</a></div></nav></header>
+        <main>
+            <section class="section tool-section" id="gradient-generator">
+                <div class="section-heading"><p
+                        class="eyebrow">Design</p><h1>CSS Gradient
+                        Generator</h1><p>Compose un gradient linéaire, radial ou
+                        conique et récupère directement son CSS.</p></div>
+                <div class="css-generator" id="tool-panel">
+                    <section class="css-generator-panel">
+                        <h2>Réglages</h2>
+                        <div class="generator-grid gradient-options">
+                            <label
+                                class="generator-field"><span>Type</span><select
+                                    data-gradient-type><option value="linear"
+                                        selected>Linéaire</option><option
+                                        value="radial">Radial</option><option
+                                        value="conic">Conique</option></select></label>
+                            <label class="generator-field"
+                                data-gradient-angle-field><span>Angle <output
+                                        data-gradient-angle-value>135deg</output></span><input
+                                    type="range" data-gradient-angle min="0"
+                                    max="360" value="135"></label>
+                            <label class="generator-field"
+                                data-gradient-shape-field><span>Forme
+                                    radiale</span><select
+                                    data-gradient-shape><option value="circle"
+                                        selected>Cercle</option><option
+                                        value="ellipse">Ellipse</option></select></label>
+                        </div>
+                        <div class="stops-header"><h3>Stops de
+                                couleur</h3><button type="button"
+                                data-gradient-add>Ajouter un stop</button></div>
+                        <div class="gradient-stops" data-gradient-stops></div>
+                        <div class="generator-actions"><button type="button"
+                                data-gradient-copy>Copier CSS</button><button
+                                type="button"
+                                data-gradient-reset>Reset</button></div>
+                        <p class="generator-status" data-gradient-status>En
+                            attente.</p>
+                    </section>
+                    <section
+                        class="css-generator-panel generator-result"><h2>Aperçu
+                            & sortie</h2><div class="gradient-preview"
+                            data-gradient-preview></div><label
+                            class="generator-field"><span>CSS
+                                généré</span><pre class="css-output"><code
+                                class="language-css" data-gradient-output></code></pre></label></section>
+                </div>
+            </section>
+        </main>
+        <footer class="site-footer"><p>&copy; <span class="date"></span>
+                SoraTool - Tous droits réservés.</p><p
+                class="location"></p></footer>
+    </body>
+</html>

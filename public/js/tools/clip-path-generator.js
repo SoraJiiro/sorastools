@@ -19,16 +19,83 @@ let points = [];
 let activeDrag = null;
 
 const presets = {
-  triangle: [[50, 0], [100, 100], [0, 100]],
-  diamond: [[50, 0], [100, 50], [50, 100], [0, 50]],
-  pentagon: [[50, 0], [100, 38], [82, 100], [18, 100], [0, 38]],
-  hexagon: [[25, 0], [75, 0], [100, 50], [75, 100], [25, 100], [0, 50]],
-  octagon: [[30, 0], [70, 0], [100, 30], [100, 70], [70, 100], [30, 100], [0, 70], [0, 30]],
-  star: [[50, 0], [61, 35], [98, 35], [68, 57], [79, 91], [50, 70], [21, 91], [32, 57], [2, 35], [39, 35]],
-  arrow: [[0, 35], [60, 35], [60, 10], [100, 50], [60, 90], [60, 65], [0, 65]],
-  chevron: [[0, 0], [70, 0], [100, 50], [70, 100], [0, 100], [30, 50]],
-  parallelogram: [[20, 0], [100, 0], [80, 100], [0, 100]],
-  trapezoid: [[20, 0], [80, 0], [100, 100], [0, 100]],
+  triangle: [
+    [50, 0],
+    [100, 100],
+    [0, 100],
+  ],
+  diamond: [
+    [50, 0],
+    [100, 50],
+    [50, 100],
+    [0, 50],
+  ],
+  pentagon: [
+    [50, 0],
+    [100, 38],
+    [82, 100],
+    [18, 100],
+    [0, 38],
+  ],
+  hexagon: [
+    [25, 0],
+    [75, 0],
+    [100, 50],
+    [75, 100],
+    [25, 100],
+    [0, 50],
+  ],
+  octagon: [
+    [30, 0],
+    [70, 0],
+    [100, 30],
+    [100, 70],
+    [70, 100],
+    [30, 100],
+    [0, 70],
+    [0, 30],
+  ],
+  star: [
+    [50, 0],
+    [61, 35],
+    [98, 35],
+    [68, 57],
+    [79, 91],
+    [50, 70],
+    [21, 91],
+    [32, 57],
+    [2, 35],
+    [39, 35],
+  ],
+  arrow: [
+    [0, 35],
+    [60, 35],
+    [60, 10],
+    [100, 50],
+    [60, 90],
+    [60, 65],
+    [0, 65],
+  ],
+  chevron: [
+    [0, 0],
+    [70, 0],
+    [100, 50],
+    [70, 100],
+    [0, 100],
+    [30, 50],
+  ],
+  parallelogram: [
+    [20, 0],
+    [100, 0],
+    [80, 100],
+    [0, 100],
+  ],
+  trapezoid: [
+    [20, 0],
+    [80, 0],
+    [100, 100],
+    [0, 100],
+  ],
 };
 
 function setClipStatus(message, type = "default") {
@@ -102,7 +169,10 @@ function drawHandles() {
   handles.innerHTML = "";
 
   points.forEach((point, index) => {
-    const circle = document.createElementNS("http://www.w3.org/2000/svg", "circle");
+    const circle = document.createElementNS(
+      "http://www.w3.org/2000/svg",
+      "circle",
+    );
 
     circle.setAttribute("cx", point.x);
     circle.setAttribute("cy", point.y);
@@ -129,11 +199,15 @@ function drawHandles() {
 function updateTool() {
   const clipPath = getClipPath();
 
-  polygon.setAttribute("points", points.map((point) => `${point.x},${point.y}`).join(" "));
+  polygon.setAttribute(
+    "points",
+    points.map((point) => `${point.x},${point.y}`).join(" "),
+  );
   preview.style.clipPath = clipPath;
   preview.style.background = colorInput.value;
-  output.value = getCss();
+  output.textContent = getCss();
   drawHandles();
+  document.dispatchEvent(new CustomEvent("sorastool:content-updated"));
 }
 
 function eventToPoint(event) {
@@ -228,12 +302,12 @@ function setupClipPathGenerator() {
   removeButton?.addEventListener("click", () => removePoint());
 
   copyButton?.addEventListener("click", async () => {
-    if (!output.value.trim()) {
+    if (!output.textContent.trim()) {
       setClipStatus("Aucun CSS à copier.", "warning");
       return;
     }
 
-    await copyToClipboard(output.value);
+    await copyToClipboard(output.textContent);
     temporarilyChangeText(copyButton, "Copié");
     setClipStatus("CSS copié dans le presse-papiers.", "success");
   });

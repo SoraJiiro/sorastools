@@ -200,7 +200,7 @@ function setupScrollUpButton() {
 
 function setupCursorGlow() {
   const excludedSelector =
-    ".tool-section, .tool-card, .form-card, .not-found-card, .lookup-card, .card";
+    "#tool-panel, .tool-card, .form-card, .not-found-card, .lookup-card, .card";
 
   function updateGlow(event) {
     if (event.pointerType === "touch") return;
@@ -464,7 +464,20 @@ async function giveCredit(toolId) {
   }
 }
 
+function setTextAboveAll() {
+  const texts = document.querySelectorAll(
+    "a, button, p, h1, h2, h3, h4, h5, h6, span, i, b, small, label",
+  );
+
+  texts.forEach((text) => {
+    if (text.classList.contains("hero-icon")) return;
+    text.style.zIndex = "9999";
+    text.style.position = "relative";
+  });
+}
+
 initFaKit();
+setTextAboveAll();
 setFooterLocation();
 updateFooterDate();
 setInterval(updateFooterDate, 30000 * 3);

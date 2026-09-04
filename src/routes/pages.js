@@ -77,6 +77,14 @@ router.get("/tools/clip-path-generator", (req, res) => {
   sendPublicFile(res, "tools", "clip-path-generator.html");
 });
 
+router.get("/tools/box-shadow-generator", (req, res) => {
+  sendPublicFile(res, "tools", "box-shadow-generator.html");
+});
+
+router.get("/tools/gradient-generator", (req, res) => {
+  sendPublicFile(res, "tools", "gradient-generator.html");
+});
+
 router.get("/tools/js-minifier", (req, res) => {
   sendPublicFile(res, "tools", "js-minifier.html");
 });

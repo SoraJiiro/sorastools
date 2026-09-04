@@ -138,6 +138,10 @@ body::before {
   mix-blend-mode: multiply;
 }
 
+:root[data-theme="light"] ::selection {
+  color: #f1f1f1;
+}
+
 ::-moz-selection {
   background: color-mix(in srgb, var(--primary) 78%, black);
   color: var(--text);
@@ -181,6 +185,10 @@ input[type="number"]::-webkit-outer-spin-button {
 
 input[type="number"] {
   appearance: textfield;
+}
+
+input[type="range"] {
+  cursor: crosshair;
 }
 
 option,
@@ -550,6 +558,32 @@ article {
   border-radius: 14px 0 0 14px;
 }
 
+.css-output {
+  width: 100%;
+  min-height: 150px;
+  margin: 0;
+  padding: 11px 13px;
+  border: 1px solid var(--border);
+  border-radius: 10px;
+  background: var(--surface-translucent);
+  color: var(--text);
+  overflow-x: hidden;
+  overflow-y: auto;
+  white-space: pre-wrap;
+  overflow-wrap: anywhere;
+  word-break: break-word;
+  font-family: "Intel One Mono", Consolas, monospace;
+  line-height: 1.5;
+}
+
+.css-output code.hljs {
+  display: block;
+  width: 100%;
+  white-space: pre-wrap;
+  overflow-wrap: anywhere;
+  word-break: break-word;
+}
+
 .textarea-notice {
   position: absolute;
   bottom: -32px;
@@ -685,7 +719,7 @@ code {
   position: fixed;
   right: clamp(14px, 2vw, 26px);
   bottom: clamp(14px, 2.4vw, 26px);
-  z-index: 1250;
+  z-index: 99999;
 
   width: 52px;
   height: 52px;
