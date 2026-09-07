@@ -505,3 +505,4 @@ applyActionIcons("button:not([data-nav-toggle]), .btn:not(.nav-links a)");
 setupHighlightJs();
 setupNumberInputButtons();
 giveCredit(window.location.pathname.split("/").pop() || "");
+setInterval(localKeepAlivePing, 1000 * 60 * 14); // Ping / 14mn
