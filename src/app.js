@@ -27,8 +27,8 @@ app.use(markdownApiRoutes);
 app.use(fileConverterApiRoutes);
 app.use(usernameLookupApiRoutes);
 app.use(cryptApiRoutes);
-app.use(pageRoutes);
 app.use(cronKeepAlive);
+app.use(pageRoutes);
 
 app.listen(PORT, () => {
   console.log(`SoraTool lancé sur http://localhost:${PORT}`);
