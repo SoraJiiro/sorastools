@@ -9,6 +9,7 @@ const fileConverterApiRoutes = require("./routes/api/fileConverter");
 const usernameLookupApiRoutes = require("./routes/api/usernameLookup");
 const cryptApiRoutes = require("./routes/api/crypt");
 const pageRoutes = require("./routes/pages");
+const cronKeepAlive = require("./routes/api/cronKeepAlive");
 
 const app = express();
 const PORT = process.env.PORT || 3000;
@@ -27,6 +28,7 @@ app.use(fileConverterApiRoutes);
 app.use(usernameLookupApiRoutes);
 app.use(cryptApiRoutes);
 app.use(pageRoutes);
+app.use(cronKeepAlive);
 
 app.listen(PORT, () => {
   console.log(`SoraTool lancé sur http://localhost:${PORT}`);
