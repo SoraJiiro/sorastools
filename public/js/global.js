@@ -476,6 +476,18 @@ function setTextAboveAll() {
   });
 }
 
+async function localKeepAlivePing() {
+  try {
+    const response = await fetch("/api/keep-alive");
+    if (!response.ok) {
+      throw new Error(`HTTP error! status: ${response.status}`);
+    }
+    return response.json();
+  } catch (error) {
+    console.error("Erreur lors du ping keep-alive local:", error);
+  }
+}
+
 initFaKit();
 setTextAboveAll();
 setFooterLocation();
