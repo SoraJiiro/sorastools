@@ -199,6 +199,8 @@ function setupScrollUpButton() {
 }
 
 function setupCursorGlow() {
+  if (document.body.id === "b404") return;
+
   const excludedSelector =
     "#tool-panel, .tool-card, .form-card, .not-found-card, .lookup-card, .card";
 

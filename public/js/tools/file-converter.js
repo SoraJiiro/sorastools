@@ -34,6 +34,7 @@ const OUTPUT_FORMATS = {
     { value: "avif", label: "AVIF" },
     { value: "tiff", label: "TIFF" },
     { value: "gif", label: "GIF" },
+    { value: "ico", label: "ICO" },
   ],
   video: [
     { value: "mp4", label: "MP4" },
@@ -66,7 +67,10 @@ function formatBytes(bytes = 0) {
   if (!bytes) return "0 o";
 
   const units = ["o", "Ko", "Mo", "Go"];
-  const index = Math.min(Math.floor(Math.log(bytes) / Math.log(1024)), units.length - 1);
+  const index = Math.min(
+    Math.floor(Math.log(bytes) / Math.log(1024)),
+    units.length - 1,
+  );
   const value = bytes / 1024 ** index;
 
   return `${value.toFixed(value >= 10 || index === 0 ? 0 : 1)} ${units[index]}`;
@@ -131,7 +135,8 @@ function updateFileLabel() {
 
   if (!file) {
     fileName.textContent = "Choisir un fichier";
-    fileMeta.textContent = "Glisse-dépose ou clique ici. Taille max serveur : 350 Mo.";
+    fileMeta.textContent =
+      "Glisse-dépose ou clique ici. Taille max serveur : 350 Mo.";
     return;
   }
 
@@ -166,7 +171,10 @@ async function convertFile(event) {
   formData.append("outputFormat", outputSelect?.value || "");
 
   setLoading(true);
-  setFcStatus(isCompression ? "Compression en cours..." : "Conversion en cours...", "warning");
+  setFcStatus(
+    isCompression ? "Compression en cours..." : "Conversion en cours...",
+    "warning",
+  );
 
   try {
     const response = await fetch("/api/file-converter/convert", {
@@ -176,11 +184,18 @@ async function convertFile(event) {
 
     if (!response.ok) {
       const error = await response.json().catch(() => null);
-      throw new Error(error?.message || (isCompression ? "Compression impossible." : "Conversion impossible."));
+      throw new Error(
+        error?.message ||
+          (isCompression
+            ? "Compression impossible."
+            : "Conversion impossible."),
+      );
     }
 
     const blob = await response.blob();
-    const filename = getFilenameFromDisposition(response.headers.get("Content-Disposition") || "");
+    const filename = getFilenameFromDisposition(
+      response.headers.get("Content-Disposition") || "",
+    );
     const url = URL.createObjectURL(blob);
 
     downloadLink.href = url;
@@ -189,7 +204,10 @@ async function convertFile(event) {
     downloadLink.textContent = `Télécharger ${filename}`;
     downloadLink.click();
 
-    setFcStatus(isCompression ? "Compression terminée." : "Conversion terminée.", "success");
+    setFcStatus(
+      isCompression ? "Compression terminée." : "Conversion terminée.",
+      "success",
+    );
   } catch (error) {
     setFcStatus(error.message, "error");
   } finally {

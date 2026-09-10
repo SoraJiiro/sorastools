@@ -6,7 +6,11 @@
   width: 92vw;
 }
 
-#b404::after {
+#b404 .not-found {
+  position: relative;
+}
+
+#b404 .not-found::before {
   content: "404";
   position: fixed;
   top: -64px;
@@ -15,6 +19,7 @@
   font-weight: 900;
   font-family: "Science Gothic", sans-serif !important;
   color: rgba(var(--accent-rgb), 0.18);
+  pointer-events: none;
 }
 
 .not-found {

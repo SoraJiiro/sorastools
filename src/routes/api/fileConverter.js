@@ -34,6 +34,7 @@ const IMAGE_FORMATS = new Set([
   "avif",
   "tiff",
   "gif",
+  "ico",
 ]);
 const VIDEO_FORMATS = new Set([
   "mp4",
@@ -72,6 +73,7 @@ const MIME_TYPES = {
   avif: "image/avif",
   tiff: "image/tiff",
   gif: "image/gif",
+  ico: "image/x-icon",
   mp4: "video/mp4",
   webm: "video/webm",
   mkv: "video/x-matroska",
@@ -225,6 +227,32 @@ function runProcess(command, args, label) {
 }
 
 async function convertImage(inputBuffer, outputExtension, quality = 90) {
+  if (outputExtension === "ico") {
+    const pngBuffer = await sharp(inputBuffer)
+      .rotate()
+      .resize(256, 256, {
+        fit: "contain",
+        background: { r: 0, g: 0, b: 0, alpha: 0 },
+      })
+      .png()
+      .toBuffer();
+
+    const header = Buffer.alloc(22);
+    header.writeUInt16LE(0, 0);
+    header.writeUInt16LE(1, 2);
+    header.writeUInt16LE(1, 4);
+    header.writeUInt8(0, 6);
+    header.writeUInt8(0, 7);
+    header.writeUInt8(0, 8);
+    header.writeUInt8(0, 9);
+    header.writeUInt16LE(1, 10);
+    header.writeUInt16LE(32, 12);
+    header.writeUInt32LE(pngBuffer.length, 14);
+    header.writeUInt32LE(22, 18);
+
+    return Buffer.concat([header, pngBuffer]);
+  }
+
   const sharpFormat = outputExtension === "jpg" ? "jpeg" : outputExtension;
   let pipeline = sharp(inputBuffer, { animated: true }).rotate();
 

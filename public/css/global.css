@@ -1061,7 +1061,7 @@ code {
 }
 
 @media (max-width: 525px) {
-  #b404::after {
+  #b404 .not-found::before {
     top: -38px;
     right: 6px;
     font-size: 7rem;
