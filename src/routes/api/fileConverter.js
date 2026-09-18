@@ -58,7 +58,14 @@ const AUDIO_FORMATS = new Set([
 const WORD_INPUT_FORMATS = new Set(["doc", "docx", "odt", "rtf"]);
 const EXCEL_INPUT_FORMATS = new Set(["xls", "xlsx", "ods", "csv"]);
 const POWERPOINT_INPUT_FORMATS = new Set(["ppt", "pptx", "odp"]);
-const PDF_TO_OFFICE_FORMATS = new Set(["docx", "xlsx", "pptx"]);
+const PDF_TO_OFFICE_FORMATS = new Set([
+  "docx",
+  "odt",
+  "xlsx",
+  "ods",
+  "pptx",
+  "odp",
+]);
 const OFFICE_TO_PDF_FORMATS = new Set([
   ...WORD_INPUT_FORMATS,
   ...EXCEL_INPUT_FORMATS,
@@ -90,8 +97,11 @@ const MIME_TYPES = {
   opus: "audio/opus",
   pdf: "application/pdf",
   docx: "application/vnd.openxmlformats-officedocument.wordprocessingml.document",
+  odt: "application/vnd.oasis.opendocument.text",
   xlsx: "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet",
+  ods: "application/vnd.oasis.opendocument.spreadsheet",
   pptx: "application/vnd.openxmlformats-officedocument.presentationml.presentation",
+  odp: "application/vnd.oasis.opendocument.presentation",
 };
 
 function getExtension(filename = "") {
@@ -156,11 +166,16 @@ function validateConversion(category, inputExtension, outputExtension, mode) {
   }
 
   if (category === "video") {
-    return VIDEO_FORMATS.has(outputExtension);
+    return (
+      VIDEO_FORMATS.has(inputExtension) &&
+      (VIDEO_FORMATS.has(outputExtension) || AUDIO_FORMATS.has(outputExtension))
+    );
   }
 
   if (category === "audio") {
-    return AUDIO_FORMATS.has(outputExtension);
+    return (
+      AUDIO_FORMATS.has(inputExtension) && AUDIO_FORMATS.has(outputExtension)
+    );
   }
 
   if (category === "document") {
@@ -273,6 +288,13 @@ function buildFfmpegArgs(
   const args = ["-y", "-i", inputPath];
 
   if (category === "audio") {
+    args.push("-vn");
+  }
+
+  if (
+    AUDIO_FORMATS.has(outputExtension) &&
+    !(category === "video" && VIDEO_FORMATS.has(outputExtension))
+  ) {
     args.push("-vn");
   }
 
@@ -416,12 +438,27 @@ async function convertPdfToOffice(inputBuffer, outputExtension) {
     return Packer.toBuffer(createDocxFromText(text));
   }
 
+  if (outputExtension === "odt") {
+    const docxBuffer = Packer.toBuffer(createDocxFromText(text));
+    return convertOffice(docxBuffer, ".odt", undefined);
+  }
+
   if (outputExtension === "xlsx") {
     return createXlsxFromText(text);
   }
 
+  if (outputExtension === "ods") {
+    const xlsxBuffer = createXlsxFromText(text);
+    return convertOffice(xlsxBuffer, ".ods", undefined);
+  }
+
   if (outputExtension === "pptx") {
     return createPptxFromText(text);
+  }
+
+  if (outputExtension === "odp") {
+    const pptxBuffer = await createPptxFromText(text);
+    return convertOffice(pptxBuffer, ".odp", undefined);
   }
 
   throw new Error("Conversion PDF non supportée.");

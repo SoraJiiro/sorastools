@@ -88,14 +88,19 @@
               data-label="Réinitialiser le convertisseur">Vider</button>
           </div>
 
-          <div class="fc-progress" aria-hidden="true" data-fc-progress>
-            <span></span>
+          <div class="fc-progress-wrap">
+            <div class="fc-progress-meta" aria-live="polite">
+              <span class="fc-progress-value" data-fc-progress-value>0%</span>
+              <span class="fc-progress-eta" data-fc-eta>ETA: --</span>
+            </div>
+            <div class="fc-progress" aria-hidden="true" data-fc-progress>
+              <span></span>
+            </div>
           </div>
 
           <div class="fc-result" aria-live="polite">
             <p data-fc-status>En attente d'un fichier.</p>
-            <a href="#" data-fc-download hidden>Télécharger le fichier
-              traité</a>
+            <a href="#" data-fc-download hidden>En attente.</a>
           </div>
         </form>
       </section>

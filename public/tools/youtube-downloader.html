@@ -1,0 +1,94 @@
+<!DOCTYPE html>
+<html lang="fr">
+    <head>
+        <meta charset="UTF-8">
+        <meta name="viewport" content="width=device-width, initial-scale=1.0">
+        <title>YouTube Downloader - SoraTool</title>
+        <meta name="description"
+            content="Télécharge une vidéo ou son audio depuis YouTube et les Shorts.">
+        <link rel="icon" type="image/png" href="/assets/logo.png">
+        <link rel="stylesheet" href="/css/global.css">
+        <link rel="stylesheet" href="/css/youtube-downloader.css">
+        <link rel="preconnect" href="https://fonts.googleapis.com">
+        <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+        <link
+            href="https://fonts.googleapis.com/css2?family=Intel+One+Mono:ital,wght@0,300..700;1,300..700&family=Roboto+Condensed:ital,wght@0,100..900;1,100..900&family=Science+Gothic:wght@100..900&display=swap"
+            rel="stylesheet">
+        <script type="module" src="/js/tools/youtube-downloader.js"></script>
+        <script type="module" src="/js/global.js"></script>
+    </head>
+    <body>
+        <header class="site-header">
+            <nav class="navbar">
+                <a class="logo" href="/"
+                    data-label="Retourner à l'accueil SoraTool"><img
+                        class="logo-img" src="/assets/logo.png" alt
+                        aria-hidden="true">SoraTool</a>
+                <div class="nav-links">
+                    <a href="/#tools"
+                        data-label="Aller au catalogue des tools">Tools</a>
+                    <a href="/suggest"
+                        data-label="Aller aux suggestions de tools">Suggest</a>
+                    <a href="/contact"
+                        data-label="Aller à la page contact">Contact</a>
+                </div>
+            </nav>
+        </header>
+
+        <main>
+            <section class="section tool-section" id="youtube-downloader">
+                <div class="section-heading">
+                    <p class="eyebrow">Média</p>
+                    <h1>YouTube Downloader</h1>
+                    <p>Colle une URL YouTube ou Shorts et récupère la vidéo ou
+                        seulement son audio.</p>
+                </div>
+
+                <form class="yt-tool" data-yt-form>
+                    <label class="field" data-label="URL YouTube">
+                        <span>URL YouTube</span>
+                        <input type="url" data-yt-url
+                            placeholder="https://www.youtube.com/watch?v=..."
+                            required>
+                    </label>
+
+                    <div class="yt-controls">
+                        <label class="field"
+                            data-label="Format de téléchargement">
+                            <span>Format</span>
+                            <select data-yt-type>
+                                <option value="video">Vidéo MP4</option>
+                                <option value="audio">Audio MP3</option>
+                            </select>
+                        </label>
+                        <button type="submit" data-yt-submit
+                            data-label="Télécharger depuis YouTube">Télécharger</button>
+                    </div>
+
+                    <p class="yt-status" data-yt-status aria-live="polite">En
+                        attente d'une URL.</p>
+                    <div class="yt-progress-wrap" data-yt-progress-wrap hidden>
+                        <div class="yt-progress-meta">
+                            <span data-yt-progress-value>0%</span>
+                            <span data-yt-eta>ETA: --</span>
+                        </div>
+                        <div class="yt-progress" role="progressbar"
+                            aria-label="Progression du téléchargement"
+                            aria-valuemin="0" aria-valuemax="100"
+                            aria-valuenow="0">
+                            <span data-yt-progress-bar></span>
+                        </div>
+                    </div>
+                    <a class="yt-download" data-yt-download hidden>Télécharger
+                        le résultat</a>
+                </form>
+            </section>
+        </main>
+
+        <footer class="site-footer">
+            <p>&copy; <span class="date"></span> SoraTool - Tous droits
+                réservés.</p>
+            <p class="location"></p>
+        </footer>
+    </body>
+</html>

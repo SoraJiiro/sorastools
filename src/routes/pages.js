@@ -93,6 +93,10 @@ router.get("/tools/file-converter", (req, res) => {
   sendPublicFile(res, "tools", "file-converter.html");
 });
 
+router.get("/tools/youtube-downloader", (req, res) => {
+  sendPublicFile(res, "tools", "youtube-downloader.html");
+});
+
 router.get("/tools/username-lookup", (req, res) => {
   sendPublicFile(res, "tools", "username-lookup.html");
 });

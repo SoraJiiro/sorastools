@@ -14,6 +14,12 @@ const resetButton = document.querySelector("[data-fc-reset]");
 const statusElement = document.querySelector("[data-fc-status]");
 const downloadLink = document.querySelector("[data-fc-download]");
 const progress = document.querySelector("[data-fc-progress]");
+const progressBar = progress?.querySelector("span");
+const progressValue = document.querySelector("[data-fc-progress-value]");
+const etaLabel = document.querySelector("[data-fc-eta]");
+
+let processingTimer = null;
+let etaStartedAt = 0;
 
 const OUTPUT_FORMATS = {
   auto: [
@@ -44,6 +50,13 @@ const OUTPUT_FORMATS = {
     { value: "avi", label: "AVI" },
     { value: "m4v", label: "M4V" },
     { value: "ogv", label: "OGV" },
+    { value: "mp3", label: "MP3 audio" },
+    { value: "wav", label: "WAV audio" },
+    { value: "ogg", label: "OGG audio" },
+    { value: "flac", label: "FLAC audio" },
+    { value: "aac", label: "AAC audio" },
+    { value: "m4a", label: "M4A audio" },
+    { value: "opus", label: "OPUS audio" },
   ],
   audio: [
     { value: "mp3", label: "MP3" },
@@ -58,8 +71,11 @@ const OUTPUT_FORMATS = {
   document: [
     { value: "pdf", label: "PDF (Word/Excel/PowerPoint → PDF)" },
     { value: "docx", label: "DOCX (PDF → Word)" },
+    { value: "odt", label: "ODT (PDF → OpenDocument Text)" },
     { value: "xlsx", label: "XLSX (PDF → Excel)" },
+    { value: "ods", label: "ODS (PDF → OpenDocument Sheet)" },
     { value: "pptx", label: "PPTX (PDF → PowerPoint)" },
+    { value: "odp", label: "ODP (PDF → OpenDocument Presentation)" },
   ],
 };
 
@@ -88,12 +104,76 @@ function setFcStatus(message, type = "default") {
   setStatus(statusElement, message, type);
 }
 
-function setLoading(isLoading) {
+function formatEta(seconds = 0) {
+  if (!Number.isFinite(seconds) || seconds <= 0) return "ETA: --";
+
+  const totalSeconds = Math.max(0, Math.round(seconds));
+  const minutes = Math.floor(totalSeconds / 60);
+  const remainingSeconds = totalSeconds % 60;
+
+  if (minutes > 0) {
+    return `ETA: ${minutes}m ${remainingSeconds}s`;
+  }
+
+  return `ETA: ${remainingSeconds}s`;
+}
+
+function updateEta(percent) {
+  if (!etaLabel) return;
+
+  if (percent <= 0 || !etaStartedAt) {
+    etaLabel.textContent = "ETA: --";
+    return;
+  }
+
+  const elapsedSeconds = (Date.now() - etaStartedAt) / 1000;
+  const remainingPercent = Math.max(0, 100 - percent);
+  const estimate = elapsedSeconds * (remainingPercent / Math.max(percent, 1));
+
+  etaLabel.textContent = formatEta(estimate);
+
+  if (percent >= 100) {
+    etaLabel.textContent = "ETA: 00s";
+  }
+}
+
+function setProgress(value, label = "") {
+  const percent = Math.max(0, Math.min(100, Number(value) || 0));
+
+  if (progressBar) {
+    progressBar.style.width = `${percent}%`;
+  }
+
+  if (progressValue) {
+    progressValue.textContent = `${Math.round(percent)}%`;
+  }
+
+  if (progress) {
+    progress.dataset.value = String(percent);
+    progress.setAttribute("aria-valuenow", String(percent));
+    if (label) {
+      progress.setAttribute("aria-label", label);
+    }
+  }
+
+  updateEta(percent);
+}
+
+function setLoading(isLoading, value = 0) {
   if (convertButton) convertButton.disabled = isLoading;
   if (progress) {
     progress.dataset.active = String(isLoading);
     progress.setAttribute("aria-hidden", String(!isLoading));
   }
+
+  if (isLoading) {
+    etaStartedAt = Date.now();
+    setProgress(value, "Conversion en cours");
+    return;
+  }
+
+  setProgress(100, "Traitement terminé");
+  if (etaLabel) etaLabel.textContent = "ETA: 00s";
 }
 
 function clearDownload() {
@@ -149,6 +229,9 @@ function resetForm() {
   fillOutputFormats();
   updateFileLabel();
   clearDownload();
+  if (progressValue) progressValue.textContent = "0%";
+  if (etaLabel) etaLabel.textContent = "ETA: --";
+  setProgress(0, "En attente");
   setFcStatus("En attente d'un fichier.");
 }
 
@@ -170,33 +253,86 @@ async function convertFile(event) {
   formData.append("category", categorySelect?.value || "auto");
   formData.append("outputFormat", outputSelect?.value || "");
 
-  setLoading(true);
+  if (processingTimer) {
+    clearInterval(processingTimer);
+    processingTimer = null;
+  }
+
+  etaStartedAt = Date.now();
+  setLoading(true, 5);
   setFcStatus(
-    isCompression ? "Compression en cours..." : "Conversion en cours...",
+    isCompression
+      ? "Compression en cours, veuillez patienter..."
+      : "Conversion en cours, veuillez patienter...",
     "warning",
   );
 
+  const xhr = new XMLHttpRequest();
+  const startProcessingProgress = () => {
+    let value = 35;
+    processingTimer = setInterval(() => {
+      value = Math.min(value + 8, 92);
+      setProgress(value, "Traitement du fichier en cours");
+    }, 700);
+  };
+
   try {
-    const response = await fetch("/api/file-converter/convert", {
-      method: "POST",
-      body: formData,
+    await new Promise((resolve, reject) => {
+      xhr.open("POST", "/api/file-converter/convert", true);
+      xhr.responseType = "blob";
+
+      xhr.upload.onprogress = (event) => {
+        if (!event.lengthComputable) return;
+        const progressValue = Math.min(
+          35,
+          Math.round((event.loaded / event.total) * 35),
+        );
+        setProgress(progressValue, "Téléversement du fichier");
+      };
+
+      xhr.onprogress = (event) => {
+        if (!event.lengthComputable) return;
+        const progressValue =
+          35 + Math.round((event.loaded / event.total) * 55);
+        setProgress(Math.min(progressValue, 96), "Téléchargement du résultat");
+      };
+
+      xhr.onload = () => {
+        if (xhr.status >= 400) {
+          try {
+            const errorPayload = JSON.parse(xhr.responseText || "{}");
+            reject(new Error(errorPayload.message || "Conversion impossible."));
+          } catch {
+            reject(new Error("Conversion impossible."));
+          }
+          return;
+        }
+
+        clearInterval(processingTimer);
+        processingTimer = null;
+        setProgress(100, "Téléchargement du fichier");
+        resolve();
+      };
+
+      xhr.onerror = () => {
+        clearInterval(processingTimer);
+        processingTimer = null;
+        reject(new Error("La conversion a échoué."));
+      };
+
+      xhr.onreadystatechange = () => {
+        if (xhr.readyState === 2 && !processingTimer) {
+          startProcessingProgress();
+        }
+      };
+
+      xhr.send(formData);
     });
 
-    if (!response.ok) {
-      const error = await response.json().catch(() => null);
-      throw new Error(
-        error?.message ||
-          (isCompression
-            ? "Compression impossible."
-            : "Conversion impossible."),
-      );
-    }
-
-    const blob = await response.blob();
     const filename = getFilenameFromDisposition(
-      response.headers.get("Content-Disposition") || "",
+      xhr.getResponseHeader("Content-Disposition") || "",
     );
-    const url = URL.createObjectURL(blob);
+    const url = URL.createObjectURL(xhr.response);
 
     downloadLink.href = url;
     downloadLink.download = filename;
@@ -209,9 +345,13 @@ async function convertFile(event) {
       "success",
     );
   } catch (error) {
+    clearInterval(processingTimer);
+    processingTimer = null;
+    setProgress(0, "Erreur de conversion");
+    if (etaLabel) etaLabel.textContent = "ETA: --";
     setFcStatus(error.message, "error");
   } finally {
-    setLoading(false);
+    setLoading(false, 100);
   }
 }
 

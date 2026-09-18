@@ -5,8 +5,6 @@ import {
   temporarilyChangeText,
 } from "../utils.js";
 
-import * as acorn from "https://cdn.jsdelivr.net/npm/acorn@8.17.0/dist/acorn.mjs";
-
 const jmInput = document.querySelector("[data-jm-input]");
 const jmOutput = document.querySelector("[data-jm-output]");
 const jmStatus = document.querySelector("[data-jm-status]");
@@ -29,7 +27,11 @@ function setJmStatus(message, type = "default") {
 }
 
 function parseJavaScript(code, moduleMode = false) {
-  return acorn.parse(code, {
+  if (!globalThis.acorn?.parse) {
+    throw new Error("ACORN_UNAVAILABLE");
+  }
+
+  return globalThis.acorn.parse(code, {
     ecmaVersion: "latest",
     sourceType: moduleMode ? "module" : "script",
     allowHashBang: true,

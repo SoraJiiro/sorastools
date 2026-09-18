@@ -62,75 +62,154 @@ function formatBlockCode(code) {
   return lines.join("\n").replace(/\n([ \t]*)(else|catch|finally)\b/g, " $2");
 }
 
-function formatCss(code) {
-  if (typeof globalThis.css_beautify === "function") {
-    return globalThis.css_beautify(code, {
-      indent_size: Number(indent.value) || 4,
-      indent_char: indent.value === "tab" ? "\t" : " ",
-      end_with_newline: false,
+function getPrettierPlugins() {
+  const plugins = [];
+  const pluginMap = [
+    globalThis.prettierPlugins,
+    {
+      sql: globalThis.prettierPluginSql,
+      php: globalThis.prettierPluginPhp,
+      java: globalThis.prettierPluginJava,
+      babel: globalThis.prettierPlugins?.babel,
+    },
+    globalThis.prettierPluginSql,
+    globalThis.prettierPluginPhp,
+    globalThis.prettierPluginJava,
+  ];
+
+  pluginMap.forEach((entry) => {
+    if (!entry) return;
+    if (Array.isArray(entry)) {
+      entry.forEach((plugin) => {
+        if (plugin && !plugins.includes(plugin)) plugins.push(plugin);
+      });
+      return;
+    }
+
+    Object.values(entry).forEach((plugin) => {
+      if (plugin && !plugins.includes(plugin)) plugins.push(plugin);
     });
+  });
+
+  return plugins;
+}
+
+function formatWithPrettier(code, parser, options = {}) {
+  if (
+    !globalThis.prettier ||
+    typeof globalThis.prettier.format !== "function"
+  ) {
+    return null;
   }
 
-  return formatBlockCode(code).replace(/^(\s*)([-\w]+)\s*:\s*/gm, "$1$2: ");
+  try {
+    return globalThis.prettier.format(code, {
+      parser,
+      plugins: getPrettierPlugins(),
+      tabWidth: Number(indent.value) || 2,
+      useTabs: indent.value === "tab",
+      semi: true,
+      singleQuote: false,
+      endOfLine: "lf",
+      ...options,
+    });
+  } catch (error) {
+    return null;
+  }
+}
+
+function formatCss(code) {
+  return (
+    formatWithPrettier(code, "css") ??
+    (typeof globalThis.css_beautify === "function"
+      ? globalThis.css_beautify(code, {
+          indent_size: Number(indent.value) || 4,
+          indent_char: indent.value === "tab" ? "\t" : " ",
+          end_with_newline: false,
+        })
+      : formatBlockCode(code).replace(/^\s*([-\w]+)\s*:\s*/gm, "$1$2: "))
+  );
 }
 
 function formatHtml(code) {
-  if (typeof globalThis.html_beautify === "function") {
-    return globalThis.html_beautify(code, {
-      indent_size: Number(indent.value) || 4,
-      indent_char: indent.value === "tab" ? "\t" : " ",
-      wrap_line_length: 0,
-      end_with_newline: false,
-    });
-  }
+  return (
+    formatWithPrettier(code, "html") ??
+    (typeof globalThis.html_beautify === "function"
+      ? globalThis.html_beautify(code, {
+          indent_size: Number(indent.value) || 4,
+          indent_char: indent.value === "tab" ? "\t" : " ",
+          wrap_line_length: 0,
+          end_with_newline: false,
+        })
+      : (() => {
+          const unit = getIndent();
+          const normalized = code.replace(/>\s*</g, "><").trim();
+          const tokens =
+            normalized.match(/<!--[\s\S]*?-->|<[^>]+>|[^<]+/g) || [];
+          const lines = [];
+          let depth = 0;
 
-  const unit = getIndent();
-  const normalized = code.replace(/>\s*</g, "><").trim();
-  const tokens = normalized.match(/<!--[\s\S]*?-->|<[^>]+>|[^<]+/g) || [];
-  const lines = [];
-  let depth = 0;
+          tokens.forEach((token) => {
+            const value = token.trim();
+            if (!value) return;
+            const closing = /^<\//.test(value);
+            const opening = /^<([a-z][\w:-]*)\b[^>]*[^/]?>$/i.test(value);
+            if (closing) depth = Math.max(0, depth - 1);
+            lines.push(`${unit.repeat(depth)}${value}`);
+            if (
+              opening &&
+              !/^<(br|hr|img|input|meta|link|area|base|embed|param|source|track|wbr)\b/i.test(
+                value,
+              )
+            )
+              depth += 1;
+          });
 
-  tokens.forEach((token) => {
-    const value = token.trim();
-    if (!value) return;
-    const closing = /^<\//.test(value);
-    const opening = /^<([a-z][\w:-]*)\b[^>]*[^/]?>$/i.test(value);
-    if (closing) depth = Math.max(0, depth - 1);
-    lines.push(`${unit.repeat(depth)}${value}`);
-    if (
-      opening &&
-      !/^<(br|hr|img|input|meta|link|area|base|embed|param|source|track|wbr)\b/i.test(
-        value,
-      )
-    )
-      depth += 1;
-  });
-
-  return lines.join("\n");
+          return lines.join("\n");
+        })())
+  );
 }
 
 function formatSql(code) {
-  if (globalThis.sqlFormatter?.format) {
-    return globalThis.sqlFormatter.format(code, {
-      language: "sql",
-      tabWidth: Number(indent.value) || 4,
-      useTabs: indent.value === "tab",
-    });
-  }
-
-  const keywords =
-    /\b(SELECT|FROM|WHERE|GROUP BY|ORDER BY|HAVING|LIMIT|JOIN|LEFT JOIN|RIGHT JOIN|INNER JOIN|OUTER JOIN|UNION|VALUES|SET|RETURNING)\b/gi;
-  return code
-    .replace(/\s+/g, " ")
-    .replace(/\s*,\s*/g, ", ")
-    .replace(/\s*;\s*/g, ";\n")
-    .replace(keywords, (match) => `\n${match.toUpperCase()}`)
-    .trim()
-    .replace(/^\n/, "");
+  return (
+    formatWithPrettier(code, "sql", { keywordCase: "upper" }) ??
+    (globalThis.sqlFormatter?.format
+      ? globalThis.sqlFormatter.format(code, {
+          language: "sql",
+          tabWidth: Number(indent.value) || 4,
+          useTabs: indent.value === "tab",
+        })
+      : (() => {
+          const keywords =
+            /\b(SELECT|FROM|WHERE|GROUP BY|ORDER BY|HAVING|LIMIT|JOIN|LEFT JOIN|RIGHT JOIN|INNER JOIN|OUTER JOIN|UNION|VALUES|SET|RETURNING)\b/gi;
+          return code
+            .replace(/\s+/g, " ")
+            .replace(/\s*,\s*/g, ", ")
+            .replace(/\s*;\s*/g, ";\n")
+            .replace(keywords, (match) => `\n${match.toUpperCase()}`)
+            .trim()
+            .replace(/^\n/, "");
+        })())
+  );
 }
 
 function formatJson(code) {
-  return JSON.stringify(JSON.parse(code), null, getIndent());
+  return (
+    formatWithPrettier(code, "json") ??
+    JSON.stringify(JSON.parse(code), null, getIndent())
+  );
+}
+
+function formatJavascript(code) {
+  return formatWithPrettier(code, "babel") ?? formatBlockCode(code);
+}
+
+function formatPhp(code) {
+  return formatWithPrettier(code, "php") ?? formatBlockCode(code);
+}
+
+function formatJava(code) {
+  return formatWithPrettier(code, "java") ?? formatBlockCode(code);
 }
 
 function formatCode(code) {
@@ -143,6 +222,12 @@ function formatCode(code) {
       return formatSql(code);
     case "css":
       return formatCss(code);
+    case "javascript":
+      return formatJavascript(code);
+    case "php":
+      return formatPhp(code);
+    case "java":
+      return formatJava(code);
     default:
       return formatBlockCode(code);
   }
@@ -215,6 +300,19 @@ function validateCode(code) {
   }
   if (language.value === "html")
     return validateHtml(code) || checkBalanced(code);
+  if (language.value === "javascript") {
+    try {
+      new Function(code);
+      return null;
+    } catch (error) {
+      return `JavaScript invalide : ${error.message}`;
+    }
+  }
+  if (language.value === "sql") {
+    if (!/\b(SELECT|INSERT|UPDATE|DELETE|CREATE|ALTER|DROP|WITH)\b/i.test(code))
+      return "Aucune instruction SQL reconnue.";
+    return null;
+  }
   const balancedError = checkBalanced(code);
   if (balancedError) return balancedError;
   if (
@@ -228,11 +326,6 @@ function validateCode(code) {
     !/\b(class|interface|enum|record)\s+\w+/.test(code)
   )
     return "Aucune classe, interface, enum ou record Java détecté.";
-  if (
-    language.value === "sql" &&
-    !/\b(SELECT|INSERT|UPDATE|DELETE|CREATE|ALTER|DROP|WITH)\b/i.test(code)
-  )
-    return "Aucune instruction SQL reconnue.";
   return null;
 }
 

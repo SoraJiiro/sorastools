@@ -472,7 +472,11 @@ function setTextAboveAll() {
   );
 
   texts.forEach((text) => {
-    if (text.classList.contains("hero-icon")) return;
+    if (
+      text.classList.contains("hero-icon") ||
+      text.parentElement.id === "tool-panel"
+    )
+      return;
     text.style.zIndex = "9999";
     text.style.position = "relative";
   });

@@ -5,7 +5,7 @@
         <meta name="viewport" content="width=device-width, initial-scale=1.0">
         <title>Code Formatter - SoraTool</title>
         <meta name="description"
-            content="Indente et vérifie du CSS, HTML, PHP, JSON, Java ou SQL.">
+            content="Indente et vérifie du CSS, HTML, JavaScript, JSON ou SQL.">
         <link rel="icon" type="image/png" href="/assets/logo.png">
         <link rel="shortcut icon" type="image/png" href="/assets/logo.png">
         <link rel="stylesheet" href="/css/global.css">
@@ -15,10 +15,15 @@
         <link
             href="https://fonts.googleapis.com/css2?family=Intel+One+Mono:ital,wght@0,300..700;1,300..700&family=Roboto+Condensed:ital,wght@0,100..900;1,100..900&family=Science+Gothic:wght@100..900&display=swap"
             rel="stylesheet">
-        <script defer
-            src="https://cdnjs.cloudflare.com/ajax/libs/js-beautify/1.15.1/beautify.min.js"></script>
-        <script defer
-            src="https://cdn.jsdelivr.net/npm/sql-formatter@15.6.3/dist/sql-formatter.min.js"></script>
+        <script defer src="/vendor/prettier/standalone.js"></script>
+        <script defer src="/vendor/prettier/plugins/babel.js"></script>
+        <script defer src="/vendor/prettier/plugins/html.js"></script>
+        <script defer src="/vendor/prettier/plugins/postcss.js"></script>
+        <script defer src="/vendor/prettier-plugin-sql/index.js"></script>
+        <script defer src="/vendor/@prettier/plugin-php/standalone.js"></script>
+        <script defer src="/vendor/prettier-plugin-java/index.js"></script>
+        <script defer src="/vendor/js-beautify/js/index.js"></script>
+        <script defer src="/vendor/sql-formatter/sql-formatter.min.js"></script>
         <script type="module" src="/js/tools/code-formatter.js"></script>
         <script type="module" src="/js/global.js"></script>
     </head>
@@ -45,8 +50,8 @@
                 <div class="section-heading">
                     <p class="eyebrow">Dev</p>
                     <h1>Code Formatter</h1>
-                    <p>Indente et vérifie rapidement ton CSS, HTML, JSON, PHP,
-                        JSON, Java ou SQL.</p>
+                    <p>Indente et vérifie rapidement ton CSS, HTML,
+                        JavaScript, JSON ou SQL.</p>
                 </div>
 
                 <div class="code-tool" id="tool-panel">
@@ -58,6 +63,7 @@
                             <select data-code-language>
                                 <option value="css">CSS</option>
                                 <option value="html">HTML</option>
+                                <option value="javascript">JavaScript</option>
                                 <option value="json">JSON</option>
                                 <option value="php">PHP</option>
                                 <option value="java">Java</option>

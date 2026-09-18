@@ -19,7 +19,7 @@
     "url": "/tools/code-formatter",
     "status": "ready",
     "createdAt": "2026-09-03",
-    "updatedAt": "2026-09-03",
+    "updatedAt": "2026-09-18",
     "credit": "Sora [le seul et l'unique]"
   },
   {
@@ -162,7 +162,18 @@
     "url": "/tools/file-converter",
     "status": "ready",
     "createdAt": "2026-02-13",
-    "updatedAt": "2026-02-16"
+    "updatedAt": "2026-09-18"
+  },
+  {
+    "id": "youtube-downloader",
+    "name": "YouTube Downloader",
+    "category": "Média",
+    "description": "Télécharge une vidéo YouTube ou Shorts en MP4 ou récupère son audio en MP3.",
+    "icon": "<i class='fa-brands fa-youtube'></i>",
+    "url": "/tools/youtube-downloader",
+    "status": "ready",
+    "createdAt": "2026-09-18",
+    "updatedAt": "2026-09-18"
   },
   {
     "id": "username-lookup",
@@ -171,8 +182,6 @@
     "description": "Vérifie rapidement si un pseudo est déjà pris sur plusieurs plateformes.",
     "icon": "<i class='fa-solid fa-user-secret'></i>",
     "url": "/tools/username-lookup",
-    "status": "soon",
-    "createdAt": "2026-08-02",
-    "updatedAt": "2026-08-02"
+    "status": "soon"
   }
 ]
