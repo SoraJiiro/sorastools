@@ -93,7 +93,7 @@ async function downloadMedia(event) {
     const href = URL.createObjectURL(blob);
     downloadLink.href = href;
     downloadLink.download = getFilename(
-      response.headers.get("Content-Disposition"),
+      response.getResponseHeader("Content-Disposition"),
     );
     downloadLink.textContent = "Télécharger le résultat";
     downloadLink.hidden = false;
