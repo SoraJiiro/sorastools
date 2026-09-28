@@ -151,7 +151,10 @@
     "description": "Crée et exporte des charts Clone Hero au format .chart, avec audio, timeline et notes synchronisées.",
     "icon": "<i class='fa-solid fa-guitar'></i>",
     "url": "/tools/chart-editor",
-    "status": "ready"
+    "status": "ready",
+    "createdAt": "2026-09-28",
+    "updatedAt": "2026-09-28",
+    "credit": "Sora [le seul et l'unique]"
   },
   {
     "id": "file-converter",
