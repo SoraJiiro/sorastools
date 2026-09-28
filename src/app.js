@@ -79,5 +79,5 @@ app.use(cronKeepAlive);
 app.use(pageRoutes);
 
 app.listen(PORT, () => {
-  console.log(`SoraTool lancé sur http://localhost:${PORT}`);
+  console.log(`SorasTools lancé sur http://localhost:${PORT}`);
 });

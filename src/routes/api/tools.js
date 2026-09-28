@@ -127,7 +127,10 @@ async function readSupabaseJson(response) {
 }
 
 function logSupabaseStatsError(context, error) {
-  console.warn(`[SoraTool] Stats Supabase ignorées (${context}) :`, error.message);
+  console.warn(
+    `[SorasTools] Stats Supabase ignorées (${context}) :`,
+    error.message,
+  );
 }
 
 async function getSupabaseMostUsedTools(tools) {
@@ -201,10 +204,16 @@ router.get("/api/tools/debug/supabase", async (req, res) => {
 
   try {
     const { url } = getSupabaseConfig();
-    const query = new URLSearchParams({ select: "tool_id,submit_count", limit: "1" });
-    const response = await fetch(`${url}/rest/v1/${TOOL_USAGE_TABLE}?${query}`, {
-      headers: getSupabaseHeaders(),
+    const query = new URLSearchParams({
+      select: "tool_id,submit_count",
+      limit: "1",
     });
+    const response = await fetch(
+      `${url}/rest/v1/${TOOL_USAGE_TABLE}?${query}`,
+      {
+        headers: getSupabaseHeaders(),
+      },
+    );
     const data = await readSupabaseJson(response);
 
     return res.json({
@@ -250,7 +259,8 @@ router.post("/api/tools/:toolId/submit", async (req, res) => {
       success: true,
       rateLimited: true,
       toolId,
-      message: "Limite atteinte : 5 actions comptabilisées par tool et par heure.",
+      message:
+        "Limite atteinte : 5 actions comptabilisées par tool et par heure.",
     });
   }
 

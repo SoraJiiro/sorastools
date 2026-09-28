@@ -388,10 +388,10 @@ function createXlsxFromText(text) {
 async function createPptxFromText(text) {
   const pptx = new pptxgen();
   pptx.layout = "LAYOUT_WIDE";
-  pptx.author = "SoraTool";
+  pptx.author = "SorasTools";
   pptx.subject = "PDF converti en PowerPoint";
   pptx.title = "PDF converti";
-  pptx.company = "SoraTool";
+  pptx.company = "SorasTools";
   pptx.lang = "fr-FR";
 
   const chunks = text

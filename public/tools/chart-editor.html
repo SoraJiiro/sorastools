@@ -1,57 +1,183 @@
-<!doctype html>
+<!DOCTYPE html>
 <html lang="fr">
   <head>
-    <meta charset="utf-8">
-    <meta name="viewport" content="width=device-width,initial-scale=1">
-    <title>Chart Editor</title>
-    <link rel="stylesheet" href="/assets/css/global.css">
-    <style>
-    body{background:#06121a;color:#dfeff6;font-family:Inter,Arial,Helvetica,sans-serif;margin:0}
-    .container{padding:12px}
-    .modal{position:fixed;inset:0;background:rgba(0,0,0,.6);display:flex;align-items:center;justify-content:center}
-    .card{background:#071726;padding:18px;border-radius:8px;width:520px;box-shadow:0 8px 30px rgba(0,0,0,.6)}
-    .row{display:flex;gap:8px;margin-bottom:8px}
-    label{font-size:13px;color:#9fc2d4}
-    input,select{flex:1;padding:8px;border-radius:6px;border:1px solid #08313f;background:#02202a;color:#dff}
-    #highwayWrap{margin-top:12px;border-radius:8px;overflow:hidden;border:1px solid #05262f}
-    canvas{display:block;width:100%;height:560px;background:#031016}
-    .toolbar{display:flex;gap:8px;margin-top:8px;align-items:center}
-    .btn{padding:8px 12px;border-radius:6px;background:#0b3b4a;color:#eaf7fb;border:none;cursor:pointer}
-    .note-type{padding:6px 8px;border-radius:6px;background:#06252b;color:#cfe}
-  </style>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Chart Editor - SorasTools</title>
+    <meta name="description"
+      content="Crée et édite des charts de rythme au format .chart.">
+    <link rel="icon" type="image/png" href="/assets/logo.png">
+    <link rel="stylesheet" href="/css/global.css">
+    <link rel="stylesheet" href="/css/chart-editor.css">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link
+      href="https://fonts.googleapis.com/css2?family=Intel+One+Mono:ital,wght@0,300..700;1,300..700&family=Roboto+Condensed:ital,wght@0,100..900;1,100..900&family=Science+Gothic:wght@100..900&display=swap"
+      rel="stylesheet">
+    <script type="module" src="/js/tools/chart-editor.js"></script>
+    <script type="module" src="/js/global.js"></script>
   </head>
   <body>
-    <div class="modal" id="metaModal">
-      <div class="card">
-        <h3>Nouvelle chanson</h3>
-        <div class="row"><label>Nom</label><input id="songName"></div>
-        <div class="row"><label>Artist</label><input id="artist"></div>
-        <div class="row"><label>Date</label><input id="date" type="date"></div>
-        <div class="row"><label>Album</label><input id="album"></div>
-        <div class="row"><label>Charter</label><input id="charter"></div>
-        <div class="row"><label>Fichier audio</label><input id="audioFile"
-            type="file" accept="audio/*"></div>
-        <div style="text-align:right;margin-top:8px"><button class="btn"
-            id="openBtn">Charger et ouvrir</button></div>
-      </div>
-    </div>
-
-    <div class="container" id="tool-panel">
-      <div class="toolbar">
-        <div>Song: <span id="metaDisplay">(aucune)</span></div>
-        <select id="noteType" class="note-type">
-          <option value="normal">Normal</option>
-          <option value="hopo">Hop-o</option>
-          <option value="tap">Tap</option>
-          <option value="open">Open</option>
-        </select>
-        <button id="saveBtn" class="btn">Exporter .chart</button>
-      </div>
-
-      <div id="highwayWrap"><canvas id="highway"></canvas></div>
-      <audio id="audio" crossorigin="anonymous"></audio>
-    </div>
-
-    <script src="/js/tools/chart-editor.js"></script>
+    <header class="site-header">
+      <nav class="navbar">
+        <a class="logo" href="/"><img class="logo-img" src="/assets/logo.png"
+            alt aria-hidden="true">SorasTools</a>
+        <div class="nav-links"><a href="/#tools">Accueil</a><a
+            href="/suggest">Suggest</a><a href="/contact">Contact</a></div>
+      </nav>
+    </header>
+    <main>
+      <section class="section tool-section" id="chart-editor">
+        <div class="section-heading"><p class="eyebrow">Musique</p><h1>Chart
+            Editor</h1><p>Chart au format Guitar Hero
+            <code>.chart</code></p></div>
+        <div class="chart-tool" id="tool-panel" data-chart-editor>
+          <div class="chart-toolbar">
+            <label class="chart-field"><span>Titre</span><input data-chart-title
+                value="Untitled"></label>
+            <label class="chart-field"><span>Artiste</span><input
+                data-chart-artist placeholder="Artiste"></label>
+            <label class="chart-field"><span>Charter</span><input
+                data-chart-charter value="SorasTools"></label>
+            <button class="chart-button" data-no-action-icon
+              data-chart-action="new"><i data-action-icon-el
+                class="fa-solid fa-file-circle-plus"
+                aria-hidden="true"></i>Nouveau</button>
+            <button class="chart-button" data-no-action-icon
+              data-chart-action="import"><i data-action-icon-el
+                class="fa-solid fa-folder-open" aria-hidden="true"></i>Ouvrir
+              .chart</button>
+            <button class="chart-button chart-primary" data-no-action-icon
+              data-chart-action="export"><i data-action-icon-el
+                class="fa-solid fa-file-zipper" aria-hidden="true"></i>Exporter
+              ZIP</button>
+            <input data-chart-file type="file" accept=".chart,text/plain"
+              hidden>
+          </div>
+          <div class="chart-config">
+            <label class="chart-field"><span>Difficulté</span><select
+                data-chart-difficulty><option
+                  value="ExpertSingle">Expert</option><option
+                  value="HardSingle">Hard</option><option
+                  value="MediumSingle">Medium</option><option
+                  value="EasySingle">Easy</option></select></label>
+            <label class="chart-field"><span>BPM</span><input data-chart-bpm
+                type="number" min="1" max="1000" value="120"></label>
+            <label class="chart-field"><span>Résolution</span><select
+                data-chart-resolution><option>192</option><option>480</option><option>960</option></select></label>
+            <label class="chart-field"><span>Quantification</span><select
+                data-chart-snap><option value="4">1/4</option><option value="8"
+                  selected>1/8</option><option value="16">1/16</option><option
+                  value="32">1/32</option></select></label>
+            <div class="chart-mode" role="group"
+              aria-label="Outil actif"><button class="is-active"
+                data-no-action-icon data-chart-tool="note"><i
+                  data-action-icon-el class="fa-solid fa-note-sticky"
+                  aria-hidden="true"></i>Placer</button><button
+                data-no-action-icon data-chart-tool="mouse"><i
+                  data-action-icon-el class="fa-solid fa-arrow-pointer"
+                  aria-hidden="true"></i>Souris</button><button
+                data-no-action-icon data-chart-tool="erase"><i
+                  data-action-icon-el class="fa-solid fa-eraser"
+                  aria-hidden="true"></i>Effacer</button></div>
+          </div>
+          <div class="chart-editor-grid">
+            <aside class="chart-sidebar">
+              <h2>Type de note</h2>
+              <div class="chart-mod-list"><button class="is-active"
+                  data-no-action-icon data-chart-mod="normal"><span
+                    class="chart-note-pill note-normal"
+                    aria-hidden="true"></span>Notes normales</button><button
+                  data-no-action-icon data-chart-mod="forced"><span
+                    class="chart-note-pill note-forced"
+                    aria-hidden="true"></span>Forced notes</button><button
+                  data-no-action-icon data-chart-mod="tap"><span
+                    class="chart-note-pill note-tap"
+                    aria-hidden="true"></span>Tap notes</button><button
+                  data-no-action-icon data-chart-mod="open"><span
+                    class="chart-note-pill note-open"
+                    aria-hidden="true"></span>Open notes</button><button
+                  data-no-action-icon data-chart-mod="forced-open"><span
+                    class="chart-note-pill note-forced-open"
+                    aria-hidden="true"></span>Forced open</button></div>
+              <label class="chart-audio"><span class="chart-audio-title"><i
+                    class="fa-solid fa-file-audio" aria-hidden="true"></i>Audio
+                  de référence</span><input data-chart-audio type="file"
+                  accept="audio/*"></label>
+              <div class="chart-transport"><button data-no-action-icon
+                  data-chart-action="play"
+                  aria-label="Lire ou mettre en pause"><i data-action-icon-el
+                    class="fa-solid fa-play"
+                    aria-hidden="true"></i>Lecture</button><button
+                  data-no-action-icon data-chart-action="stop"
+                  aria-label="Arrêter"><i data-action-icon-el
+                    class="fa-solid fa-stop"
+                    aria-hidden="true"></i>Stop</button><span
+                  data-chart-time>00:00.000</span></div>
+              <audio data-chart-player preload="metadata"></audio>
+              <label class="chart-range"><span>Hyperspeed</span><input
+                  data-chart-zoom type="range" min="1" max="3" step="0.1"
+                  value="2"></label>
+              <p class="chart-hint">Clique une colonne pour poser · clic
+                droit-glissé pour allonger</p>
+            </aside>
+            <div class="chart-stage-wrap"><div class="chart-stage"><canvas
+                  data-chart-canvas
+                  aria-label="Éditeur de notes"></canvas></div><input
+                class="chart-timeline" data-chart-timeline type="range" min="0"
+                max="1000" value="0" aria-label="Timeline de la chart"></div>
+            <aside
+              class="chart-sidebar chart-inspector"><h2>Chart</h2><p><strong
+                  data-chart-note-count>0</strong> notes</p><p>Tick <strong
+                  data-chart-tick>0</strong></p><button class="chart-button"
+                data-no-action-icon data-chart-action="delete" disabled><i
+                  data-action-icon-el class="fa-solid fa-trash"
+                  aria-hidden="true"></i>Supprimer la note</button><output
+                class="chart-message" data-chart-message
+                aria-live="polite">Chart vierge</output></aside>
+          </div>
+        </div>
+      </section>
+    </main>
+    <dialog class="chart-meta-modal" data-chart-meta-modal>
+      <form method="dialog" data-chart-meta-form>
+        <h2>Métadonnées de la chart</h2>
+        <p>Vérifie les informations avant l’exportation.</p>
+        <div class="chart-save-choice" data-chart-save-choice hidden>
+          <p data-chart-save-status>Une dernière sauvegarde locale a été
+            trouvée.</p>
+          <div class="chart-meta-actions"><button type="button"
+              class="chart-button" data-chart-new>Nouvelle chart</button><button
+              type="button" class="chart-button chart-primary"
+              data-chart-restore>Charger la dernière</button></div>
+        </div>
+        <div data-chart-meta-fields>
+          <label class="chart-field"><span>Titre</span><input
+              data-chart-meta-title required></label>
+          <label class="chart-field"><span>Artiste</span><input
+              data-chart-meta-artist required></label>
+          <label class="chart-field"><span>Charter</span><input
+              data-chart-meta-charter required></label>
+          <label class="chart-field"><span>Album</span><input
+              data-chart-meta-album></label>
+          <label class="chart-field"><span>Année de sortie</span><input
+              data-chart-meta-year type="number" min="1900" max="2100"
+              placeholder="2026"></label>
+          <label class="chart-field"><span>Diff guitar</span><input
+              data-chart-meta-diff-guitar type="number" min="-1" max="10"
+              value="0"></label>
+          <label class="chart-field"><span>Loading phrase</span><input
+              data-chart-meta-loading placeholder="Prepare yourself..."></label>
+          <label class="chart-field"><span>Genre</span><input
+              data-chart-meta-genre placeholder="Rock"></label>
+          <div class="chart-meta-actions"><button class="chart-button"
+              value="cancel" formnovalidate>Annuler</button><button
+              class="chart-button chart-primary"
+              value="confirm">Valider</button></div>
+        </div>
+      </form>
+    </dialog>
+    <footer class="site-footer"><p>&copy; <span class="date"></span> SorasTools
+        - Tous droits réservés.</p><p class="location"></p></footer>
   </body>
 </html>

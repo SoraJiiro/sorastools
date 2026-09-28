@@ -43,7 +43,7 @@ const regexPresets = {
   },
   string: {
     pattern: "(['\"])(?:(?!\\1).)*\\1",
-    text: "Strings : const name = \"SoraTool\"; const type = 'regex';",
+    text: "Strings : const name = \"SorasTools\"; const type = 'regex';",
     flags: ["g"],
   },
   int: {
