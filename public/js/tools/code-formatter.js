@@ -10,227 +10,19 @@ function setCodeStatus(message, type = "default") {
   setStatus(status, message, type);
 }
 
-function getIndent() {
-  return indent.value === "tab" ? "\t" : " ".repeat(Number(indent.value));
-}
-
-function tokenize(code) {
-  return (
-    code.match(
-      /<!--[\s\S]*?-->|\/\*[\s\S]*?\*\/|\/\/[^\n]*|'(?:\\.|[^'\\])*'|"(?:\\.|[^"\\])*"|`(?:\\.|[^`\\])*`|\{|\}|;|[^{};]+/g,
-    ) || []
-  );
-}
-
-function formatBlockCode(code) {
-  const unit = getIndent();
-  let depth = 0;
-  const lines = [];
-
-  tokenize(code).forEach((token) => {
-    const trimmed = token.trim();
-    if (!trimmed) return;
-    if (trimmed === "}") depth = Math.max(0, depth - 1);
-    const prefix = unit.repeat(depth);
-    const previous = lines[lines.length - 1];
-    const value = trimmed === "{" ? "{" : trimmed;
-
-    if (trimmed === "{") {
-      if (previous && !previous.endsWith(" ")) lines[lines.length - 1] += " {";
-      else lines.push(`${prefix}{`);
-      depth += 1;
-      return;
-    }
-
-    if (trimmed === ";") {
-      if (lines.length) lines[lines.length - 1] += ";";
-      return;
-    }
-
-    if (trimmed === "}") {
-      lines.push(`${prefix}}`);
-      return;
-    }
-
-    const chunks = value
-      .split(/\r?\n/)
-      .map((line) => line.trim())
-      .filter(Boolean);
-    chunks.forEach((line) => lines.push(`${prefix}${line}`));
+async function formatCode(code) {
+  const response = await fetch("/api/code-formatter/format", {
+    method: "POST",
+    headers: { "Content-Type": "application/json" },
+    body: JSON.stringify({
+      code,
+      language: language.value,
+      indent: indent.value,
+    }),
   });
-
-  return lines.join("\n").replace(/\n([ \t]*)(else|catch|finally)\b/g, " $2");
-}
-
-function getPrettierPlugins() {
-  const plugins = [];
-  const pluginMap = [
-    globalThis.prettierPlugins,
-    {
-      sql: globalThis.prettierPluginSql,
-      php: globalThis.prettierPluginPhp,
-      java: globalThis.prettierPluginJava,
-      babel: globalThis.prettierPlugins?.babel,
-    },
-    globalThis.prettierPluginSql,
-    globalThis.prettierPluginPhp,
-    globalThis.prettierPluginJava,
-  ];
-
-  pluginMap.forEach((entry) => {
-    if (!entry) return;
-    if (Array.isArray(entry)) {
-      entry.forEach((plugin) => {
-        if (plugin && !plugins.includes(plugin)) plugins.push(plugin);
-      });
-      return;
-    }
-
-    Object.values(entry).forEach((plugin) => {
-      if (plugin && !plugins.includes(plugin)) plugins.push(plugin);
-    });
-  });
-
-  return plugins;
-}
-
-function formatWithPrettier(code, parser, options = {}) {
-  if (
-    !globalThis.prettier ||
-    typeof globalThis.prettier.format !== "function"
-  ) {
-    return null;
-  }
-
-  try {
-    return globalThis.prettier.format(code, {
-      parser,
-      plugins: getPrettierPlugins(),
-      tabWidth: Number(indent.value) || 2,
-      useTabs: indent.value === "tab",
-      semi: true,
-      singleQuote: false,
-      endOfLine: "lf",
-      ...options,
-    });
-  } catch (error) {
-    return null;
-  }
-}
-
-function formatCss(code) {
-  return (
-    formatWithPrettier(code, "css") ??
-    (typeof globalThis.css_beautify === "function"
-      ? globalThis.css_beautify(code, {
-          indent_size: Number(indent.value) || 4,
-          indent_char: indent.value === "tab" ? "\t" : " ",
-          end_with_newline: false,
-        })
-      : formatBlockCode(code).replace(/^\s*([-\w]+)\s*:\s*/gm, "$1$2: "))
-  );
-}
-
-function formatHtml(code) {
-  return (
-    formatWithPrettier(code, "html") ??
-    (typeof globalThis.html_beautify === "function"
-      ? globalThis.html_beautify(code, {
-          indent_size: Number(indent.value) || 4,
-          indent_char: indent.value === "tab" ? "\t" : " ",
-          wrap_line_length: 0,
-          end_with_newline: false,
-        })
-      : (() => {
-          const unit = getIndent();
-          const normalized = code.replace(/>\s*</g, "><").trim();
-          const tokens =
-            normalized.match(/<!--[\s\S]*?-->|<[^>]+>|[^<]+/g) || [];
-          const lines = [];
-          let depth = 0;
-
-          tokens.forEach((token) => {
-            const value = token.trim();
-            if (!value) return;
-            const closing = /^<\//.test(value);
-            const opening = /^<([a-z][\w:-]*)\b[^>]*[^/]?>$/i.test(value);
-            if (closing) depth = Math.max(0, depth - 1);
-            lines.push(`${unit.repeat(depth)}${value}`);
-            if (
-              opening &&
-              !/^<(br|hr|img|input|meta|link|area|base|embed|param|source|track|wbr)\b/i.test(
-                value,
-              )
-            )
-              depth += 1;
-          });
-
-          return lines.join("\n");
-        })())
-  );
-}
-
-function formatSql(code) {
-  return (
-    formatWithPrettier(code, "sql", { keywordCase: "upper" }) ??
-    (globalThis.sqlFormatter?.format
-      ? globalThis.sqlFormatter.format(code, {
-          language: "sql",
-          tabWidth: Number(indent.value) || 4,
-          useTabs: indent.value === "tab",
-        })
-      : (() => {
-          const keywords =
-            /\b(SELECT|FROM|WHERE|GROUP BY|ORDER BY|HAVING|LIMIT|JOIN|LEFT JOIN|RIGHT JOIN|INNER JOIN|OUTER JOIN|UNION|VALUES|SET|RETURNING)\b/gi;
-          return code
-            .replace(/\s+/g, " ")
-            .replace(/\s*,\s*/g, ", ")
-            .replace(/\s*;\s*/g, ";\n")
-            .replace(keywords, (match) => `\n${match.toUpperCase()}`)
-            .trim()
-            .replace(/^\n/, "");
-        })())
-  );
-}
-
-function formatJson(code) {
-  return (
-    formatWithPrettier(code, "json") ??
-    JSON.stringify(JSON.parse(code), null, getIndent())
-  );
-}
-
-function formatJavascript(code) {
-  return formatWithPrettier(code, "babel") ?? formatBlockCode(code);
-}
-
-function formatPhp(code) {
-  return formatWithPrettier(code, "php") ?? formatBlockCode(code);
-}
-
-function formatJava(code) {
-  return formatWithPrettier(code, "java") ?? formatBlockCode(code);
-}
-
-function formatCode(code) {
-  switch (language.value) {
-    case "json":
-      return formatJson(code);
-    case "html":
-      return formatHtml(code);
-    case "sql":
-      return formatSql(code);
-    case "css":
-      return formatCss(code);
-    case "javascript":
-      return formatJavascript(code);
-    case "php":
-      return formatPhp(code);
-    case "java":
-      return formatJava(code);
-    default:
-      return formatBlockCode(code);
-  }
+  const result = await response.json();
+  if (!response.ok) throw new Error(result.error || "Échec du formatage.");
+  return result.formatted;
 }
 
 function checkBalanced(code) {
@@ -329,17 +121,21 @@ function validateCode(code) {
   return null;
 }
 
-function formatAction() {
+async function formatAction() {
   const error = validateCode(input.value);
   if (error) {
     setCodeStatus(error, "error");
     return;
   }
-  output.value = formatCode(input.value);
-  setCodeStatus(
-    `${language.value.toUpperCase()} valide et formaté.`,
-    "success",
-  );
+  try {
+    output.value = await formatCode(input.value);
+    setCodeStatus(
+      `${language.value.toUpperCase()} valide et formaté.`,
+      "success",
+    );
+  } catch (formatError) {
+    setCodeStatus(`Erreur de formatage : ${formatError.message}`, "error");
+  }
 }
 
 function setupCodeFormatter() {

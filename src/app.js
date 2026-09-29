@@ -5,6 +5,7 @@ const express = require("express");
 const { NODE_MODULES_DIR, PUBLIC_DIR } = require("./config/paths");
 const toolsApiRoutes = require("./routes/api/tools");
 const markdownApiRoutes = require("./routes/api/markdown");
+const codeFormatterApiRoutes = require("./routes/api/codeFormatter");
 const fileConverterApiRoutes = require("./routes/api/fileConverter");
 const usernameLookupApiRoutes = require("./routes/api/usernameLookup");
 const cryptApiRoutes = require("./routes/api/crypt");
@@ -71,6 +72,7 @@ app.use(
 
 app.use(toolsApiRoutes);
 app.use(markdownApiRoutes);
+app.use(codeFormatterApiRoutes);
 app.use(fileConverterApiRoutes);
 app.use(usernameLookupApiRoutes);
 app.use(cryptApiRoutes);
