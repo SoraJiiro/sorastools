@@ -8,7 +8,7 @@
     "url": "/tools/color-picker",
     "status": "ready",
     "createdAt": "2025-07-15",
-    "updatedAt": "2025-07-16"
+    "updatedAt": "2026-10-04"
   },
   {
     "id": "code-formatter",
@@ -177,6 +177,29 @@
     "status": "ready",
     "createdAt": "2026-09-18",
     "updatedAt": "2026-09-18"
+  },
+  {
+    "id": "qr-code-generator",
+    "name": "QR Code Generator",
+    "category": "Utilitaires",
+    "description": "Crée un QR code et exporte-le en SVG directement dans ton navigateur.",
+    "icon": "<i class='fa-solid fa-qrcode'></i>",
+    "url": "/tools/qr-code-generator",
+    "status": "ready",
+    "createdAt": "2026-10-04",
+    "updatedAt": "2026-10-04"
+  },
+  {
+    "id": "password-generator",
+    "name": "Password Generator",
+    "category": "Sécurité",
+    "description": "Génère des mots de passe aléatoires et sécurisés dans ton navigateur.",
+    "icon": "<i class='fa-solid fa-key'></i>",
+    "url": "/tools/password-generator",
+    "status": "ready",
+    "createdAt": "2026-10-02",
+    "updatedAt": "2026-10-03",
+    "credit": "Max"
   },
   {
     "id": "username-lookup",

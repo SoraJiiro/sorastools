@@ -21,6 +21,10 @@ app.use(express.urlencoded({ extended: true }));
 app.use(express.static(PUBLIC_DIR));
 
 app.use(
+  "/vendor/qrcode-generator",
+  express.static(path.join(NODE_MODULES_DIR, "qrcode-generator", "dist")),
+);
+app.use(
   "/vendor/prettier",
   express.static(path.join(NODE_MODULES_DIR, "prettier")),
 );

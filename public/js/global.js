@@ -466,22 +466,6 @@ async function giveCredit(toolId) {
   }
 }
 
-function setTextAboveAll() {
-  const texts = document.querySelectorAll(
-    "a, button, p, h1, h2, h3, h4, h5, h6, span, i, b, small, label",
-  );
-
-  texts.forEach((text) => {
-    if (
-      text.classList.contains("hero-icon") ||
-      text.parentElement.id === "tool-panel"
-    )
-      return;
-    text.style.zIndex = "9999";
-    text.style.position = "relative";
-  });
-}
-
 async function localKeepAlivePing() {
   try {
     const response = await fetch("/api/keep-alive");
@@ -495,7 +479,6 @@ async function localKeepAlivePing() {
 }
 
 initFaKit();
-setTextAboveAll();
 setFooterLocation();
 updateFooterDate();
 setInterval(updateFooterDate, 30000 * 3);

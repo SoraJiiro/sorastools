@@ -41,11 +41,30 @@
         <div class="section-heading">
           <p class="eyebrow">Design</p>
           <h1>Color picker</h1>
-          <p>Choisis une couleur pour obtenir instantanément ses valeurs HEX,
-            RGB et HSL.</p>
+          <p>Choisis une couleur ou prélève-la directement sur une image.</p>
         </div>
         <div class="color-tool" id="tool-panel">
-          <div class="color-preview" data-color-preview></div>
+          <section class="image-picker"
+            aria-label="Prélever une couleur depuis une image">
+            <div class="picker-stage" data-picker-stage>
+              <div class="picker-empty" data-picker-empty>
+                <span class="picker-mark" aria-hidden="true">+</span>
+                <strong>Importe une image pour prélever une couleur</strong>
+                <span>Clique sur un pixel pour le sélectionner.</span>
+              </div>
+              <canvas data-image-canvas hidden
+                aria-label="Image importée. Clique pour prélever une couleur."
+                title="Clique sur l’image pour prélever une couleur."></canvas>
+            </div>
+            <div class="picker-actions">
+              <label class="upload-button" data-label="Importer une image">
+                <span>Importer une image</span>
+                <input type="file" accept="image/*" data-image-input>
+              </label>
+              <span class="picker-status" data-picker-status
+                aria-live="polite">Aucune image sélectionnée</span>
+            </div>
+          </section>
           <div class="color-panel">
             <label class="field" data-label="Champ de sélection de couleur">
               <span>Couleur</span>
@@ -88,7 +107,7 @@
 
     <section class="tech-explanation">
       <div class="tech-explanation-heading">
-        <p class="tech-name">Couleurs web</p>
+        <p class="tech-name">Couleurs</p>
         <h2 class="subtitle">Comment ça marche ?</h2>
       </div>
 
@@ -112,7 +131,8 @@
     </section>
 
     <footer class="site-footer">
-      <p>&copy; <span class="date"></span> SorasTools - Tous droits réservés.</p>
+      <p>&copy; <span class="date"></span> SorasTools - Tous droits
+        réservés.</p>
       <p class="location"></p>
     </footer>
   </body>

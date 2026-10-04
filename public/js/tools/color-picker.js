@@ -9,12 +9,19 @@ import {
 } from "../utils.js";
 
 const colorInput = document.querySelector("[data-color-input]");
-const colorPreview = document.querySelector("[data-color-preview]");
 const hexOutput = document.querySelector("[data-hex-output]");
 const rgbOutput = document.querySelector("[data-rgb-output]");
 const hslOutput = document.querySelector("[data-hsl-output]");
+const imageInput = document.querySelector("[data-image-input]");
+const imageCanvas = document.querySelector("[data-image-canvas]");
+const pickerEmpty = document.querySelector("[data-picker-empty]");
+const pickerStatus = document.querySelector("[data-picker-status]");
+const imageContext = imageCanvas?.getContext("2d", {
+  willReadFrequently: true,
+});
 
 let isUpdating = false;
+let imageUrl = null;
 
 function normalizeHex(value) {
   const cleanValue = value.trim().replace(/^#/, "");
@@ -34,10 +41,11 @@ function normalizeHex(value) {
 }
 
 function parseRgb(value) {
-  const match = value
-    .trim()
-    .match(/^rgb\(\s*(\d{1,3})\s*,\s*(\d{1,3})\s*,\s*(\d{1,3})\s*\)$/i)
-    || value.trim().match(/^(\d{1,3})\s*,\s*(\d{1,3})\s*,\s*(\d{1,3})$/);
+  const match =
+    value
+      .trim()
+      .match(/^rgb\(\s*(\d{1,3})\s*,\s*(\d{1,3})\s*,\s*(\d{1,3})\s*\)$/i) ||
+    value.trim().match(/^(\d{1,3})\s*,\s*(\d{1,3})\s*,\s*(\d{1,3})$/);
 
   if (!match) return null;
 
@@ -47,16 +55,25 @@ function parseRgb(value) {
     b: Number(match[3]),
   };
 
-  const isValid = Object.values(rgb).every((number) => number >= 0 && number <= 255);
+  const isValid = Object.values(rgb).every(
+    (number) => number >= 0 && number <= 255,
+  );
 
   return isValid ? rgb : null;
 }
 
 function parseHsl(value) {
-  const match = value
-    .trim()
-    .match(/^hsl\(\s*(-?\d+(?:\.\d+)?)\s*,\s*(\d+(?:\.\d+)?)%\s*,\s*(\d+(?:\.\d+)?)%\s*\)$/i)
-    || value.trim().match(/^(-?\d+(?:\.\d+)?)\s*,\s*(\d+(?:\.\d+)?)%?\s*,\s*(\d+(?:\.\d+)?)%?$/);
+  const match =
+    value
+      .trim()
+      .match(
+        /^hsl\(\s*(-?\d+(?:\.\d+)?)\s*,\s*(\d+(?:\.\d+)?)%\s*,\s*(\d+(?:\.\d+)?)%\s*\)$/i,
+      ) ||
+    value
+      .trim()
+      .match(
+        /^(-?\d+(?:\.\d+)?)\s*,\s*(\d+(?:\.\d+)?)%?\s*,\s*(\d+(?:\.\d+)?)%?$/,
+      );
 
   if (!match) return null;
 
@@ -72,7 +89,7 @@ function setInputState(input, isValid) {
 }
 
 function updateColorValues(hex, sourceInput = null) {
-  if (!colorPreview || !hexOutput || !rgbOutput || !hslOutput || !colorInput) return;
+  if (!hexOutput || !rgbOutput || !hslOutput || !colorInput) return;
 
   const normalizedHex = normalizeHex(hex);
   if (!normalizedHex) return;
@@ -82,14 +99,15 @@ function updateColorValues(hex, sourceInput = null) {
 
   isUpdating = true;
 
-  colorPreview.style.background = normalizedHex;
   colorInput.value = normalizedHex;
 
   if (sourceInput !== hexOutput) hexOutput.value = normalizedHex.toUpperCase();
   if (sourceInput !== rgbOutput) rgbOutput.value = `rgb(${r}, ${g}, ${b})`;
   if (sourceInput !== hslOutput) hslOutput.value = `hsl(${h}, ${s}%, ${l}%)`;
 
-  [hexOutput, rgbOutput, hslOutput].forEach((input) => setInputState(input, true));
+  [hexOutput, rgbOutput, hslOutput].forEach((input) =>
+    setInputState(input, true),
+  );
 
   isUpdating = false;
 }
@@ -126,11 +144,71 @@ function setupEditableColorInputs() {
   });
 }
 
+function setupImagePicker() {
+  if (
+    !imageInput ||
+    !imageCanvas ||
+    !imageContext ||
+    !pickerEmpty ||
+    !pickerStatus
+  )
+    return;
+
+  imageInput.addEventListener("change", () => {
+    const file = imageInput.files?.[0];
+    if (!file) return;
+
+    if (!file.type.startsWith("image/")) {
+      pickerStatus.textContent = "Ce fichier n’est pas une image.";
+      imageInput.value = "";
+      return;
+    }
+
+    if (imageUrl) URL.revokeObjectURL(imageUrl);
+    imageUrl = URL.createObjectURL(file);
+    const image = new Image();
+    image.onload = () => {
+      if (image.src !== imageUrl) return;
+
+      imageCanvas.width = image.naturalWidth;
+      imageCanvas.height = image.naturalHeight;
+      imageContext.drawImage(image, 0, 0);
+      imageCanvas.hidden = false;
+      pickerEmpty.hidden = true;
+      pickerStatus.textContent = file.name;
+    };
+    image.onerror = () => {
+      pickerStatus.textContent = "Impossible de lire cette image.";
+    };
+    image.src = imageUrl;
+  });
+
+  imageCanvas.addEventListener("click", (event) => {
+    const bounds = imageCanvas.getBoundingClientRect();
+    const x = Math.min(
+      imageCanvas.width - 1,
+      Math.floor(
+        ((event.clientX - bounds.left) * imageCanvas.width) / bounds.width,
+      ),
+    );
+    const y = Math.min(
+      imageCanvas.height - 1,
+      Math.floor(
+        ((event.clientY - bounds.top) * imageCanvas.height) / bounds.height,
+      ),
+    );
+    const [red, green, blue] = imageContext.getImageData(x, y, 1, 1).data;
+
+    updateColorValues(rgbToHex(red, green, blue));
+  });
+}
+
 function setupColorPicker() {
   if (!colorInput || !hexOutput || !rgbOutput || !hslOutput) return;
 
   updateColorValues(colorInput.value);
   setupEditableColorInputs();
+  setupImagePicker();
 
   colorInput.addEventListener("input", () => {
     updateColorValues(colorInput.value);

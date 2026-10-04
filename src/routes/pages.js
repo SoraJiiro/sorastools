@@ -37,6 +37,14 @@ router.get("/tools/color-picker", (req, res) => {
   sendPublicFile(res, "tools", "color-picker.html");
 });
 
+router.get("/tools/qr-code-generator", (req, res) => {
+  sendPublicFile(res, "tools", "qr-code-generator.html");
+});
+
+router.get("/tools/password-generator", (req, res) => {
+  sendPublicFile(res, "tools", "password-generator.html");
+});
+
 router.get("/tools/json-formatter", (req, res) => {
   res.redirect(301, "/tools/code-formatter");
 });

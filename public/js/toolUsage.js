@@ -53,6 +53,8 @@ const TOOL_ACTION_SELECTORS = {
     "[data-copy='rgb']",
     "[data-copy='hsl']",
   ],
+  "qr-code-generator": ["[data-qr-generate]", "[data-qr-download]"],
+  "password-generator": ["[data-password-generate]", "[data-password-copy]"],
   "time-calculator": [
     "[data-time-duration-convert]",
     "[data-time-duration-swap]",

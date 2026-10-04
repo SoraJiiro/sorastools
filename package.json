@@ -36,6 +36,7 @@
     "prettier": "^3.9.8",
     "prettier-plugin-java": "^2.10.4",
     "prettier-plugin-sql": "^0.20.0",
+    "qrcode-generator": "^2.0.4",
     "sharp": "^0.33.5",
     "sql-formatter": "^15.8.2",
     "terser": "^5.51.2",

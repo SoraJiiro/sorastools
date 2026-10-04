@@ -1,0 +1,103 @@
+<!DOCTYPE html>
+<html lang="fr">
+    <head>
+        <meta charset="UTF-8">
+        <meta name="viewport" content="width=device-width, initial-scale=1.0">
+        <title>QR Code Generator - SorasTools</title>
+        <meta name="description"
+            content="Crée un QR code pour un texte ou une URL, puis exporte-le en SVG.">
+        <link rel="icon" type="image/png" href="/assets/logo.png">
+        <link rel="shortcut icon" type="image/png" href="/assets/logo.png">
+        <link rel="stylesheet" href="/css/global.css">
+        <link rel="stylesheet" href="/css/qr-code-generator.css">
+        <link rel="preconnect" href="https://fonts.googleapis.com">
+        <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+        <link
+            href="https://fonts.googleapis.com/css2?family=Intel+One+Mono:ital,wght@0,300..700;1,300..700&family=Roboto+Condensed:wght@100..900&family=Science+Gothic:wght@100..900&display=swap"
+            rel="stylesheet">
+        <script defer src="/vendor/qrcode-generator/qrcode.js"></script>
+        <script defer src="/vendor/qrcode-generator/qrcode_UTF8.js"></script>
+        <script type="module" src="/js/tools/qr-code-generator.js"></script>
+        <script type="module" src="/js/global.js"></script>
+    </head>
+    <body>
+        <header class="site-header">
+            <nav class="navbar">
+                <a class="logo" href="/"
+                    data-label="Retourner à l'accueil SorasTools"><img
+                        class="logo-img"
+                        src="/assets/logo.png" alt
+                        aria-hidden="true">SorasTools</a>
+                <div class="nav-links">
+                    <a href="/#tools"
+                        data-label="Aller au catalogue des Tools">Accueil</a>
+                    <a href="/suggest"
+                        data-label="Aller aux suggestions de tools">Suggest</a>
+                    <a href="/contact"
+                        data-label="Aller à la page contact">Contact</a>
+                </div>
+            </nav>
+        </header>
+        <main>
+            <section class="section tool-section" id="qr-code-generator">
+                <div class="section-heading">
+                    <p class="eyebrow">Utilitaires</p>
+                    <h1>Générateur de QR code</h1>
+                    <p>Transforme un texte ou une URL en QR code
+                        téléchargeable.</p>
+                </div>
+                <div class="qr-tool" id="tool-panel">
+                    <div class="qr-controls">
+                        <label class="field" data-label="Contenu du QR code">
+                            <span>Texte ou URL</span>
+                            <textarea data-qr-input rows="6" spellcheck="false"
+                                placeholder="https://exemple.fr"></textarea>
+                        </label>
+                        <div class="qr-options">
+                            <label class="field"
+                                data-label="Correction d'erreur">
+                                <span>Correction d'erreur</span>
+                                <select data-qr-level>
+                                    <option value="L">Faible (L)</option>
+                                    <option value="M" selected>Moyenne
+                                        (M)</option>
+                                    <option value="Q">Haute (Q)</option>
+                                    <option value="H">Très haute (H)</option>
+                                </select>
+                            </label>
+                            <label class="field" data-label="Taille du QR code">
+                                <span>Taille du SVG</span>
+                                <select data-qr-size>
+                                    <option value="4">Petite</option>
+                                    <option value="8" selected>Moyenne</option>
+                                    <option value="12">Grande</option>
+                                </select>
+                            </label>
+                        </div>
+                        <div class="qr-actions">
+                            <button type="button" data-qr-generate
+                                data-label="Générer le QR code">Générer</button>
+                            <a class="qr-download" href="#" data-qr-download
+                                aria-disabled="true" tabindex="-1">Télécharger
+                                SVG</a>
+                        </div>
+                        <p class="qr-status" data-qr-status
+                            aria-live="polite">Prêt à générer.</p>
+                        <p class="qr-privacy">Le contenu reste dans ton
+                            navigateur.</p>
+                    </div>
+                    <div class="qr-preview" aria-label="Aperçu du QR code">
+                        <span class="qr-empty" data-qr-empty>Ton QR code
+                            apparaîtra ici.</span>
+                        <img data-qr-image alt="QR code généré" hidden>
+                    </div>
+                </div>
+            </section>
+        </main>
+        <footer class="site-footer">
+            <p>&copy; <span class="date"></span> SorasTools - Tous droits
+                réservés.</p>
+            <p class="location"></p>
+        </footer>
+    </body>
+</html>

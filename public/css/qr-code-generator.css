@@ -1,0 +1,143 @@
+.qr-tool {
+  display: grid;
+  grid-template-columns: minmax(0, 1.1fr) minmax(260px, 0.9fr);
+  gap: 24px;
+  padding: 24px;
+  background: linear-gradient(
+    180deg,
+    var(--surface-strong),
+    var(--surface-soft)
+  );
+  border: 1px solid var(--border);
+  border-radius: 20px;
+  box-shadow: var(--shadow);
+}
+
+.qr-controls {
+  display: grid;
+  align-content: start;
+  gap: 16px;
+  min-width: 0;
+}
+
+.qr-controls textarea,
+.qr-controls select {
+  width: 100%;
+  border: 1px solid var(--border);
+  border-radius: 10px;
+  background: var(--surface-translucent);
+  color: var(--text);
+  padding: 12px;
+  font: inherit;
+}
+
+.qr-controls textarea {
+  min-height: 150px;
+  resize: vertical;
+  font-family: "Intel One Mono", Consolas, monospace;
+}
+
+.qr-controls textarea:focus,
+.qr-controls select:focus {
+  border-color: var(--border-orange);
+}
+
+.qr-options {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 14px;
+}
+
+.qr-actions {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 10px;
+}
+
+.qr-actions button,
+.qr-download {
+  display: inline-flex;
+  min-height: 44px;
+  align-items: center;
+  justify-content: center;
+  border: 0;
+  border-radius: 999px;
+  background: linear-gradient(135deg, var(--primary), var(--primary-end));
+  color: var(--button-text);
+  cursor: pointer;
+  font: inherit;
+  font-weight: 800;
+  padding: 10px 16px;
+  text-decoration: none;
+}
+
+.qr-download[aria-disabled="true"] {
+  cursor: not-allowed;
+  filter: grayscale(1);
+  opacity: 0.5;
+  pointer-events: none;
+}
+
+.qr-status,
+.qr-privacy {
+  margin: 0;
+  color: var(--muted);
+}
+
+.qr-status {
+  font-weight: 800;
+}
+
+.qr-status[data-type="success"] {
+  color: #39d353;
+}
+
+.qr-status[data-type="warning"] {
+  color: #ffcc66;
+}
+
+.qr-status[data-type="error"] {
+  color: #ff6b6b;
+}
+
+.qr-privacy {
+  font-size: 0.9rem;
+}
+
+.qr-preview {
+  display: grid;
+  min-width: 0;
+  min-height: 320px;
+  place-items: center;
+  overflow: hidden;
+  border: 1px solid var(--border);
+  border-radius: 14px;
+  background: #fff;
+  padding: 20px;
+}
+
+.qr-preview img {
+  display: block;
+  width: min(100%, 360px);
+  height: auto;
+  image-rendering: pixelated;
+}
+
+.qr-preview [hidden] {
+  display: none;
+}
+
+.qr-empty {
+  color: #667085;
+  text-align: center;
+}
+
+@media (max-width: 720px) {
+  .qr-tool {
+    grid-template-columns: 1fr;
+  }
+
+  .qr-preview {
+    min-height: 260px;
+  }
+}
