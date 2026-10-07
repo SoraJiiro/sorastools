@@ -2,6 +2,7 @@ import { copyToClipboard, setStatus } from "../utils.js";
 
 const input = document.querySelector("[data-code-input]");
 const output = document.querySelector("[data-code-output]");
+let result = "";
 const status = document.querySelector("[data-code-status]");
 const language = document.querySelector("[data-code-language]");
 const indent = document.querySelector("[data-code-indent]");
@@ -128,7 +129,7 @@ async function formatAction() {
     return;
   }
   try {
-    output.value = await formatCode(input.value);
+    setOutput(await formatCode(input.value));
     setCodeStatus(
       `${language.value.toUpperCase()} valide et formaté.`,
       "success",
@@ -136,6 +137,13 @@ async function formatAction() {
   } catch (formatError) {
     setCodeStatus(`Erreur de formatage : ${formatError.message}`, "error");
   }
+}
+
+function setOutput(text) {
+  result = text;
+  output.className = `language-${language.value}`;
+  output.textContent = text;
+  document.dispatchEvent(new CustomEvent("sorastool:content-updated"));
 }
 
 function setupCodeFormatter() {
@@ -154,13 +162,13 @@ function setupCodeFormatter() {
     });
   document.querySelector("[data-code-clear]")?.addEventListener("click", () => {
     input.value = "";
-    output.value = "";
+    setOutput("");
     setCodeStatus("En attente de code.");
   });
   document
     .querySelector("[data-code-copy]")
     ?.addEventListener("click", async () => {
-      const value = output.value || input.value;
+      const value = result || input.value;
       if (!value.trim()) {
         setCodeStatus("Aucun code à copier.", "warning");
         return;

@@ -87,7 +87,7 @@
 
 .jm-editor-grid {
   display: grid;
-  grid-template-columns: repeat(2, minmax(0, 1fr));
+  grid-template-columns: minmax(0, 1fr) minmax(0, 1.6fr);
   gap: 18px;
 }
 
@@ -150,4 +150,14 @@
     align-items: flex-start;
     flex-direction: column;
   }
+}
+
+.jm-output {
+  height: 420px;
+  white-space: pre-wrap;
+  overflow-wrap: anywhere;
+}
+
+main {
+  width: min(1400px, calc(100% - 32px));
 }

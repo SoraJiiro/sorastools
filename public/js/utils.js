@@ -9,15 +9,12 @@ export function escapeHtml(value) {
 
 export function applyActionsLabels(selector = "[data-label]") {
   if (!selector) return;
-  const elements = document.querySelectorAll(selector);
 
-  elements.forEach((element) => {
+  document.querySelectorAll(selector).forEach((element) => {
     const label = element.dataset.label?.trim();
-
     if (!label) return;
-
+    element.title = label;
     element.setAttribute("aria-label", label);
-    element.setAttribute("title", label);
   });
 }
 

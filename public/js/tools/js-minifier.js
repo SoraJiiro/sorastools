@@ -21,6 +21,14 @@ const moduleCheckbox = document.querySelector("[data-jm-module]");
 const obfuscationLevelSelect = document.querySelector("[data-jm-obf-level]");
 
 let activeMinifyRunId = 0;
+let result = "";
+
+function setOutput(text) {
+  result = text;
+  jmOutput.className = "language-javascript";
+  jmOutput.textContent = text;
+  document.dispatchEvent(new CustomEvent("sorastool:content-updated"));
+}
 
 function setJmStatus(message, type = "default") {
   setStatus(jmStatus, message, type);
@@ -203,7 +211,7 @@ async function minifyInput() {
   const value = jmInput.value;
 
   if (!value.trim()) {
-    jmOutput.value = "";
+    setOutput("");
     updateStats(0, 0);
     setJmStatus("Aucun JavaScript à minifier.", "warning");
     return;
@@ -239,7 +247,7 @@ async function minifyInput() {
 
     if (currentRunId !== activeMinifyRunId) return;
 
-    jmOutput.value = output;
+    setOutput(output);
     updateStats(value.length, output.length);
     if (obfuscationSkipped) {
       setJmStatus(
@@ -258,7 +266,7 @@ async function minifyInput() {
   } catch (error) {
     if (currentRunId !== activeMinifyRunId) return;
 
-    jmOutput.value = "";
+    setOutput("");
     updateStats(value.length, 0);
 
     if (error?.code === "MINIFIER_UNAVAILABLE") {
@@ -278,19 +286,19 @@ async function minifyInput() {
 
 function clearValues() {
   jmInput.value = "";
-  jmOutput.value = "";
+  setOutput("");
   updateStats(0, 0);
   setJmStatus("En attente.", "default");
 }
 
 function swapValues() {
-  if (!jmOutput.value.trim()) {
+  if (!result.trim()) {
     setJmStatus("Aucun résultat à remplacer.", "warning");
     return;
   }
 
-  jmInput.value = jmOutput.value;
-  jmOutput.value = "";
+  jmInput.value = result;
+  setOutput("");
   updateStats(jmInput.value.length, 0);
   setJmStatus("Le résultat a remplacé l'input.", "success");
 }
@@ -319,23 +327,23 @@ function setupJsMinifier() {
   swapButton?.addEventListener("click", swapValues);
 
   copyButton?.addEventListener("click", async () => {
-    if (!jmOutput.value.trim()) {
+    if (!result.trim()) {
       setJmStatus("Aucun résultat à copier.", "warning");
       return;
     }
 
-    await copyToClipboard(jmOutput.value);
+    await copyToClipboard(result);
     temporarilyChangeText(copyButton, "Copié");
     setJmStatus("Résultat copié dans le presse-papiers.", "success");
   });
 
   downloadButton?.addEventListener("click", () => {
-    if (!jmOutput.value.trim()) {
+    if (!result.trim()) {
       setJmStatus("Aucun résultat à télécharger.", "warning");
       return;
     }
 
-    downloadTextFile(jmOutput.value, "script.min.js", "text/javascript");
+    downloadTextFile(result, "script.min.js", "text/javascript");
     temporarilyChangeText(downloadButton, "Téléchargé");
     setJmStatus("Fichier JavaScript téléchargé.", "success");
   });

@@ -10,6 +10,20 @@ const youtubeDl = require("youtube-dl-exec");
 const router = express.Router();
 const ffmpegPath = ffmpegStatic || "ffmpeg";
 
+const USER_AGENTS = [
+  "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/126.0.0.0 Safari/537.36",
+  "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/125.0.0.0 Safari/537.36 Edg/125.0.0.0",
+  "Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/126.0.0.0 Safari/537.36",
+  "Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/605.1.15 (KHTML, like Gecko) Version/17.5 Safari/605.1.15",
+  "Mozilla/5.0 (X11; Linux x86_64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/126.0.0.0 Safari/537.36",
+  "Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:127.0) Gecko/20100101 Firefox/127.0",
+  "Mozilla/5.0 (X11; Ubuntu; Linux x86_64; rv:127.0) Gecko/20100101 Firefox/127.0",
+];
+
+function randomUserAgent() {
+  return USER_AGENTS[crypto.randomInt(USER_AGENTS.length)];
+}
+
 function convertAudio(inputPath, outputPath) {
   return new Promise((resolve, reject) => {
     const process = spawn(ffmpegPath, [
@@ -71,11 +85,13 @@ router.post("/api/youtube/download", async (req, res) => {
   }
 
   try {
+    const userAgent = randomUserAgent();
     const metadata = await youtubeDl(url, {
       dumpSingleJson: true,
       noWarnings: true,
       noCheckCertificates: true,
       skipDownload: true,
+      userAgent,
     });
     const title = sanitizeFilename(metadata.title);
     const extension = type === "audio" ? "mp3" : "mp4";
@@ -109,6 +125,7 @@ router.post("/api/youtube/download", async (req, res) => {
         ...(ffmpegStatic ? { ffmpegLocation: path.dirname(ffmpegStatic) } : {}),
         noWarnings: true,
         noCheckCertificates: true,
+        userAgent,
       });
 
       if (type === "audio") await convertAudio(sourcePath, outputPath);

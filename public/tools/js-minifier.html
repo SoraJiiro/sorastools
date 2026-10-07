@@ -8,6 +8,8 @@
       content="Minifie du JavaScript et ajoute une obfuscation en option.">
     <link rel="icon" type="image/png" href="/assets/logo.png">
     <link rel="shortcut icon" type="image/png" href="/assets/logo.png">
+    <link rel="stylesheet"
+      href="/vendor/highlight.js/styles/github-dark.min.css">
     <link rel="stylesheet" href="/css/global.css">
     <link rel="stylesheet" href="/css/js-minifier.css">
     <link rel="preconnect" href="https://fonts.googleapis.com">
@@ -15,6 +17,7 @@
     <link
       href="https://fonts.googleapis.com/css2?family=Intel+One+Mono:ital,wght@0,300..700;1,300..700&family=Roboto+Condensed:ital,wght@0,100..900;1,100..900&family=Science+Gothic:wght@100..900&display=swap"
       rel="stylesheet">
+    <script defer src="/vendor/highlight.js/highlight.min.js"></script>
     <script src="/vendor/terser/bundle.min.js"></script>
     <script src="/vendor/javascript-obfuscator/index.browser.js"></script>
     <script src="/vendor/acorn/acorn.js"></script>
@@ -97,12 +100,12 @@ hello(name);</textarea>
                 sortir du focus</p>
             </label>
 
-            <label class="field jm-field"
+            <div class="field jm-field"
               data-label="Résultat JavaScript minifié">
               <span>Résultat</span>
-              <textarea data-jm-output data-label="JavaScript minifié"
-                spellcheck="false" readonly></textarea>
-            </label>
+              <pre
+                class="css-output jm-output"><code data-jm-output></code></pre>
+            </div>
           </div>
 
           <div class="jm-stats" aria-live="polite">
@@ -117,7 +120,7 @@ hello(name);</textarea>
 
     <section class="tech-explanation">
       <div class="tech-explanation-heading">
-        <p class="tech-name">JavaScript</p>
+        <p class="tech-name">JS Minification</p>
         <h2 class="subtitle">Comment ça marche ?</h2>
       </div>
 
@@ -133,25 +136,11 @@ hello(name);</textarea>
         d'exécution. Elle rend le code moins lisible, mais ce n'est pas une
         protection forte : un code côté client peut toujours être inspecté.
       </p>
-
-      <p>
-        Le niveau « Équilibré » garde un bon compromis entre lisibilité,
-        performance et taille de sortie. Le niveau « Fort » pousse
-        l'obfuscation davantage et peut produire un fichier plus volumineux.
-      </p>
-
-      <p>
-        L'option « Module ? » conserve les déclarations <code>import</code> et
-        <code>export</code> au niveau racine, valide le code en mode module et
-        évite le wrapper d'exécution pour préserver les modules ES et les
-        usages
-        CommonJS comme <code>require</code>, <code>module.exports</code> ou
-        <code>exports</code>.
-      </p>
     </section>
 
     <footer class="site-footer">
-      <p>&copy; <span class="date"></span> SorasTools - Tous droits réservés.</p>
+      <p>&copy; <span class="date"></span> SorasTools - Tous droits
+        réservés.</p>
       <p class="location"></p>
     </footer>
   </body>

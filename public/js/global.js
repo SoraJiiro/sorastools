@@ -5,7 +5,7 @@ import {
 } from "./utils.js";
 import { setupMostUsedTools, setupToolSubmitTracking } from "./toolUsage.js";
 
-const HIGHLIGHT_STYLE_HREF = "/vendor/highlight.js/styles/github-dark.min.css";
+const HIGHLIGHT_STYLE_HREF = "/vendor/highlight.js/styles/";
 const HIGHLIGHT_SCRIPT_SRC = "/vendor/highlight.js/highlight.min.js";
 const NAVBAR_MOBILE_QUERY = "(max-width: 720px)";
 const MOST_USED_SELECTOR = "[data-tools-most-used]";
@@ -67,15 +67,23 @@ function hasHighlightableCode(root = document) {
   );
 }
 
-function ensureHighlightStyle() {
-  if (document.querySelector(`link[href='${HIGHLIGHT_STYLE_HREF}']`)) return;
+function syncHighlightTheme(create = false) {
+  const isLight = document.documentElement.dataset.theme === "light";
+  const href = `${HIGHLIGHT_STYLE_HREF}${isLight ? "github" : "github-dark"}.min.css`;
+  let link = document.querySelector(`link[href^='${HIGHLIGHT_STYLE_HREF}']`);
 
-  const link = document.createElement("link");
-  link.rel = "stylesheet";
-  link.href = HIGHLIGHT_STYLE_HREF;
-  document.head.appendChild(link);
+  if (!link && !create) return;
+  if (!link) {
+    link = document.createElement("link");
+    link.rel = "stylesheet";
+    document.head.appendChild(link);
+  }
+  if (link.getAttribute("href") !== href) link.setAttribute("href", href);
 }
 
+function ensureHighlightStyle() {
+  syncHighlightTheme(true);
+}
 function setFooterLocation() {
   const locationEl = document.querySelector(".location");
   const path = window.location.pathname;
@@ -153,6 +161,12 @@ function highlightCode(root = document) {
 function setupHighlightJs() {
   window.applyHighlightJs = highlightCode;
 
+  new MutationObserver(() => syncHighlightTheme()).observe(
+    document.documentElement,
+    { attributes: true, attributeFilter: ["data-theme"] },
+  );
+  syncHighlightTheme();
+
   function applyHighlighting(root = document) {
     if (!hasHighlightableCode(root)) return;
 
@@ -162,6 +176,8 @@ function setupHighlightJs() {
   }
 
   document.addEventListener("sorastool:content-updated", (event) => {
+    applyActionsLabels();
+    applyActionIcons("button:not([data-nav-toggle]), .btn:not(.nav-links a)");
     applyHighlighting(event.detail?.root || document);
   });
 
@@ -236,54 +252,54 @@ function normalizeActionText(value = "") {
     .trim();
 }
 
+const ACTION_ICONS = [
+  [/envoyer|submit/, "fa-paper-plane"],
+  [/copier|copy/, "fa-copy"],
+  [/hasher|hash/, "fa-key"],
+  [/formatter|format|formater/, "fa-align-left"],
+  [/charger|load/, "fa-upload"],
+  [/telecharger|download|exporter|export/, "fa-download"],
+  [/generer|generate/, "fa-gears"],
+  [/convertir|convert|encoder|decoder|inverser|traduire|remplacer|replace/, "fa-right-left"],
+  [/reinitialiser|reset/, "fa-rotate-left"],
+  [/effacer|vider|clear|supprimer|delete/, "fa-trash"],
+  [/ajouter|add/, "fa-plus"],
+  [/rechercher|search/, "fa-magnifying-glass"],
+  [/retour|back/, "fa-arrow-left"],
+  [/contact/, "fa-envelope"],
+  [/suggest|suggestion/, "fa-lightbulb"],
+  [/valider|confirm|ok/, "fa-check"],
+  [/annuler|cancel/, "fa-xmark"],
+  [/precedent|previous/, "fa-chevron-left"],
+  [/suivant|next/, "fa-chevron-right"],
+  [/haut|top/, "fa-angles-up"],
+  [/bas|bottom/, "fa-angles-down"],
+  [/ouvrir|open/, "fa-folder-open"],
+  [/fermer|close/, "fa-xmark"],
+  [/imprimer|print/, "fa-print"],
+  [/favoris|favori|bookmark/, "fa-bookmark"],
+  [/partager|share/, "fa-share-nodes"],
+  [/actualiser|refresh|reload/, "fa-rotate"],
+  [/parametres|settings/, "fa-gear"],
+  [/aide|help/, "fa-circle-question"],
+  [/quitter|exit/, "fa-right-from-bracket"],
+  [/minifier/, "fa-compress"],
+  [/lancer|run/, "fa-play"],
+  [/arreter|stop/, "fa-stop"],
+  [/verifier|verify/, "fa-file-circle-check"],
+];
 function getActionIcon(element) {
   const text = normalizeActionText(
     `${element.textContent || ""} ${element.dataset.label || ""}`,
   );
   const href = element.getAttribute("href") || "";
 
-  if (/envoyer|submit/.test(text)) return "fa-paper-plane";
-  if (/copier|copy/.test(text)) return "fa-copy";
-  if (/hasher|hash/.test(text)) return "fa-key";
-  if (/formatter|format|formater/.test(text)) return "fa-align-left";
-  if (/charger|load/.test(text)) return "fa-upload";
-  if (/telecharger|download|exporter|export/.test(text)) return "fa-download";
-  if (/generer|generate/.test(text)) return "fa-gears";
-  if (/convertir|convert|encoder|decoder|inverser|traduire/.test(text))
-    return "fa-right-left";
-  if (/reinitialiser|reset/.test(text)) return "fa-rotate-left";
-  if (/effacer|vider|clear|supprimer|delete/.test(text)) return "fa-trash";
-  if (/ajouter|add/.test(text)) return "fa-plus";
-  if (/rechercher|search/.test(text)) return "fa-magnifying-glass";
-  if (/retour|back/.test(text)) return "fa-arrow-left";
   if (href === "/") return "fa-house";
-  if (/contact/.test(text) || href === "/contact") return "fa-envelope";
-  if (/suggest|suggestion/.test(text) || href === "/suggest")
-    return "fa-lightbulb";
-  if (/valider|confirm|ok/.test(text)) return "fa-check";
-  if (/annuler|cancel/.test(text)) return "fa-xmark";
-  if (/precedent|previous/.test(text)) return "fa-chevron-left";
-  if (/suivant|next/.test(text)) return "fa-chevron-right";
-  if (/haut|top/.test(text)) return "fa-angles-up";
-  if (/bas|bottom/.test(text)) return "fa-angles-down";
-  if (/remplacer|replace/.test(text)) return "fa-right-left";
-  if (/ouvrir|open/.test(text)) return "fa-folder-open";
-  if (/fermer|close/.test(text)) return "fa-xmark";
-  if (/imprimer|print/.test(text)) return "fa-print";
-  if (/favoris|favori|bookmark/.test(text)) return "fa-bookmark";
-  if (/partager|share/.test(text)) return "fa-share-nodes";
-  if (/actualiser|refresh|reload/.test(text)) return "fa-rotate";
-  if (/parametres|settings/.test(text)) return "fa-gear";
-  if (/aide|help/.test(text)) return "fa-circle-question";
-  if (/quitter|exit/.test(text)) return "fa-right-from-bracket";
-  if (/formatter|format/.test(text)) return "fa-align-left";
-  if (/minifier/.test(text)) return "fa-compress";
-  if (/lancer|run/.test(text)) return "fa-play";
-  if (/arreter|stop/.test(text)) return "fa-stop";
-  if (/verifier|verify/.test(text)) return "fa-file-circle-check";
-  return null;
-}
+  if (href === "/contact") return "fa-envelope";
+  if (href === "/suggest") return "fa-lightbulb";
 
+  return ACTION_ICONS.find(([pattern]) => pattern.test(text))?.[1] ?? null;
+}
 function applyActionIcons(selector = "button, .btn, .nav-links a") {
   document.querySelectorAll(selector).forEach((element) => {
     if (element.dataset.noActionIcon !== undefined) return;

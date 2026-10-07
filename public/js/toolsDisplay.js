@@ -12,6 +12,10 @@ function sortTools(a, b) {
 
   if (aReady !== bReady) return aReady - bReady;
 
+  const categoryOrder = (a.querySelector(".tool-card__category")?.textContent || "")
+    .localeCompare(b.querySelector(".tool-card__category")?.textContent || "", "fr");
+  if (categoryOrder) return categoryOrder;
+
   if (aUpdateDate && bUpdateDate) {
     const aDate = new Date(aUpdateDate);
     const bDate = new Date(bUpdateDate);

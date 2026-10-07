@@ -8,6 +8,8 @@
             content="Indente et vérifie du CSS, HTML, JavaScript, JSON ou SQL.">
         <link rel="icon" type="image/png" href="/assets/logo.png">
         <link rel="shortcut icon" type="image/png" href="/assets/logo.png">
+        <link rel="stylesheet"
+            href="/vendor/highlight.js/styles/github-dark.min.css">
         <link rel="stylesheet" href="/css/global.css">
         <link rel="stylesheet" href="/css/code-formatter.css">
         <link rel="preconnect" href="https://fonts.googleapis.com">
@@ -15,6 +17,7 @@
         <link
             href="https://fonts.googleapis.com/css2?family=Intel+One+Mono:ital,wght@0,300..700;1,300..700&family=Roboto+Condensed:ital,wght@0,100..900;1,100..900&family=Science+Gothic:wght@100..900&display=swap"
             rel="stylesheet">
+        <script defer src="/vendor/highlight.js/highlight.min.js"></script>
         <script type="module" src="/js/tools/code-formatter.js"></script>
         <script type="module" src="/js/global.js"></script>
     </head>
@@ -92,12 +95,11 @@
                             <p class="textarea-notice">Appuyer sur
                                 <span>Échap</span> pour sortir du focus</p>
                         </label>
-                        <label class="field code-field"
+                        <div class="field code-field"
                             data-label="Résultat du code formaté">
                             <span>Résultat</span>
-                            <textarea data-code-output spellcheck="false"
-                                readonly></textarea>
-                        </label>
+                            <pre class="css-output code-output"><code data-code-output></code></pre>
+                        </div>
                     </div>
 
                     <p class="code-status" data-code-status
@@ -108,17 +110,6 @@
                 </div>
             </section>
         </main>
-
-        <section class="tech-explanation">
-            <div class="tech-explanation-heading">
-                <p class="tech-name">Code</p>
-                <h2 class="subtitle">Formatage local</h2>
-            </div>
-            <p>Le code est traité directement dans ton navigateur. Les
-                accolades, balises, commentaires et mots-clés sont utilisés pour
-                produire une indentation lisible sans envoyer ton contenu à un
-                serveur.</p>
-        </section>
 
         <footer class="site-footer">
             <p>&copy; <span class="date"></span> SorasTools - Tous droits

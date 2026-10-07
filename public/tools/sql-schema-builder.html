@@ -1,0 +1,132 @@
+<!DOCTYPE html>
+<html lang="fr">
+    <head>
+        <meta charset="UTF-8">
+        <meta name="viewport" content="width=device-width, initial-scale=1.0">
+        <title>SQL Schema Builder - SorasTools</title>
+        <meta name="description"
+            content="Crée visuellement tables, clés primaires et étrangères, droits utilisateur, et génère le code SQL.">
+        <link rel="icon" type="image/png" href="/assets/logo.png">
+        <link rel="shortcut icon" type="image/png" href="/assets/logo.png">
+        <link rel="stylesheet"
+            href="/vendor/highlight.js/styles/github-dark.min.css">
+        <link rel="stylesheet" href="/css/global.css">
+        <link rel="stylesheet" href="/css/sql-schema-builder.css">
+        <link rel="preconnect" href="https://fonts.googleapis.com">
+        <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+        <link
+            href="https://fonts.googleapis.com/css2?family=Intel+One+Mono:ital,wght@0,300..700;1,300..700&family=Roboto+Condensed:ital,wght@0,100..900;1,100..900&family=Science+Gothic:wght@100..900&display=swap"
+            rel="stylesheet">
+        <script defer src="/vendor/highlight.js/highlight.min.js"></script>
+        <script type="module" src="/js/tools/sql-schema-builder.js"></script>
+        <script type="module" src="/js/global.js"></script>
+    </head>
+    <body>
+        <header class="site-header">
+            <nav class="navbar">
+                <a class="logo" href="/"
+                    data-label="Retourner à l'accueil SorasTools"><img
+                        class="logo-img" src="/assets/logo.png" alt
+                        aria-hidden="true">SorasTools</a>
+                <div class="nav-links">
+                    <a href="/#tools"
+                        data-label="Aller au catalogue des Tools">Accueil</a>
+                    <a href="/suggest"
+                        data-label="Aller aux suggestions de tools">Suggest</a>
+                    <a href="/contact"
+                        data-label="Aller à la page contact">Contact</a>
+                </div>
+            </nav>
+        </header>
+
+        <main>
+            <section class="section tool-section" id="sql-schema-builder">
+                <div class="section-heading">
+                    <p class="eyebrow">Dev</p>
+                    <h1>SQL Schema Builder</h1>
+                    <p>Crée une base de donnée graphiquement et récupère le code
+                        SQL associé.</p>
+                </div>
+
+                <div class="sb-tool" id="tool-panel">
+                    <div class="sb-controls">
+                        <label class="sb-select"
+                            data-label="Choisir le système de base de données">
+                            <span>Système</span>
+                            <select data-g="state.dialect">
+                                <option value="mysql">MySQL / MariaDB</option>
+                                <option value="postgres">PostgreSQL</option>
+                            </select>
+                        </label>
+                        <label class="sb-select"
+                            data-label="Nom de la base de données">
+                            <span>Base</span>
+                            <input data-g="state.db" value="ma_base"
+                                spellcheck="false">
+                        </label>
+                        <label class="sb-check"
+                            data-label="Ajouter la création de la base">
+                            <input type="checkbox" data-g="state.createDb"
+                                checked>
+                            <span>CREATE DATABASE</span>
+                        </label>
+                    </div>
+
+                    <div class="sb-controls">
+                        <label class="sb-select"
+                            data-label="Nom de l'utilisateur à qui donner tous les droits">
+                            <span>Utilisateur (GRANT ALL)</span>
+                            <input data-g="user.name" placeholder="app_user"
+                                autocomplete="off" spellcheck="false">
+                        </label>
+                        <label class="sb-select"
+                            data-label="Hôte de l'utilisateur (MySQL)">
+                            <span>Hôte (MySQL)</span>
+                            <input data-g="user.host" value="localhost"
+                                spellcheck="false">
+                        </label>
+                        <label class="sb-select"
+                            data-label="Mot de passe de l'utilisateur">
+                            <span>Mot de passe</span>
+                            <input data-g="user.password" autocomplete="off"
+                                spellcheck="false">
+                        </label>
+                        <label class="sb-check"
+                            data-label="Ajouter la création de l'utilisateur">
+                            <input type="checkbox" data-g="user.create"
+                                checked>
+                            <span>CREATE USER</span>
+                        </label>
+                    </div>
+
+                    <div class="sb-toolbar">
+                        <button type="button" data-add-table
+                            data-label="Ajouter une table">Ajouter une
+                            table</button>
+                        <button type="button" data-copy
+                            data-label="Copier le code SQL">Copier</button>
+                        <button type="button" data-download
+                            data-label="Télécharger le fichier .sql">Télécharger</button>
+                    </div>
+
+                    <div class="sb-editor-grid">
+                        <div class="field">
+                            <span>Tables</span>
+                            <div class="sb-tables" data-tables></div>
+                        </div>
+                        <div class="field">
+                            <span>Résultat</span>
+                            <pre class="css-output sb-sql"><code
+                                    class="language-sql" data-sql></code></pre>
+                        </div>
+                    </div>
+                </div>
+            </section>
+        </main>
+        <footer class="site-footer">
+            <p>&copy; <span class="date"></span> SorasTools - Tous droits
+                réservés.</p>
+            <p class="location"></p>
+        </footer>
+    </body>
+</html>
