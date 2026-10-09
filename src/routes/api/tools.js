@@ -4,7 +4,7 @@ const { TOOLS_FILE } = require("../../config/paths");
 
 const router = express.Router();
 const TOOL_USAGE_TABLE = "tool_usage_counts";
-const TOOL_USAGE_LIMIT_WINDOW_MS = 60 * 60 * 1000;
+const TOOL_USAGE_LIMIT_WINDOW_MS = 3600000;
 const TOOL_USAGE_LIMIT_MAX_CLICKS = 5;
 const toolUsageRateLimits = new Map();
 const SUPABASE_REST_HEADERS = {

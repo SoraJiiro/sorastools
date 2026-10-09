@@ -271,7 +271,7 @@ export function setupTextareaTabHandlers(selector = "textarea") {
   });
 }
 
-export function initFaKit() {
+export function getFaKit() {
   const faKitLink = "https://kit.fontawesome.com/9a6b0f1631.js";
 
   const kitScript = document.createElement("script");

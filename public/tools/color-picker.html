@@ -4,6 +4,7 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Color Picker - SorasTools</title>
+    <link rel="canonical" href="https://sorastools.onrender.com/tools/color-picker">
     <meta name="description"
       content="Choisis une couleur et convertis-la instantanément en HEX, RGB et HSL.">
     <link rel="icon" type="image/png" href="/assets/logo.png">
@@ -60,6 +61,11 @@
               <label class="upload-button" data-label="Importer une image">
                 <span>Importer une image</span>
                 <input type="file" accept="image/*" data-image-input>
+              </label>
+              <label class="zoom-control" data-label="Zoom de l'image">
+                <span>Zoom</span>
+                <input type="range" min="1" max="4" step="0.1" value="1"
+                  data-picker-zoom disabled>
               </label>
               <span class="picker-status" data-picker-status
                 aria-live="polite">Aucune image sélectionnée</span>

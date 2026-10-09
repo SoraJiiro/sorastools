@@ -1,7 +1,7 @@
 import {
   applyActionsLabels,
   setupTextareaTabHandlers,
-  initFaKit,
+  getFaKit,
 } from "./utils.js";
 import { setupMostUsedTools, setupToolSubmitTracking } from "./toolUsage.js";
 
@@ -10,11 +10,6 @@ const HIGHLIGHT_SCRIPT_SRC = "/vendor/highlight.js/highlight.min.js";
 const NAVBAR_MOBILE_QUERY = "(max-width: 720px)";
 const MOST_USED_SELECTOR = "[data-tools-most-used]";
 const THEME_STORAGE_KEY = "sorastool-theme";
-const BASIC_LOCATIONS = {
-  "/": "Home",
-  "/contact": "Contact",
-  "/suggest": "Suggest",
-};
 
 let highlightJsPromise = null;
 
@@ -83,31 +78,6 @@ function syncHighlightTheme(create = false) {
 
 function ensureHighlightStyle() {
   syncHighlightTheme(true);
-}
-function setFooterLocation() {
-  const locationEl = document.querySelector(".location");
-  const path = window.location.pathname;
-  if (!locationEl) return;
-
-  if (path in BASIC_LOCATIONS) {
-    locationEl.textContent = BASIC_LOCATIONS[path];
-  } else {
-    const name =
-      document.querySelector(".section-heading h1")?.textContent?.trim() ||
-      "Unknown Location";
-    locationEl.textContent = name;
-  }
-
-  locationEl.setAttribute(
-    "title",
-    `Vous êtes sur la page "${locationEl.textContent}"`,
-  );
-  locationEl.setAttribute(
-    "aria-label",
-    `Vous êtes sur la page "${locationEl.textContent}"`,
-  );
-  locationEl.textContent = "~/" + locationEl.textContent;
-  locationEl.style.cursor = "help";
 }
 
 function updateFooterDate() {
@@ -260,7 +230,10 @@ const ACTION_ICONS = [
   [/charger|load/, "fa-upload"],
   [/telecharger|download|exporter|export/, "fa-download"],
   [/generer|generate/, "fa-gears"],
-  [/convertir|convert|encoder|decoder|inverser|traduire|remplacer|replace/, "fa-right-left"],
+  [
+    /convertir|convert|encoder|decoder|inverser|traduire|remplacer|replace/,
+    "fa-right-left",
+  ],
   [/reinitialiser|reset/, "fa-rotate-left"],
   [/effacer|vider|clear|supprimer|delete/, "fa-trash"],
   [/ajouter|add/, "fa-plus"],
@@ -494,20 +467,28 @@ async function localKeepAlivePing() {
   }
 }
 
-initFaKit();
-setFooterLocation();
-updateFooterDate();
-setInterval(updateFooterDate, 30000 * 3);
-setupResponsiveNavbar();
-setupThemeToggle();
-setupMostUsedTools();
-setupToolSubmitTracking();
-setupTextareaTabHandlers("textarea:not([readonly])");
-setupScrollUpButton();
-setupCursorGlow();
-applyActionsLabels();
-applyActionIcons("button:not([data-nav-toggle]), .btn:not(.nav-links a)");
-setupHighlightJs();
-setupNumberInputButtons();
-giveCredit(window.location.pathname.split("/").pop() || "");
-setInterval(localKeepAlivePing, 1000 * 60 * 14); // Ping / 14mn
+function initModuleLoad() {
+  Promise.all([
+    getFaKit(),
+    updateFooterDate(),
+    setupResponsiveNavbar(),
+    setupThemeToggle(),
+    setupMostUsedTools(),
+    setupToolSubmitTracking(),
+    setupTextareaTabHandlers("textarea:not([readonly])"),
+    setupScrollUpButton(),
+    setupCursorGlow(),
+    applyActionsLabels(),
+    applyActionIcons("button:not([data-nav-toggle]), .btn:not(.nav-links a)"),
+    setupHighlightJs(),
+    setupNumberInputButtons(),
+    giveCredit(window.location.pathname.split("/").pop() || ""),
+    localKeepAlivePing(),
+  ]).catch((error) => {
+    console.error("Erreur mod :", error);
+  });
+  console.info("Modules chargés.");
+}
+
+window.addEventListener("DOMContentLoaded", initModuleLoad);
+document.onload = initModuleLoad;

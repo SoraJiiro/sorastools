@@ -55,6 +55,7 @@
     transform var(--transition),
     border-color var(--transition),
     background var(--transition);
+  cursor: default;
 }
 
 .tool-card::before {

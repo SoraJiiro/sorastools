@@ -61,7 +61,7 @@
   width: 54px;
   aspect-ratio: 1;
   place-items: center;
-  border: 1px solid var(--border-orange);
+  border: 2.5px solid var(--border-orange);
   border-radius: 50%;
   color: var(--primary);
   font-size: 2rem;
@@ -75,7 +75,17 @@
   width: auto;
   height: auto;
   cursor: crosshair;
-  touch-action: manipulation;
+  transform: translate(
+      var(--picker-offset-x, 0px),
+      var(--picker-offset-y, 0px)
+    )
+    scale(var(--picker-zoom, 1));
+  transform-origin: top left;
+  touch-action: none;
+}
+
+.picker-stage canvas.is-panning {
+  cursor: grabbing;
 }
 
 .picker-stage canvas[hidden],
@@ -121,10 +131,31 @@
 }
 
 .picker-status {
+  min-width: 0;
+  flex: 1 1 auto;
   overflow: hidden;
   color: var(--muted);
   text-overflow: ellipsis;
   white-space: nowrap;
+}
+
+.zoom-control {
+  display: inline-flex;
+  flex: 0 1 180px;
+  align-items: center;
+  gap: 8px;
+  color: var(--muted);
+  font-size: 0.9rem;
+}
+
+.zoom-control input {
+  width: 100%;
+  accent-color: var(--primary);
+}
+
+.zoom-control input:disabled {
+  cursor: not-allowed;
+  opacity: 0.5;
 }
 
 .color-panel {
@@ -209,6 +240,14 @@ input[type="color"] {
 
   .picker-stage {
     min-height: 220px;
+  }
+
+  .picker-actions {
+    flex-wrap: wrap;
+  }
+
+  .picker-status {
+    flex-basis: 100%;
   }
 
   .copy-row {

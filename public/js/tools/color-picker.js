@@ -16,6 +16,7 @@ const imageInput = document.querySelector("[data-image-input]");
 const imageCanvas = document.querySelector("[data-image-canvas]");
 const pickerEmpty = document.querySelector("[data-picker-empty]");
 const pickerStatus = document.querySelector("[data-picker-status]");
+const pickerZoom = document.querySelector("[data-picker-zoom]");
 const imageContext = imageCanvas?.getContext("2d", {
   willReadFrequently: true,
 });
@@ -150,9 +151,141 @@ function setupImagePicker() {
     !imageCanvas ||
     !imageContext ||
     !pickerEmpty ||
-    !pickerStatus
+    !pickerStatus ||
+    !pickerZoom
   )
     return;
+
+  const touchPoints = new Map();
+  let pinchDistance = null;
+  let zoom = 1;
+  let offsetX = 0;
+  let offsetY = 0;
+  let dragPoint = null;
+  let didDrag = false;
+
+  function renderImage() {
+    imageCanvas.style.setProperty("--picker-zoom", zoom);
+    imageCanvas.style.setProperty("--picker-offset-x", `${offsetX}px`);
+    imageCanvas.style.setProperty("--picker-offset-y", `${offsetY}px`);
+  }
+
+  function setZoom(nextZoom, clientX, clientY) {
+    const bounds = imageCanvas.getBoundingClientRect();
+    const clampedZoom = clampNumber(
+      nextZoom,
+      Number(pickerZoom.min),
+      Number(pickerZoom.max),
+    );
+
+    offsetX += (clientX - bounds.left) * (1 - clampedZoom / zoom);
+    offsetY += (clientY - bounds.top) * (1 - clampedZoom / zoom);
+    zoom = clampedZoom;
+    pickerZoom.value = zoom;
+    renderImage();
+  }
+
+  function moveImage(clientX, clientY) {
+    if (!dragPoint) return;
+
+    const deltaX = clientX - dragPoint.clientX;
+    const deltaY = clientY - dragPoint.clientY;
+    if (deltaX || deltaY) {
+      offsetX += deltaX;
+      offsetY += deltaY;
+      didDrag = true;
+      renderImage();
+    }
+
+    dragPoint = { ...dragPoint, clientX, clientY };
+  }
+
+  pickerZoom.addEventListener("input", () => {
+    const bounds = imageCanvas.getBoundingClientRect();
+    setZoom(
+      Number(pickerZoom.value),
+      bounds.left + bounds.width / 2,
+      bounds.top + bounds.height / 2,
+    );
+  });
+
+  imageCanvas.addEventListener(
+    "wheel",
+    (event) => {
+      event.preventDefault();
+      setZoom(
+        Number(pickerZoom.value) * Math.exp(-event.deltaY * 0.002),
+        event.clientX,
+        event.clientY,
+      );
+    },
+    { passive: false },
+  );
+
+  imageCanvas.addEventListener("pointerdown", (event) => {
+    if (event.pointerType === "mouse" && event.button !== 0) return;
+
+    imageCanvas.setPointerCapture(event.pointerId);
+    didDrag = false;
+    if (event.pointerType === "touch") {
+      touchPoints.set(event.pointerId, event);
+      if (touchPoints.size === 2) {
+        dragPoint = null;
+        return;
+      }
+    }
+
+    dragPoint = {
+      pointerId: event.pointerId,
+      clientX: event.clientX,
+      clientY: event.clientY,
+    };
+    imageCanvas.classList.add("is-panning");
+  });
+
+  imageCanvas.addEventListener("pointermove", (event) => {
+    if (event.pointerType === "touch") {
+      if (!touchPoints.has(event.pointerId)) return;
+
+      touchPoints.set(event.pointerId, event);
+      if (touchPoints.size === 2) {
+        event.preventDefault();
+        const [firstTouch, secondTouch] = touchPoints.values();
+        const centerX = (firstTouch.clientX + secondTouch.clientX) / 2;
+        const centerY = (firstTouch.clientY + secondTouch.clientY) / 2;
+        const distance = Math.hypot(
+          firstTouch.clientX - secondTouch.clientX,
+          firstTouch.clientY - secondTouch.clientY,
+        );
+
+        if (pinchDistance) {
+          setZoom(
+            Number(pickerZoom.value) * (distance / pinchDistance),
+            centerX,
+            centerY,
+          );
+          didDrag = true;
+        }
+
+        pinchDistance = distance;
+        return;
+      }
+    }
+
+    moveImage(event.clientX, event.clientY);
+  });
+
+  function stopPinch(event) {
+    touchPoints.delete(event.pointerId);
+    pinchDistance = null;
+    if (dragPoint && dragPoint.pointerId === event.pointerId) {
+      dragPoint = null;
+    }
+    imageCanvas.classList.remove("is-panning");
+  }
+
+  imageCanvas.addEventListener("pointerup", stopPinch);
+  imageCanvas.addEventListener("pointercancel", stopPinch);
 
   imageInput.addEventListener("change", () => {
     const file = imageInput.files?.[0];
@@ -173,6 +306,12 @@ function setupImagePicker() {
       imageCanvas.width = image.naturalWidth;
       imageCanvas.height = image.naturalHeight;
       imageContext.drawImage(image, 0, 0);
+      pickerZoom.value = "1";
+      pickerZoom.disabled = false;
+      zoom = 1;
+      offsetX = 0;
+      offsetY = 0;
+      renderImage();
       imageCanvas.hidden = false;
       pickerEmpty.hidden = true;
       pickerStatus.textContent = file.name;
@@ -184,6 +323,11 @@ function setupImagePicker() {
   });
 
   imageCanvas.addEventListener("click", (event) => {
+    if (didDrag) {
+      didDrag = false;
+      return;
+    }
+
     const bounds = imageCanvas.getBoundingClientRect();
     const x = Math.min(
       imageCanvas.width - 1,
