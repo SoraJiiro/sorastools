@@ -53,6 +53,13 @@ const TOOL_ACTION_SELECTORS = {
     "[data-copy='rgb']",
     "[data-copy='hsl']",
   ],
+  "background-remover": [
+    "[data-background-file]",
+    "[data-background-mode]",
+    "[data-background-undo]",
+    "[data-background-redo]",
+    "[data-background-download]",
+  ],
   "qr-code-generator": ["[data-qr-generate]", "[data-qr-download]"],
   "password-generator": ["[data-password-generate]", "[data-password-copy]"],
   "time-calculator": [

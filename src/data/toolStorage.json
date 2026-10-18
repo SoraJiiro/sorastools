@@ -11,6 +11,17 @@
     "updatedAt": "2026-10-04"
   },
   {
+    "id": "background-remover",
+    "name": "Background Remover",
+    "category": "Design",
+    "description": "Retire le fond des images.",
+    "icon": "<i class='fa-solid fa-eraser'></i>",
+    "url": "/tools/background-remover",
+    "status": "ready",
+    "createdAt": "2026-10-19",
+    "updatedAt": "2026-10-19"
+  },
+  {
     "id": "code-formatter",
     "name": "Code Formatter",
     "category": "Dev",

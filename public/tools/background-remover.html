@@ -1,0 +1,120 @@
+<!DOCTYPE html>
+<html lang="fr">
+    <head>
+        <meta charset="UTF-8">
+        <meta name="viewport" content="width=device-width, initial-scale=1.0">
+        <title>Background Remover - SorasTools</title>
+        <link rel="canonical"
+            href="https://sorastools.onrender.com/tools/background-remover">
+        <meta name="description"
+            content="Retire le fond des images.">
+        <link rel="icon" type="image/png" href="/assets/logo.png">
+        <link rel="stylesheet" href="/css/global.css">
+        <link rel="stylesheet" href="/css/background-remover.css">
+        <link rel="preconnect" href="https://fonts.googleapis.com">
+        <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+        <link
+            href="https://fonts.googleapis.com/css2?family=Intel+One+Mono:ital,wght@0,300..700;1,300..700&family=Roboto+Condensed:wght@100..900&family=Science+Gothic:wght@100..900&display=swap"
+            rel="stylesheet">
+        <script type="module" src="/js/tools/background-remover.js"></script>
+        <script type="module" src="/js/global.js"></script>
+    </head>
+    <body>
+        <header class="site-header">
+            <nav class="navbar">
+                <a class="logo" href="/"
+                    data-label="Retourner à l'accueil SorasTools"><img
+                        class="logo-img" src="/assets/logo.png" alt
+                        aria-hidden="true">SorasTools</a>
+                <div class="nav-links">
+                    <a href="/#tools"
+                        data-label="Aller au catalogue des Tools">Accueil</a>
+                    <a href="/suggest"
+                        data-label="Aller aux suggestions de tools">Suggest</a>
+                    <a href="/contact"
+                        data-label="Aller à la page contact">Contact</a>
+                </div>
+            </nav>
+        </header>
+        <main>
+            <section class="section tool-section" id="background-remover">
+                <div class="section-heading">
+                    <p class="eyebrow">Design</p>
+                    <h1>Background Remover</h1>
+                    <p>Retire le fond des images.</p>
+                </div>
+                <div class="background-tool" id="tool-panel">
+                    <div class="background-controls">
+                        <label class="background-upload"
+                            data-label="Importer une image">
+                            <span>Importer une image</span>
+                            <input type="file" accept="image/*"
+                                data-background-file>
+                        </label>
+                        <label class="field background-color"
+                            data-label="Choisir la couleur du fond">
+                            <span>Couleur du fond</span>
+                            <input type="color" value="#ffffff"
+                                data-background-color disabled>
+                        </label>
+                        <label class="field background-tolerance"
+                            data-label="Régler la tolérance de couleur">
+                            <span>Tolérance <output
+                                    data-tolerance-value>48</output></span>
+                            <input type="range" min="0" max="220" value="48"
+                                data-background-tolerance disabled>
+                        </label>
+                        <div class="background-mode" role="group"
+                            aria-label="Mode de suppression">
+                            <button type="button" data-background-mode="color"
+                                aria-pressed="true" disabled>Par
+                                couleur</button>
+                            <button type="button" data-background-mode="zone"
+                                aria-pressed="false" disabled>Par zone</button>
+                        </div>
+                        <div class="background-history" role="group"
+                            aria-label="Historique des suppressions">
+                            <button type="button" data-background-undo
+                                aria-label="Annuler la dernière suppression"
+                                title="Annuler" disabled>↶</button>
+                            <button type="button" data-background-redo
+                                aria-label="Rétablir la suppression annulée"
+                                title="Rétablir" disabled>↷</button>
+                        </div>
+                        <label class="field background-zoom"
+                            data-label="Régler le zoom de l’image">
+                            <span>Zoom <output
+                                    data-background-zoom-value>1×</output></span>
+                            <input type="range" min="1" max="4" step="0.1"
+                                value="1" data-background-zoom disabled>
+                        </label>
+                        <p class="background-status" data-background-status
+                            aria-live="polite">Importe une image pour
+                            commencer.</p>
+                        <p class="background-note">Le mode couleur agit sur les
+                            teintes similaires ; le mode zone traite une région
+                            à
+                            la fois. Les retouches manuelles peuvent être
+                            annulées ou rétablies.</p>
+                        <a class="background-download" href="#"
+                            download="background-removed.png"
+                            aria-disabled="true" data-background-download
+                            data-label="Télécharger l'image sans fond">Télécharger
+                            PNG</a>
+                    </div>
+                    <div class="background-preview"
+                        aria-label="Aperçu de l'image sans fond">
+                        <p data-background-empty>Ton image apparaîtra ici.</p>
+                        <canvas data-background-canvas hidden
+                            title="Clique sur la couleur à retirer"></canvas>
+                    </div>
+                </div>
+            </section>
+        </main>
+        <footer class="site-footer">
+            <p>&copy; <span class="date"></span> SorasTools - Tous droits
+                réservés.</p>
+            <p class="location"></p>
+        </footer>
+    </body>
+</html>

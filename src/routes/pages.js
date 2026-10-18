@@ -37,6 +37,10 @@ router.get("/tools/color-picker", (req, res) => {
   sendPublicFile(res, "tools", "color-picker.html");
 });
 
+router.get("/tools/background-remover", (req, res) => {
+  sendPublicFile(res, "tools", "background-remover.html");
+});
+
 router.get("/tools/qr-code-generator", (req, res) => {
   sendPublicFile(res, "tools", "qr-code-generator.html");
 });
