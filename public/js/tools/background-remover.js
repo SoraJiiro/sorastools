@@ -4,6 +4,16 @@ const fileInput = document.querySelector("[data-background-file]");
 const colorInput = document.querySelector("[data-background-color]");
 const toleranceInput = document.querySelector("[data-background-tolerance]");
 const toleranceValue = document.querySelector("[data-tolerance-value]");
+const zoneToleranceInput = document.querySelector("[data-zone-tolerance]");
+const zoneToleranceValue = document.querySelector(
+  "[data-zone-tolerance-value]",
+);
+const colorToleranceControl = document.querySelector(
+  "[data-color-tolerance-control]",
+);
+const zoneToleranceControl = document.querySelector(
+  "[data-zone-tolerance-control]",
+);
 const zoomInput = document.querySelector("[data-background-zoom]");
 const zoomValue = document.querySelector("[data-background-zoom-value]");
 const canvas = document.querySelector("[data-background-canvas]");
@@ -20,6 +30,7 @@ let image = null;
 let sourcePixels = null;
 let removedPixels = null;
 let mode = "color";
+let colorRemovalActive = true;
 let undoStack = [];
 let redoStack = [];
 let zoom = 1;
@@ -49,6 +60,7 @@ function isNearColor(pixel, red, green, blue, tolerance) {
 function renderImage() {
   if (!sourcePixels || !context) return;
 
+  const removeByColor = mode === "color" && colorRemovalActive;
   const [red, green, blue] = colorInput.value
     .match(/[\da-f]{2}/gi)
     .map((value) => parseInt(value, 16));
@@ -60,16 +72,20 @@ function renderImage() {
   );
 
   for (let index = 0; index < pixels.data.length; index += 4) {
-    const distance =
-      (Math.abs(pixels.data[index] - red) +
-        Math.abs(pixels.data[index + 1] - green) +
-        Math.abs(pixels.data[index + 2] - blue)) /
-      3;
-    pixels.data[index + 3] = Math.round(
-      pixels.data[index + 3] *
-        Math.max(0, Math.min(1, (distance - tolerance) / 36)),
-    );
-    if (removedPixels[index / 4]) pixels.data[index + 3] = 0;
+    if (removeByColor) {
+      const distance =
+        (Math.abs(pixels.data[index] - red) +
+          Math.abs(pixels.data[index + 1] - green) +
+          Math.abs(pixels.data[index + 2] - blue)) /
+        3;
+      pixels.data[index + 3] = Math.round(
+        pixels.data[index + 3] *
+          Math.max(0, Math.min(1, (distance - tolerance) / 36)),
+      );
+    }
+    if (mode === "zone" && removedPixels[index / 4]) {
+      pixels.data[index + 3] = 0;
+    }
   }
 
   context.putImageData(pixels, 0, 0);
@@ -87,6 +103,7 @@ function createFullResolutionExport() {
     .match(/[\da-f]{2}/gi)
     .map((value) => parseInt(value, 16));
   const tolerance = Number(toleranceInput.value);
+  const removeByColor = mode === "color" && colorRemovalActive;
   const previewScaleX = canvas.width / image.width;
   const previewScaleY = canvas.height / image.height;
 
@@ -100,20 +117,25 @@ function createFullResolutionExport() {
       );
       for (let x = 0; x < image.width; x++) {
         const offset = (y * image.width + x) * 4;
-        const distance =
-          (Math.abs(pixels.data[offset] - red) +
-            Math.abs(pixels.data[offset + 1] - green) +
-            Math.abs(pixels.data[offset + 2] - blue)) /
-          3;
-        pixels.data[offset + 3] = Math.round(
-          pixels.data[offset + 3] *
-            Math.max(0, Math.min(1, (distance - tolerance) / 36)),
-        );
+        if (removeByColor) {
+          const distance =
+            (Math.abs(pixels.data[offset] - red) +
+              Math.abs(pixels.data[offset + 1] - green) +
+              Math.abs(pixels.data[offset + 2] - blue)) /
+            3;
+          pixels.data[offset + 3] = Math.round(
+            pixels.data[offset + 3] *
+              Math.max(0, Math.min(1, (distance - tolerance) / 36)),
+          );
+        }
         const previewX = Math.min(
           canvas.width - 1,
           Math.floor((x + 0.5) * previewScaleX),
         );
-        if (removedPixels[previewY * canvas.width + previewX]) {
+        if (
+          mode === "zone" &&
+          removedPixels[previewY * canvas.width + previewX]
+        ) {
           pixels.data[offset + 3] = 0;
         }
       }
@@ -173,7 +195,7 @@ function removeZone(startX, startY) {
   const red = sourcePixels.data[startOffset];
   const green = sourcePixels.data[startOffset + 1];
   const blue = sourcePixels.data[startOffset + 2];
-  const tolerance = Number(toleranceInput.value);
+  const tolerance = Number(zoneToleranceInput.value);
   const visited = new Uint8Array(width * height);
   const queue = new Uint32Array(width * height);
   let readIndex = 0;
@@ -254,8 +276,12 @@ fileInput.addEventListener("change", async () => {
     emptyMessage.hidden = true;
     colorInput.disabled = false;
     toleranceInput.disabled = false;
+    zoneToleranceInput.disabled = true;
     zoomInput.disabled = false;
     mode = "color";
+    colorRemovalActive = true;
+    colorToleranceControl.hidden = false;
+    zoneToleranceControl.hidden = true;
     modeButtons.forEach((button) => {
       button.disabled = false;
       button.setAttribute(
@@ -267,6 +293,10 @@ fileInput.addEventListener("change", async () => {
     canvas.title = "Clique sur une couleur à retirer";
     download.setAttribute("aria-disabled", "false");
     colorInput.value = "#ffffff";
+    toleranceInput.value = "48";
+    toleranceValue.value = "48";
+    zoneToleranceInput.value = "48";
+    zoneToleranceValue.value = "48";
     download.href = "#";
     renderImage();
     setStatus(
@@ -308,6 +338,7 @@ canvas.addEventListener("click", (event) => {
   const offset = (y * canvas.width + x) * 4;
   const [red, green, blue] = sourcePixels.data.slice(offset, offset + 3);
   colorInput.value = `#${[red, green, blue].map((value) => value.toString(16).padStart(2, "0")).join("")}`;
+  colorRemovalActive = true;
   renderImage();
   setStatus(
     "Couleur échantillonnée. Clique sur une autre teinte ou passe en mode zone.",
@@ -396,7 +427,20 @@ canvas.addEventListener("pointercancel", stopCanvasGesture);
 
 modeButtons.forEach((button) => {
   button.addEventListener("click", () => {
-    mode = button.dataset.backgroundMode;
+    const nextMode = button.dataset.backgroundMode;
+    if (nextMode === mode) return;
+    mode = nextMode;
+    colorRemovalActive = false;
+    removedPixels?.fill(0);
+    undoStack = [];
+    redoStack = [];
+    colorInput.value = "#ffffff";
+    colorInput.disabled = mode !== "color";
+    toleranceInput.disabled = mode !== "color";
+    zoneToleranceInput.disabled = mode !== "zone";
+    colorToleranceControl.hidden = mode !== "color";
+    zoneToleranceControl.hidden = mode !== "zone";
+    updateHistoryButtons();
     modeButtons.forEach((option) =>
       option.setAttribute("aria-pressed", String(option === button)),
     );
@@ -405,11 +449,8 @@ modeButtons.forEach((button) => {
       mode === "zone"
         ? "Clique sur une zone connectée à supprimer"
         : "Clique sur une couleur à retirer";
-    setStatus(
-      mode === "zone"
-        ? "Mode zone : clique sur chaque zone connectée à supprimer."
-        : "Mode couleur : clique sur une teinte à retirer partout.",
-    );
+    renderImage();
+    setStatus("Méthode changée : les modifications précédentes sont annulées.");
   });
 });
 
@@ -433,10 +474,18 @@ redoButton.addEventListener("click", () => {
   setStatus("Suppression rétablie.");
 });
 
-colorInput.addEventListener("input", renderImage);
+colorInput.addEventListener("input", () => {
+  if (mode === "color") colorRemovalActive = true;
+  renderImage();
+});
 toleranceInput.addEventListener("input", () => {
   toleranceValue.value = toleranceInput.value;
+  if (mode === "color") colorRemovalActive = true;
   renderImage();
+});
+zoneToleranceInput.addEventListener("input", () => {
+  zoneToleranceValue.value = zoneToleranceInput.value;
+  setStatus("Cette tolérance s’applique aux prochaines zones sélectionnées.");
 });
 
 download.addEventListener("click", (event) => {

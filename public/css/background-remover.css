@@ -116,8 +116,7 @@
   overflow: hidden;
 }
 
-.background-upload:hover,
-.background-download:hover {
+.background-upload:hover {
   background: var(--surface-translucent);
 }
 
@@ -158,6 +157,10 @@
   font-variant-numeric: tabular-nums;
 }
 
+.background-tolerance[hidden] {
+  display: none;
+}
+
 .background-status,
 .background-note {
   margin: 0;
@@ -180,6 +183,11 @@
   background: linear-gradient(135deg, var(--primary), var(--primary-end));
   color: var(--button-text);
   text-decoration: none;
+}
+
+.background-download:hover {
+  background: linear-gradient(135deg, var(--primary-end), var(--primary));
+  color: var(--button-text);
 }
 
 .background-download[aria-disabled="true"] {

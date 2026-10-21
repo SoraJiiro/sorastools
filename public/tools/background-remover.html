@@ -58,11 +58,20 @@
                                 data-background-color disabled>
                         </label>
                         <label class="field background-tolerance"
+                            data-color-tolerance-control
                             data-label="Régler la tolérance de couleur">
-                            <span>Tolérance <output
+                            <span>Tolérance couleur <output
                                     data-tolerance-value>48</output></span>
                             <input type="range" min="0" max="220" value="48"
                                 data-background-tolerance disabled>
+                        </label>
+                        <label class="field background-tolerance"
+                            data-zone-tolerance-control hidden
+                            data-label="Régler la tolérance des zones">
+                            <span>Tolérance zone <output
+                                    data-zone-tolerance-value>48</output></span>
+                            <input type="range" min="0" max="220" value="48"
+                                data-zone-tolerance disabled>
                         </label>
                         <div class="background-mode" role="group"
                             aria-label="Mode de suppression">
