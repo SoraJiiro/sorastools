@@ -1,6 +1,6 @@
 import { setStatus } from "./utils.js";
+import { createAdditionCaptcha, createCooldown } from "./formSupport.js";
 
-const COOLDOWN_MS = 30 * 60 * 1000;
 const COOLDOWN_KEY = "soraToolSuggestLastSubmit";
 
 const form = document.querySelector("[data-suggest-form]");
@@ -15,9 +15,15 @@ const submitButton = document.querySelector("[data-suggest-submit]");
 const statusElement = document.querySelector("[data-suggest-status]");
 const cooldownElement = document.querySelector("[data-suggest-cooldown]");
 
-let captchaAnswer = 0;
-let cooldownTimer = null;
 let emailJsConfig = null;
+const captcha = createAdditionCaptcha(captchaQuestion, captchaInput);
+const cooldown = createCooldown({
+  storageKey: COOLDOWN_KEY,
+  submitButton,
+  cooldownElement,
+  waitingMessage: "Prochaine suggestion possible dans",
+  readyMessage: "Tu peux envoyer une suggestion.",
+});
 
 function setSuggestStatus(message, type = "default") {
   setStatus(statusElement, message, type);
@@ -25,57 +31,6 @@ function setSuggestStatus(message, type = "default") {
 
 function getSuggestTemplateId() {
   return emailJsConfig?.suggestTemplateId || emailJsConfig?.templateId || "";
-}
-
-function getLastSubmitTime() {
-  return Number(localStorage.getItem(COOLDOWN_KEY)) || 0;
-}
-
-function getRemainingCooldown() {
-  const elapsed = Date.now() - getLastSubmitTime();
-  return Math.max(COOLDOWN_MS - elapsed, 0);
-}
-
-function formatRemainingTime(ms) {
-  const totalSeconds = Math.ceil(ms / 1000);
-  const minutes = Math.floor(totalSeconds / 60);
-  const seconds = totalSeconds % 60;
-
-  return `${minutes}m ${String(seconds).padStart(2, "0")}s`;
-}
-
-function updateCooldownState() {
-  const remaining = getRemainingCooldown();
-
-  if (remaining > 0) {
-    submitButton.disabled = true;
-    cooldownElement.textContent = `Prochaine suggestion possible dans ${formatRemainingTime(remaining)}.`;
-    return;
-  }
-
-  submitButton.disabled = false;
-  cooldownElement.textContent = "Tu peux envoyer une suggestion.";
-
-  if (cooldownTimer) {
-    clearInterval(cooldownTimer);
-    cooldownTimer = null;
-  }
-}
-
-function startCooldownTimer() {
-  updateCooldownState();
-
-  if (cooldownTimer) clearInterval(cooldownTimer);
-  cooldownTimer = setInterval(updateCooldownState, 1000);
-}
-
-function generateCaptcha() {
-  const a = Math.floor(Math.random() * 9) + 1;
-  const b = Math.floor(Math.random() * 9) + 1;
-
-  captchaAnswer = a + b;
-  captchaQuestion.textContent = `${a} + ${b} = ?`;
-  captchaInput.value = "";
 }
 
 function isEmailJsConfigured() {
@@ -147,13 +102,13 @@ function validateForm() {
     return false;
   }
 
-  if (captchaValue !== captchaAnswer) {
+  if (!captcha.isCorrect(captchaValue)) {
     setSuggestStatus("Captcha incorrect.", "error");
-    generateCaptcha();
+    captcha.reset();
     return false;
   }
 
-  if (getRemainingCooldown() > 0) {
+  if (cooldown.getRemaining() > 0) {
     setSuggestStatus(
       "Cooldown actif : attends avant de renvoyer une suggestion.",
       "warning",
@@ -204,8 +159,8 @@ async function sendSuggestion(event) {
 
     localStorage.setItem(COOLDOWN_KEY, String(Date.now()));
     form.reset();
-    generateCaptcha();
-    startCooldownTimer();
+    captcha.reset();
+    cooldown.start();
     setSuggestStatus("Suggestion envoyée avec succès. Merci !", "success");
   } catch (error) {
     submitButton.disabled = false;
@@ -220,10 +175,10 @@ async function setupSuggestForm() {
   if (!form) return;
 
   submitButton.disabled = true;
-  generateCaptcha();
-  startCooldownTimer();
+  captcha.reset();
+  cooldown.start();
   await loadEmailJsConfig();
-  updateCooldownState();
+  cooldown.update();
   form.addEventListener("submit", sendSuggestion);
 }
 

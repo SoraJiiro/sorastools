@@ -190,6 +190,17 @@
     "updatedAt": "2026-09-18"
   },
   {
+    "id": "video-cutter",
+    "name": "Video Cutter",
+    "category": "Média",
+    "description": "Découpe un passage d'une vidéo sans réencodage ni perte de qualité ou de FPS.",
+    "icon": "<i class='fa-solid fa-scissors'></i>",
+    "url": "/tools/video-cutter",
+    "status": "ready",
+    "createdAt": "2026-11-13",
+    "updatedAt": "2026-11-13"
+  },
+  {
     "id": "qr-code-generator",
     "name": "QR Code Generator",
     "category": "Utilitaires",

@@ -19,10 +19,17 @@ const convertOffice = util.promisify(libre.convert);
 const router = express.Router();
 const ffmpegPath = ffmpegStatic || "ffmpeg";
 
+const memoryStorage = multer.memoryStorage();
 const upload = multer({
-  storage: multer.memoryStorage(),
+  storage: memoryStorage,
   limits: {
-    fileSize: 100 * 1024 * 1024, // 100 MB
+    fileSize: 100 * 1024 * 1024,
+  },
+});
+const videoUpload = multer({
+  storage: memoryStorage,
+  limits: {
+    fileSize: 250 * 1024 * 1024,
   },
 });
 
@@ -72,36 +79,12 @@ const OFFICE_TO_PDF_FORMATS = new Set([
   ...POWERPOINT_INPUT_FORMATS,
 ]);
 
-const MIME_TYPES = {
-  jpg: "image/jpeg",
-  jpeg: "image/jpeg",
-  png: "image/png",
-  webp: "image/webp",
-  avif: "image/avif",
-  tiff: "image/tiff",
-  gif: "image/gif",
+const MIME_TYPE_OVERRIDES = {
   ico: "image/x-icon",
-  mp4: "video/mp4",
-  webm: "video/webm",
-  mkv: "video/x-matroska",
-  mov: "video/quicktime",
-  avi: "video/x-msvideo",
-  m4v: "video/x-m4v",
-  ogv: "video/ogg",
-  mp3: "audio/mpeg",
   wav: "audio/wav",
-  ogg: "audio/ogg",
   flac: "audio/flac",
   aac: "audio/aac",
-  m4a: "audio/mp4",
   opus: "audio/opus",
-  pdf: "application/pdf",
-  docx: "application/vnd.openxmlformats-officedocument.wordprocessingml.document",
-  odt: "application/vnd.oasis.opendocument.text",
-  xlsx: "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet",
-  ods: "application/vnd.oasis.opendocument.spreadsheet",
-  pptx: "application/vnd.openxmlformats-officedocument.presentationml.presentation",
-  odp: "application/vnd.oasis.opendocument.presentation",
 };
 
 function getExtension(filename = "") {
@@ -635,10 +618,7 @@ router.post(
         mode,
       );
 
-      res.setHeader(
-        "Content-Type",
-        MIME_TYPES[downloadExtension] || "application/octet-stream",
-      );
+      res.type(MIME_TYPE_OVERRIDES[downloadExtension] || downloadExtension);
       res.setHeader(
         "Content-Disposition",
         `attachment; filename="${filename}"`,
@@ -657,6 +637,87 @@ router.post(
               ? "Conversion impossible. Pour Office → PDF, LibreOffice doit être installé sur la machine serveur. PDF → Office extrait le texte du PDF dans un fichier éditable."
               : "Conversion impossible. Vérifie que le fichier est valide et que FFmpeg supporte ce format.",
       });
+    }
+  },
+);
+
+router.post(
+  "/api/video-cutter/cut",
+  videoUpload.single("file"),
+  async (req, res) => {
+    if (!req.file)
+      return res
+        .status(400)
+        .json({ success: false, message: "Aucune vidéo reçue." });
+
+    const extension = getExtension(req.file.originalname);
+    const start = Number(req.body.start);
+    const end = Number(req.body.end);
+    if (!VIDEO_FORMATS.has(extension))
+      return res
+        .status(400)
+        .json({ success: false, message: "Format vidéo non pris en charge." });
+    if (
+      !Number.isFinite(start) ||
+      !Number.isFinite(end) ||
+      start < 0 ||
+      end <= start
+    )
+      return res.status(400).json({
+        success: false,
+        message: "Vérifie les temps de début et de fin.",
+      });
+
+    let inputPath;
+    let outputPath;
+    let downloadStarted = false;
+    try {
+      inputPath = await writeTempFile(req.file.buffer, extension);
+      outputPath = path.join(
+        os.tmpdir(),
+        `sorastools-cut-${crypto.randomUUID()}.${extension}`,
+      );
+      await runProcess(
+        ffmpegPath,
+        [
+          "-y",
+          "-ss",
+          String(start),
+          "-i",
+          inputPath,
+          "-t",
+          String(end - start),
+          "-map",
+          "0",
+          "-c",
+          "copy",
+          outputPath,
+        ],
+        "FFmpeg",
+      );
+
+      const filename = `${sanitizeFilename(req.file.originalname)}-cut.${extension}`;
+      res.download(outputPath, filename, (error) => {
+        safeUnlink(outputPath);
+        if (error) {
+          if (res.headersSent) res.destroy(error);
+          else
+            res
+              .status(500)
+              .json({ success: false, message: "Découpe vidéo impossible." });
+        }
+      });
+      downloadStarted = true;
+    } catch (error) {
+      console.error("Erreur découpe vidéo:", error);
+      return res.status(500).json({
+        success: false,
+        message:
+          "Découpe vidéo impossible. Vérifie le fichier et les temps choisis.",
+      });
+    } finally {
+      await safeUnlink(inputPath);
+      if (!downloadStarted) await safeUnlink(outputPath);
     }
   },
 );

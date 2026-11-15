@@ -1,6 +1,6 @@
 import { setStatus } from "./utils.js";
+import { createAdditionCaptcha, createCooldown } from "./formSupport.js";
 
-const COOLDOWN_MS = 30 * 60 * 1000;
 const COOLDOWN_KEY = "soraToolContactLastSubmit";
 
 const form = document.querySelector("[data-contact-form]");
@@ -15,63 +15,18 @@ const submitButton = document.querySelector("[data-contact-submit]");
 const statusElement = document.querySelector("[data-contact-status]");
 const cooldownElement = document.querySelector("[data-contact-cooldown]");
 
-let captchaAnswer = 0;
-let cooldownTimer = null;
 let emailJsConfig = null;
+const captcha = createAdditionCaptcha(captchaQuestion, captchaInput);
+const cooldown = createCooldown({
+  storageKey: COOLDOWN_KEY,
+  submitButton,
+  cooldownElement,
+  waitingMessage: "Prochain message possible dans",
+  readyMessage: "Tu peux envoyer un message.",
+});
 
 function setContactStatus(message, type = "default") {
   setStatus(statusElement, message, type);
-}
-
-function getLastSubmitTime() {
-  return Number(localStorage.getItem(COOLDOWN_KEY)) || 0;
-}
-
-function getRemainingCooldown() {
-  const elapsed = Date.now() - getLastSubmitTime();
-  return Math.max(COOLDOWN_MS - elapsed, 0);
-}
-
-function formatRemainingTime(ms) {
-  const totalSeconds = Math.ceil(ms / 1000);
-  const minutes = Math.floor(totalSeconds / 60);
-  const seconds = totalSeconds % 60;
-
-  return `${minutes}m ${String(seconds).padStart(2, "0")}s`;
-}
-
-function updateCooldownState() {
-  const remaining = getRemainingCooldown();
-
-  if (remaining > 0) {
-    submitButton.disabled = true;
-    cooldownElement.textContent = `Prochain message possible dans ${formatRemainingTime(remaining)}.`;
-    return;
-  }
-
-  submitButton.disabled = false;
-  cooldownElement.textContent = "Tu peux envoyer un message.";
-
-  if (cooldownTimer) {
-    clearInterval(cooldownTimer);
-    cooldownTimer = null;
-  }
-}
-
-function startCooldownTimer() {
-  updateCooldownState();
-
-  if (cooldownTimer) clearInterval(cooldownTimer);
-  cooldownTimer = setInterval(updateCooldownState, 1000);
-}
-
-function generateCaptcha() {
-  const a = Math.floor(Math.random() * 9) + 1;
-  const b = Math.floor(Math.random() * 9) + 1;
-
-  captchaAnswer = a + b;
-  captchaQuestion.textContent = `${a} + ${b} = ?`;
-  captchaInput.value = "";
 }
 
 function isEmailJsConfigured() {
@@ -137,13 +92,13 @@ function validateForm() {
     return false;
   }
 
-  if (captchaValue !== captchaAnswer) {
+  if (!captcha.isCorrect(captchaValue)) {
     setContactStatus("Captcha incorrect.", "error");
-    generateCaptcha();
+    captcha.reset();
     return false;
   }
 
-  if (getRemainingCooldown() > 0) {
+  if (cooldown.getRemaining() > 0) {
     setContactStatus(
       "Cooldown actif : attends avant de renvoyer un message.",
       "warning",
@@ -194,8 +149,8 @@ async function sendContactMessage(event) {
 
     localStorage.setItem(COOLDOWN_KEY, String(Date.now()));
     form.reset();
-    generateCaptcha();
-    startCooldownTimer();
+    captcha.reset();
+    cooldown.start();
     setContactStatus("Message envoyé avec succès. Merci !", "success");
   } catch (error) {
     submitButton.disabled = false;
@@ -210,10 +165,10 @@ async function setupContactForm() {
   if (!form) return;
 
   submitButton.disabled = true;
-  generateCaptcha();
-  startCooldownTimer();
+  captcha.reset();
+  cooldown.start();
   await loadEmailJsConfig();
-  updateCooldownState();
+  cooldown.update();
   form.addEventListener("submit", sendContactMessage);
 
   if (submitButton.disabled) {

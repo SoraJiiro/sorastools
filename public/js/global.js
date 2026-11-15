@@ -402,7 +402,7 @@ function setupNumberInputButtons() {
     },
   );
   numberInputsContainers.forEach((container) => {
-    const input = container.querySelector("input[type='number']"); // grab the actual input
+    const input = container.querySelector("input[type='number']");
     const wrapper = document.createElement("div");
     wrapper.className = "inc-dec-btns-wrapper";
     const addButton = document.createElement("button");

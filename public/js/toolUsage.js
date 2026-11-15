@@ -1,9 +1,7 @@
-import { applyActionsLabels } from "./utils.js";
+import { applyActionsLabels, escapeHtml } from "./utils.js";
 
 const MOST_USED_SELECTOR = "[data-tools-most-used]";
 const LIMIT_KEY = "STAToolUsage";
-const LIMIT_WINDOW = 60 * 60 * 1000;
-const LIMIT_MAX = 5;
 const TRACK_DELAY = 80;
 const TOOL_ACTION_SELECTORS = {
   base64: [
@@ -79,19 +77,12 @@ const TOOL_ACTION_SELECTORS = {
     "[data-clip-reset]",
   ],
   "file-converter": ["[data-fc-convert]", "[data-fc-reset]"],
+  "video-cutter": ["[data-vc-submit]"],
 };
 
 let refreshTimer = null;
 let clickSnapshot = null;
-
-function escapeHtml(value = "") {
-  return value
-    .replaceAll("&", "&amp;")
-    .replaceAll("<", "&lt;")
-    .replaceAll(">", "&gt;")
-    .replaceAll('"', "&quot;")
-    .replaceAll("'", "&#039;");
-}
+let localRateLimit = null;
 
 function getCurrentToolId() {
   const match = window.location.pathname.match(/^\/tools\/([^/?#]+)/);
@@ -203,13 +194,15 @@ function shouldCountAction(element, beforeState, beforeSuccessCount) {
 }
 
 function isLocalLimitReached(toolId) {
+  if (!localRateLimit?.windowMs || !localRateLimit?.maxClicks) return false;
+
   try {
     const now = Date.now();
     const store = JSON.parse(localStorage.getItem(LIMIT_KEY) || "{}");
     const clicks = (Array.isArray(store[toolId]) ? store[toolId] : []).filter(
-      (time) => now - time < LIMIT_WINDOW,
+      (time) => now - time < localRateLimit.windowMs,
     );
-    if (clicks.length >= LIMIT_MAX) {
+    if (clicks.length >= localRateLimit.maxClicks) {
       store[toolId] = clicks;
       localStorage.setItem(LIMIT_KEY, JSON.stringify(store));
       return true;
@@ -252,8 +245,10 @@ export async function refreshMostUsedTools() {
     });
     const data = await response.json();
     if (!response.ok || !data.success) throw new Error(data.message);
+    localRateLimit = data.rateLimit || null;
     renderMostUsedTools(containers, data.tools || []);
   } catch (error) {
+    localRateLimit = null;
     renderMostUsedTools(containers, []);
   }
 }

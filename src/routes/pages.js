@@ -1,6 +1,9 @@
 const express = require("express");
 const path = require("path");
 const { PUBLIC_DIR } = require("../config/paths");
+const toolRoutes = new Map(
+  require("../data/toolStorage.json").map(({ id, url }) => [url, id]),
+);
 
 const router = express.Router();
 
@@ -33,92 +36,14 @@ router.get("/api/emailjs-config", (req, res) => {
   });
 });
 
-router.get("/tools/color-picker", (req, res) => {
-  sendPublicFile(res, "tools", "color-picker.html");
-});
-
-router.get("/tools/background-remover", (req, res) => {
-  sendPublicFile(res, "tools", "background-remover.html");
-});
-
-router.get("/tools/qr-code-generator", (req, res) => {
-  sendPublicFile(res, "tools", "qr-code-generator.html");
-});
-
-router.get("/tools/password-generator", (req, res) => {
-  sendPublicFile(res, "tools", "password-generator.html");
-});
-
-router.get("/tools/sql-schema-builder", (req, res) => {
-  sendPublicFile(res, "tools", "sql-schema-builder.html");
-});
-
 router.get("/tools/json-formatter", (req, res) => {
   res.redirect(301, "/tools/code-formatter");
 });
 
-router.get("/tools/code-formatter", (req, res) => {
-  sendPublicFile(res, "tools", "code-formatter.html");
-});
-
-router.get("/tools/text-hasher", (req, res) => {
-  sendPublicFile(res, "tools", "text-hasher.html");
-});
-
-router.get("/tools/regex-tester", (req, res) => {
-  sendPublicFile(res, "tools", "regex-tester.html");
-});
-
-router.get("/tools/md-previewer", (req, res) => {
-  sendPublicFile(res, "tools", "md-previewer.html");
-});
-
-router.get("/tools/base64", (req, res) => {
-  sendPublicFile(res, "tools", "base64.html");
-});
-
-router.get("/tools/binary", (req, res) => {
-  sendPublicFile(res, "tools", "binary.html");
-});
-
-router.get("/tools/hexadecimal", (req, res) => {
-  sendPublicFile(res, "tools", "hexadecimal.html");
-});
-
-router.get("/tools/time-calculator", (req, res) => {
-  sendPublicFile(res, "tools", "time-calculator.html");
-});
-
-router.get("/tools/clip-path-generator", (req, res) => {
-  sendPublicFile(res, "tools", "clip-path-generator.html");
-});
-
-router.get("/tools/box-shadow-generator", (req, res) => {
-  sendPublicFile(res, "tools", "box-shadow-generator.html");
-});
-
-router.get("/tools/gradient-generator", (req, res) => {
-  sendPublicFile(res, "tools", "gradient-generator.html");
-});
-
-router.get("/tools/js-minifier", (req, res) => {
-  sendPublicFile(res, "tools", "js-minifier.html");
-});
-
-router.get("/tools/file-converter", (req, res) => {
-  sendPublicFile(res, "tools", "file-converter.html");
-});
-
-router.get("/tools/youtube-downloader", (req, res) => {
-  sendPublicFile(res, "tools", "youtube-downloader.html");
-});
-
-router.get("/tools/username-lookup", (req, res) => {
-  sendPublicFile(res, "tools", "username-lookup.html");
-});
-
-router.get("/tools/chart-editor", (req, res) => {
-  sendPublicFile(res, "tools", "chart-editor.html");
+router.get("/tools/:toolId", (req, res, next) => {
+  const toolId = toolRoutes.get(`/tools/${req.params.toolId.toLowerCase()}`);
+  if (!toolId) return next();
+  sendPublicFile(res, "tools", `${toolId}.html`);
 });
 
 router.use((req, res) => {

@@ -12,8 +12,12 @@ function sortTools(a, b) {
 
   if (aReady !== bReady) return aReady - bReady;
 
-  const categoryOrder = (a.querySelector(".tool-card__category")?.textContent || "")
-    .localeCompare(b.querySelector(".tool-card__category")?.textContent || "", "fr");
+  const categoryOrder = (
+    a.querySelector(".tool-card__category")?.textContent || ""
+  ).localeCompare(
+    b.querySelector(".tool-card__category")?.textContent || "",
+    "fr",
+  );
   if (categoryOrder) return categoryOrder;
 
   if (aUpdateDate && bUpdateDate) {
@@ -86,7 +90,6 @@ async function displayTools() {
 
       child.addEventListener("click", () => {
         child.querySelector("a").click();
-        console.log("clicked.");
       });
     });
     allChildren.forEach((child) => toolsGrid.appendChild(child));

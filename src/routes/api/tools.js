@@ -1,12 +1,28 @@
 const express = require("express");
+const { ipKeyGenerator, rateLimit } = require("express-rate-limit");
 const readJsonFile = require("../../utils/readJsonFile");
 const { TOOLS_FILE } = require("../../config/paths");
 
 const router = express.Router();
 const TOOL_USAGE_TABLE = "tool_usage_counts";
-const TOOL_USAGE_LIMIT_WINDOW_MS = 3600000;
-const TOOL_USAGE_LIMIT_MAX_CLICKS = 5;
-const toolUsageRateLimits = new Map();
+const TOOL_USAGE_RATE_LIMIT = {
+  windowMs: 60 * 60 * 1000,
+  maxClicks: 5,
+};
+const toolUsageRateLimit = rateLimit({
+  windowMs: TOOL_USAGE_RATE_LIMIT.windowMs,
+  limit: TOOL_USAGE_RATE_LIMIT.maxClicks,
+  keyGenerator: (req) => `${ipKeyGenerator(req.ip)}:${req.params.toolId}`,
+  standardHeaders: true,
+  legacyHeaders: false,
+  handler: (req, res) =>
+    res.status(200).json({
+      success: true,
+      rateLimited: true,
+      toolId: req.params.toolId,
+      message: "Limite d'actions atteinte.",
+    }),
+});
 const SUPABASE_REST_HEADERS = {
   apikey: "",
   Authorization: "",
@@ -57,23 +73,6 @@ function mapMostUsedTools(tools, usageRows = []) {
     .map((tool) => ({ ...tool, submitCount: 0 }));
 
   return [...rankedTools, ...fallbackTools].slice(0, 3);
-}
-
-function isToolUsageRateLimited(req, toolId) {
-  const now = Date.now();
-  const key = `${req.ip || "anonymous"}:${toolId}`;
-  const clicks = (toolUsageRateLimits.get(key) || []).filter(
-    (timestamp) => now - timestamp < TOOL_USAGE_LIMIT_WINDOW_MS,
-  );
-
-  if (clicks.length >= TOOL_USAGE_LIMIT_MAX_CLICKS) {
-    toolUsageRateLimits.set(key, clicks);
-    return true;
-  }
-
-  clicks.push(now);
-  toolUsageRateLimits.set(key, clicks);
-  return false;
 }
 
 function getSupabaseConfig() {
@@ -185,7 +184,11 @@ router.get("/api/tools/most-used", async (req, res) => {
 
   try {
     const mostUsedTools = await getSupabaseMostUsedTools(tools);
-    return res.json({ success: true, tools: mostUsedTools });
+    return res.json({
+      success: true,
+      tools: mostUsedTools,
+      rateLimit: TOOL_USAGE_RATE_LIMIT,
+    });
   } catch (error) {
     logSupabaseStatsError("most-used", error);
 
@@ -195,6 +198,7 @@ router.get("/api/tools/most-used", async (req, res) => {
       message:
         error.message || "Supabase n'est pas encore configuré pour les stats.",
       tools: mapMostUsedTools(tools),
+      rateLimit: TOOL_USAGE_RATE_LIMIT,
     });
   }
 });
@@ -232,52 +236,52 @@ router.get("/api/tools/debug/supabase", async (req, res) => {
   }
 });
 
-router.post("/api/tools/:toolId/submit", async (req, res) => {
-  const tools = await getTools();
-  const toolId = req.params.toolId;
-  const tool = tools.find(
-    (item) => item.id === toolId && item.status === "ready",
-  );
+router.post(
+  "/api/tools/:toolId/submit",
+  async (req, res, next) => {
+    const tools = await getTools();
+    const toolId = req.params.toolId;
+    const tool = tools.find(
+      (item) => item.id === toolId && item.status === "ready",
+    );
 
-  if (!tool) {
-    return res.status(404).json({
-      success: false,
-      message: "Tool introuvable ou indisponible.",
-    });
-  }
+    if (!tool) {
+      return res.status(404).json({
+        success: false,
+        message: "Tool introuvable ou indisponible.",
+      });
+    }
 
-  if (shouldPreventSubmitCount()) {
-    return res.json({
-      success: true,
-      disabled: true,
-      message: "Le comptage des submits Supabase est désactivé.",
-    });
-  }
+    if (shouldPreventSubmitCount()) {
+      return res.json({
+        success: true,
+        disabled: true,
+        message: "Le comptage des submits Supabase est désactivé.",
+      });
+    }
 
-  if (isToolUsageRateLimited(req, toolId)) {
-    return res.json({
-      success: true,
-      rateLimited: true,
-      toolId,
-      message:
-        "Limite atteinte : 5 actions comptabilisées par tool et par heure.",
-    });
-  }
+    next();
+  },
+  toolUsageRateLimit,
+  async (req, res) => {
+    const toolId = req.params.toolId;
 
-  try {
-    const submitCount = await incrementSupabaseToolUsage(toolId);
-    return res.json({ success: true, toolId, submitCount });
-  } catch (error) {
-    logSupabaseStatsError(`submit ${toolId}`, error);
+    try {
+      const submitCount = await incrementSupabaseToolUsage(toolId);
+      return res.json({ success: true, toolId, submitCount });
+    } catch (error) {
+      logSupabaseStatsError(`submit ${toolId}`, error);
 
-    return res.json({
-      success: true,
-      fallback: true,
-      toolId,
-      message:
-        error.message || "Supabase n'est pas encore configuré pour les stats.",
-    });
-  }
-});
+      return res.json({
+        success: true,
+        fallback: true,
+        toolId,
+        message:
+          error.message ||
+          "Supabase n'est pas encore configuré pour les stats.",
+      });
+    }
+  },
+);
 
 module.exports = router;

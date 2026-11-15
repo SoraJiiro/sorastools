@@ -1,0 +1,251 @@
+.vc-tool {
+  display: grid;
+  gap: 16px;
+  padding: 24px;
+  background: var(--surface-strong);
+  border: 1px solid var(--border);
+  border-radius: 8px;
+}
+
+.vc-file,
+.vc-times input {
+  display: grid;
+  gap: 8px;
+  width: 100%;
+  padding: 16px;
+  border: 1px solid var(--border);
+  border-radius: 8px;
+  background: var(--surface-translucent);
+  color: var(--text);
+  font: inherit;
+}
+
+.vc-file small,
+.vc-status {
+  color: var(--muted);
+}
+
+.vc-preview {
+  width: 100%;
+  max-height: 480px;
+  background: #000;
+}
+
+.vc-player[hidden] {
+  display: none;
+}
+
+.vc-timeline {
+  position: relative;
+  height: 40px;
+  margin: 8px 8px 0;
+  cursor: pointer;
+  touch-action: none;
+}
+
+.vc-timeline::before {
+  position: absolute;
+  inset: 16px 0 auto;
+  height: 8px;
+  border-radius: 4px;
+  background: var(--border);
+  content: "";
+}
+
+.vc-selection {
+  position: absolute;
+  top: 16px;
+  height: 8px;
+  background: var(--primary);
+  opacity: 0.65;
+  pointer-events: none;
+}
+
+.vc-playhead {
+  position: absolute;
+  z-index: 1;
+  top: 4px;
+  bottom: 4px;
+  width: 2px;
+  background: var(--text);
+  pointer-events: none;
+}
+
+.vc-marker {
+  position: absolute;
+  z-index: 2;
+  top: 4px;
+  width: 16px;
+  height: 32px;
+  min-height: 0;
+  padding: 0;
+  border: 2px solid var(--surface-strong);
+  border-radius: 4px;
+  transform: translateX(-50%);
+  touch-action: none;
+  cursor: ew-resize;
+}
+
+.vc-marker-start {
+  background: #39d353;
+}
+
+.vc-marker-end {
+  background: #ff6b6b;
+}
+
+.vc-marker:focus-visible {
+  outline: 2px solid var(--text);
+  outline-offset: 2px;
+}
+
+.vc-controls {
+  display: flex;
+  align-items: center;
+  flex-wrap: wrap;
+  gap: 16px;
+}
+
+.vc-controls output {
+  color: var(--muted);
+  font-variant-numeric: tabular-nums;
+}
+
+.vc-volume {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  color: var(--muted);
+}
+
+.vc-volume input {
+  width: 104px;
+  margin: 0;
+  accent-color: var(--primary);
+  cursor: pointer;
+}
+
+.vc-volume output {
+  min-width: 4ch;
+  text-align: right;
+}
+
+.vc-times {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 16px;
+}
+
+.vc-time-control {
+  display: flex;
+  align-items: stretch;
+  gap: 8px;
+  width: 100%;
+}
+
+.vc-time-control input {
+  flex: 1;
+  min-width: 0;
+}
+
+.vc-step {
+  display: block;
+  margin-top: 8px;
+  color: var(--muted);
+  font-variant-numeric: tabular-nums;
+}
+
+.vc-adjust {
+  width: 40px;
+  min-width: 40px;
+  padding: 0;
+  border: 1px solid var(--border);
+  border-radius: 8px;
+  background: var(--surface-translucent);
+  color: var(--text);
+  font: inherit;
+  font-size: 20px;
+  font-weight: 700;
+  cursor: pointer;
+  transition:
+    background-color 150ms ease,
+    border-color 150ms ease;
+}
+
+.vc-tool > button,
+.vc-download {
+  display: inline-flex;
+  justify-content: center;
+  align-items: center;
+  width: fit-content;
+  min-height: 48px;
+  padding: 16px;
+  border: 1px solid transparent;
+  border-radius: 8px;
+  background: var(--primary);
+  color: var(--button-text);
+  font: inherit;
+  font-weight: 900;
+  text-decoration: none;
+  cursor: pointer;
+  transition:
+    background-color 150ms ease,
+    color 150ms ease,
+    border-color 150ms ease;
+}
+
+.vc-controls button {
+  min-height: 40px;
+  padding: 8px 16px;
+  border: 1px solid var(--border);
+  border-radius: 8px;
+  background: var(--surface-strong);
+  color: var(--text);
+  font: inherit;
+  font-weight: 700;
+  cursor: pointer;
+  transition:
+    background-color 150ms ease,
+    color 150ms ease,
+    border-color 150ms ease;
+}
+
+.vc-tool button:not(.vc-marker):hover:not(:disabled),
+.vc-download:hover {
+  background: var(--surface-soft);
+  border-color: var(--primary);
+  color: var(--text);
+}
+
+.vc-tool button:focus-visible,
+.vc-download:focus-visible,
+.vc-volume input:focus-visible {
+  outline: 2px solid var(--primary);
+  outline-offset: 2px;
+}
+
+.vc-tool button:disabled {
+  opacity: 0.55;
+  cursor: wait;
+}
+
+.vc-status {
+  margin: 0;
+}
+
+.vc-status[data-type="success"] {
+  color: #39d353;
+}
+.vc-status[data-type="error"] {
+  color: #ff6b6b;
+}
+
+@media (max-width: 720px) {
+  .vc-times {
+    grid-template-columns: 1fr;
+  }
+  .vc-tool > button,
+  .vc-download {
+    width: 100%;
+  }
+}
