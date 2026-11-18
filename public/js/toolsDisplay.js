@@ -1,6 +1,41 @@
 import { applyActionsLabels } from "./utils.js";
 
 const toolsGrid = document.querySelector("[data-tools-grid]");
+const toolsSearch = document.querySelector("[data-tools-search]");
+const searchStatus = document.querySelector("[data-tools-search-status]");
+
+function normalizeSearchText(value = "") {
+  return value
+    .normalize("NFD")
+    .replace(/\p{Diacritic}/gu, "")
+    .toLowerCase()
+    .trim();
+}
+
+function filterTools() {
+  if (!toolsGrid) return;
+
+  const keywords = normalizeSearchText(toolsSearch?.value)
+    .split(/\s+/)
+    .filter(Boolean);
+  let visibleCount = 0;
+
+  toolsGrid.querySelectorAll(".tool-card").forEach((card) => {
+    const searchableText = normalizeSearchText(
+      `${card.textContent} ${card.dataset.toolKeywords || ""}`,
+    );
+    const matches = keywords.every((keyword) =>
+      searchableText.includes(keyword),
+    );
+    card.hidden = !matches;
+    if (matches) visibleCount += 1;
+  });
+
+  if (searchStatus)
+    searchStatus.textContent = keywords.length
+      ? `${visibleCount} tool${visibleCount > 1 ? "s" : ""} trouvé${visibleCount > 1 ? "s" : ""}.`
+      : "";
+}
 
 function sortTools(a, b) {
   const aUpdateDate = a.querySelector(".update-date")?.textContent || "";
@@ -61,7 +96,7 @@ async function displayTools() {
           : null;
 
         return `
-          <article class="tool-card ${isReady ? "" : "tool-card--soon"}">
+          <article class="tool-card ${isReady ? "" : "tool-card--soon"}" data-tool-keywords="${(tool.keywords || []).join(" ").replace(/"/g, "&quot;")}">
             <div class="tool-card__icon">${tool.icon || ""}</div>
             <span class="tool-card__category">${tool.category}</span>
             <h3>${tool.name}</h3>
@@ -93,6 +128,7 @@ async function displayTools() {
       });
     });
     allChildren.forEach((child) => toolsGrid.appendChild(child));
+    toolsSearch?.addEventListener("input", filterTools);
   } catch (error) {
     toolsGrid.innerHTML = "<p>Impossible de charger les tools.</p>";
   }

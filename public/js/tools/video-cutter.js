@@ -19,8 +19,13 @@ const stepLabels = document.querySelectorAll("[data-vc-step]");
 const markers = [...document.querySelectorAll("[data-vc-marker]")];
 const submitButton = document.querySelector("[data-vc-submit]");
 const status = document.querySelector("[data-vc-status]");
+const progress = document.querySelector("[data-vc-progress]");
+const progressBar = document.querySelector("[data-vc-progress-bar]");
+const progressStage = document.querySelector("[data-vc-progress-stage]");
 const downloadLink = document.querySelector("[data-vc-download]");
+const resetButton = document.querySelector("[data-vc-reset]");
 const activeSegments = new WeakMap();
+let selectedMarker = "start";
 let previewUrl;
 let durationMs = 0;
 let startMs = 0;
@@ -197,6 +202,52 @@ function clearDownload() {
   downloadLink.removeAttribute("href");
 }
 
+function setProgress(stage, fraction = null) {
+  progress.hidden = false;
+  progressStage.value =
+    fraction === null ? stage : `${stage} : ${Math.round(fraction * 100)} %`;
+  if (fraction === null) progressBar.removeAttribute("value");
+  else progressBar.value = fraction * 100;
+}
+
+function selectMarker(name) {
+  selectedMarker = name;
+  markers.forEach((marker) => {
+    marker.classList.toggle("is-selected", marker.dataset.vcMarker === name);
+  });
+}
+
+function nudgeMarker(direction, step = 100) {
+  if (!durationMs) return;
+  const value = selectedMarker === "start" ? startMs : endMs;
+  setMarker(selectedMarker, value + direction * step);
+}
+
+function resetTool() {
+  preview.pause();
+  clearDownload();
+  if (previewUrl) URL.revokeObjectURL(previewUrl);
+  previewUrl = undefined;
+  preview.removeAttribute("src");
+  preview.load();
+  preview.hidden = true;
+  player.hidden = true;
+  fileInput.value = "";
+  durationMs = 0;
+  startMs = 0;
+  endMs = 0;
+  showHours = false;
+  progress.hidden = true;
+  setTimeFormat(false);
+  startInput.value = "00:00:00";
+  endInput.value = "00:00:00";
+  volumeInput.value = "1";
+  preview.volume = 1;
+  volumeValue.value = "100 %";
+  selectMarker("start");
+  setStatus(status, "En attente d'une vidéo.", "default");
+}
+
 fileInput.addEventListener("change", () => {
   clearDownload();
   if (previewUrl) URL.revokeObjectURL(previewUrl);
@@ -265,6 +316,7 @@ timeline.addEventListener("pointerdown", (event) => {
 
 markers.forEach((marker) => {
   marker.addEventListener("pointerdown", (event) => {
+    selectMarker(marker.dataset.vcMarker);
     event.preventDefault();
     marker.setPointerCapture(event.pointerId);
     setMarker(marker.dataset.vcMarker, timeFromPointer(event));
@@ -273,6 +325,7 @@ markers.forEach((marker) => {
     if (marker.hasPointerCapture(event.pointerId))
       setMarker(marker.dataset.vcMarker, timeFromPointer(event));
   });
+  marker.addEventListener("focus", () => selectMarker(marker.dataset.vcMarker));
   marker.addEventListener("keydown", (event) => {
     const name = marker.dataset.vcMarker;
     const value = name === "start" ? startMs : endMs;
@@ -292,6 +345,24 @@ markers.forEach((marker) => {
       setMarker(name, next);
     }
   });
+});
+
+resetButton.addEventListener("click", resetTool);
+
+document.addEventListener("keydown", (event) => {
+  if (
+    event.target.closest(
+      "input, textarea, select, [contenteditable='true'], [data-vc-marker]",
+    )
+  )
+    return;
+  if (event.key === "ArrowLeft" || event.key === "ArrowRight") {
+    event.preventDefault();
+    nudgeMarker(
+      event.key === "ArrowRight" ? 1 : -1,
+      event.shiftKey ? 1000 : 100,
+    );
+  }
 });
 
 [
@@ -384,29 +455,77 @@ form.addEventListener("submit", async (event) => {
   }
 
   submitButton.disabled = true;
-  setStatus(status, "Découpe en cours...", "default");
+  fileInput.disabled = true;
+  resetButton.disabled = true;
+  setProgress("Préparation de l'envoi");
+  setStatus(status, "Préparation de l'envoi...", "default");
   try {
     const data = new FormData();
     data.append("file", fileInput.files[0]);
     data.append("start", String(start / 1000));
     data.append("end", String(end / 1000));
-    const response = await fetch("/api/video-cutter/cut", {
-      method: "POST",
-      body: data,
+    const result = await new Promise((resolve, reject) => {
+      const request = new XMLHttpRequest();
+      request.open("POST", "/api/video-cutter/cut");
+      request.responseType = "blob";
+      request.upload.addEventListener("progress", (progressEvent) => {
+        if (!progressEvent.lengthComputable) return;
+        setProgress(
+          "Envoi de la vidéo",
+          progressEvent.loaded / progressEvent.total,
+        );
+        setStatus(status, "Envoi de la vidéo au serveur...", "default");
+      });
+      request.upload.addEventListener("load", () => {
+        setProgress("Découpage sur le serveur");
+        setStatus(status, "Découpage sur le serveur...", "default");
+      });
+      request.addEventListener("progress", (progressEvent) => {
+        if (request.readyState < XMLHttpRequest.HEADERS_RECEIVED) return;
+        if (progressEvent.lengthComputable) {
+          setProgress(
+            "Réception du résultat",
+            progressEvent.loaded / progressEvent.total,
+          );
+        } else {
+          setProgress("Réception du résultat");
+        }
+        setStatus(status, "Réception du résultat...", "default");
+      });
+      request.addEventListener("load", async () => {
+        if (request.status < 200 || request.status >= 300) {
+          let message = "Découpe impossible.";
+          try {
+            message =
+              JSON.parse(await request.response.text()).message || message;
+          } catch {}
+          reject(new Error(message));
+          return;
+        }
+        resolve({
+          blob: request.response,
+          disposition: request.getResponseHeader("Content-Disposition"),
+        });
+      });
+      request.addEventListener("error", () =>
+        reject(new Error("Erreur réseau.")),
+      );
+      request.send(data);
     });
-    if (!response.ok)
-      throw new Error((await response.json()).message || "Découpe impossible.");
     const filename =
-      response.headers
-        .get("Content-Disposition")
-        ?.match(/filename="?([^";]+)"?/i)?.[1] || "video-cut.mp4";
-    downloadLink.href = URL.createObjectURL(await response.blob());
+      result.disposition?.match(/filename="?([^";]+)"?/i)?.[1] ||
+      "video-cut.mp4";
+    downloadLink.href = URL.createObjectURL(result.blob);
     downloadLink.download = filename;
     downloadLink.hidden = false;
+    setProgress("Découpage terminé", 1);
     setStatus(status, "Prêt à télécharger.", "success");
   } catch (error) {
+    progress.hidden = true;
     setStatus(status, error.message || "Découpe impossible.", "error");
   } finally {
     submitButton.disabled = false;
+    fileInput.disabled = false;
+    resetButton.disabled = false;
   }
 });

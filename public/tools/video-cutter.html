@@ -6,12 +6,10 @@
     <title>Video Cutter - SorasTools</title>
     <link
       rel="canonical"
-      href="https://sorastools.onrender.com/tools/video-cutter"
-    />
+      href="https://sorastools.onrender.com/tools/video-cutter" />
     <meta
       name="description"
-      content="Découpe une vidéo sans réencodage, sans perte de qualité ni changement de FPS."
-    />
+      content="Découpe une vidéo sans réencodage, sans perte de qualité ni changement de FPS." />
     <link rel="icon" type="image/png" href="/assets/logo.png" />
     <link rel="stylesheet" href="/css/global.css" />
     <link rel="stylesheet" href="/css/video-cutter.css" />
@@ -19,27 +17,23 @@
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
     <link
       href="https://fonts.googleapis.com/css2?family=Intel+One+Mono:ital,wght@0,300..700;1,300..700&family=Roboto+Condensed:ital,wght@0,100..900;1,100..900&family=Science+Gothic:wght@100..900&display=swap"
-      rel="stylesheet"
-    />
+      rel="stylesheet" />
     <script type="module" src="/js/tools/video-cutter.js"></script>
     <script type="module" src="/js/global.js"></script>
   </head>
   <body>
     <header class="site-header">
       <nav class="navbar">
-        <a class="logo" href="/" data-label="Retourner à l'accueil SorasTools"
-          ><img
+        <a class="logo" href="/"
+          data-label="Retourner à l'accueil SorasTools"><img
             class="logo-img"
             src="/assets/logo.png"
             alt
-            aria-hidden="true"
-          />SorasTools</a
-        >
+            aria-hidden="true" />SorasTools</a>
         <div class="nav-links">
           <a href="/#tools" data-label="Aller au catalogue des tools">Tools</a>
-          <a href="/suggest" data-label="Aller aux suggestions de tools"
-            >Suggest</a
-          >
+          <a href="/suggest"
+            data-label="Aller aux suggestions de tools">Suggest</a>
           <a href="/contact" data-label="Aller à la page contact">Contact</a>
         </div>
       </nav>
@@ -56,28 +50,27 @@
           </p>
         </div>
         <form class="vc-tool" id="tool-panel" data-vc-form>
-          <label
-            class="vc-file field"
-            data-label="Choisir une vidéo à découper"
-          >
-            <span>Vidéo</span>
-            <input
-              type="file"
-              accept="video/*,.mkv,.avi,.ogv"
-              data-vc-file
-              required
-            />
-            <small
-              >MP4, WebM, MKV, MOV, AVI, M4V ou OGV. Taille max : 250 Mo.</small
-            >
-          </label>
-          <video class="vc-preview" data-vc-preview playsinline hidden></video>
+          <div class="vc-stage">
+            <video class="vc-preview" data-vc-preview playsinline
+              hidden></video>
+            <label class="vc-file">
+              <span class="vc-file-mark" aria-hidden="true">+</span>
+              <strong>Importer une vidéo</strong>
+              <small>MP4, WebM, MKV, MOV, AVI, M4V ou OGV. Taille max : 250
+                Mo.</small>
+              <input
+                type="file"
+                accept="video/*,.mkv,.avi,.ogv"
+                data-vc-file
+                aria-label="Importer une vidéo"
+                required />
+            </label>
+          </div>
           <div class="vc-player" data-vc-player hidden>
             <div
               class="vc-timeline"
               data-vc-timeline
-              aria-label="Timeline de la vidéo"
-            >
+              aria-label="Timeline de la vidéo">
               <span class="vc-selection" data-vc-selection></span>
               <span class="vc-playhead" data-vc-playhead></span>
               <button
@@ -88,8 +81,7 @@
                 aria-label="Repère de début"
                 aria-valuemin="0"
                 aria-valuemax="0"
-                aria-valuenow="0"
-              ></button>
+                aria-valuenow="0"></button>
               <button
                 class="vc-marker vc-marker-end"
                 type="button"
@@ -98,8 +90,7 @@
                 aria-label="Repère de fin"
                 aria-valuemin="0"
                 aria-valuemax="0"
-                aria-valuenow="0"
-              ></button>
+                aria-valuenow="0"></button>
             </div>
             <div class="vc-controls">
               <button type="button" data-vc-play aria-label="Lire la vidéo">
@@ -115,8 +106,7 @@
                   step="0.01"
                   value="1"
                   data-vc-volume
-                  aria-label="Volume vidéo"
-                />
+                  aria-label="Volume vidéo" />
                 <output data-vc-volume-value>100 %</output>
               </label>
             </div>
@@ -124,8 +114,7 @@
           <div class="vc-times">
             <label
               class="field"
-              data-label="Début du passage au format minutes, secondes, millisecondes"
-            >
+              data-label="Début du passage au format minutes, secondes, millisecondes">
               <span>Début</span>
               <span class="vc-time-control">
                 <button
@@ -133,8 +122,7 @@
                   class="vc-adjust"
                   data-vc-adjust="start"
                   data-step="-1"
-                  aria-label="Reculer le début de 10 ms"
-                >
+                  aria-label="Reculer le début de 10 ms">
                   −
                 </button>
                 <input
@@ -143,15 +131,13 @@
                   placeholder="00:00:00"
                   data-vc-start
                   value="00:00:00"
-                  required
-                />
+                  required />
                 <button
                   type="button"
                   class="vc-adjust"
                   data-vc-adjust="start"
                   data-step="1"
-                  aria-label="Avancer le début de 10 ms"
-                >
+                  aria-label="Avancer le début de 10 ms">
                   +
                 </button>
               </span>
@@ -159,8 +145,7 @@
             </label>
             <label
               class="field"
-              data-label="Fin du passage au format minutes, secondes, millisecondes"
-            >
+              data-label="Fin du passage au format minutes, secondes, millisecondes">
               <span>Fin</span>
               <span class="vc-time-control">
                 <button
@@ -168,8 +153,7 @@
                   class="vc-adjust"
                   data-vc-adjust="end"
                   data-step="-1"
-                  aria-label="Reculer la fin de 10 ms"
-                >
+                  aria-label="Reculer la fin de 10 ms">
                   −
                 </button>
                 <input
@@ -177,30 +161,42 @@
                   inputmode="numeric"
                   placeholder="00:00:00"
                   data-vc-end
-                  required
-                />
+                  required />
                 <button
                   type="button"
                   class="vc-adjust"
                   data-vc-adjust="end"
                   data-step="1"
-                  aria-label="Avancer la fin de 10 ms"
-                >
+                  aria-label="Avancer la fin de 10 ms">
                   +
                 </button>
               </span>
               <small class="vc-step" data-vc-step="end">Pas : 10 ms</small>
             </label>
           </div>
-          <button type="submit" data-vc-submit data-label="Découper la vidéo">
-            Découper
-          </button>
+          <div class="vc-actions">
+            <button type="submit" class="vc-submit" data-vc-submit
+              data-label="Découper la vidéo">
+              Découper
+            </button>
+            <button
+              type="button"
+              class="vc-reset"
+              data-vc-reset
+              data-label="Réinitialiser le découpeur vidéo">
+              Réinitialiser
+            </button>
+          </div>
+          <div class="vc-progress" data-vc-progress hidden>
+            <progress max="100" value="0" data-vc-progress-bar
+              aria-label="Progression du découpage vidéo"></progress>
+            <output data-vc-progress-stage></output>
+          </div>
           <p class="vc-status" data-vc-status aria-live="polite">
             En attente d'une vidéo.
           </p>
-          <a class="vc-download" data-vc-download hidden
-            >Télécharger le passage</a
-          >
+          <a class="vc-download" data-vc-download hidden>Télécharger le
+            passage</a>
         </form>
       </section>
     </main>

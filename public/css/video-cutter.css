@@ -7,7 +7,6 @@
   border-radius: 8px;
 }
 
-.vc-file,
 .vc-times input {
   display: grid;
   gap: 8px;
@@ -25,9 +24,80 @@
   color: var(--muted);
 }
 
-.vc-preview {
+.vc-stage {
+  display: grid;
+  position: relative;
+  place-items: center;
   width: 100%;
+  aspect-ratio: 16 / 9;
   max-height: 480px;
+  overflow: hidden;
+  border: 1px solid var(--border);
+  border-radius: 8px;
+  background-color: var(--bg-soft);
+  background-image:
+    linear-gradient(45deg, var(--border) 25%, transparent 25%),
+    linear-gradient(-45deg, var(--border) 25%, transparent 25%),
+    linear-gradient(45deg, transparent 75%, var(--border) 75%),
+    linear-gradient(-45deg, transparent 75%, var(--border) 75%);
+  background-size: 20px 20px;
+  background-position:
+    0 0,
+    0 10px,
+    10px -10px,
+    -10px 0;
+}
+
+.vc-file {
+  position: absolute;
+  inset: 0;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  padding: 16px;
+  text-align: center;
+  cursor: pointer;
+}
+
+.vc-file-mark {
+  display: grid;
+  width: 54px;
+  aspect-ratio: 1;
+  place-items: center;
+  border: 2.5px solid var(--border-orange);
+  border-radius: 50%;
+  color: var(--primary);
+  font-size: 2rem;
+  line-height: 1;
+}
+
+.vc-file input {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  opacity: 0;
+}
+
+.vc-file:focus-within .vc-file-mark {
+  outline: 2px solid var(--primary);
+  outline-offset: 3px;
+}
+
+.vc-preview:not([hidden]) + .vc-file {
+  visibility: hidden;
+  pointer-events: none;
+}
+
+.vc-preview {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  min-width: 0;
+  min-height: 0;
+  object-fit: contain;
   background: #000;
 }
 
@@ -94,7 +164,8 @@
   background: #ff6b6b;
 }
 
-.vc-marker:focus-visible {
+.vc-marker:focus-visible,
+.vc-marker.is-selected {
   outline: 2px solid var(--text);
   outline-offset: 2px;
 }
@@ -172,7 +243,13 @@
     border-color 150ms ease;
 }
 
-.vc-tool > button,
+.vc-actions {
+  display: flex;
+  gap: 16px;
+}
+
+.vc-submit,
+.vc-reset,
 .vc-download {
   display: inline-flex;
   justify-content: center;
@@ -192,6 +269,12 @@
     background-color 150ms ease,
     color 150ms ease,
     border-color 150ms ease;
+}
+
+.vc-reset {
+  background: var(--surface-strong);
+  color: var(--text);
+  border-color: var(--border);
 }
 
 .vc-controls button {
@@ -233,6 +316,23 @@
   margin: 0;
 }
 
+.vc-progress {
+  display: grid;
+  gap: 8px;
+  color: var(--muted);
+  font-variant-numeric: tabular-nums;
+}
+
+.vc-progress[hidden] {
+  display: none;
+}
+
+.vc-progress progress {
+  width: 100%;
+  height: 8px;
+  accent-color: var(--primary);
+}
+
 .vc-status[data-type="success"] {
   color: #39d353;
 }
@@ -244,8 +344,12 @@
   .vc-times {
     grid-template-columns: 1fr;
   }
-  .vc-tool > button,
-  .vc-download {
+  .vc-actions {
     width: 100%;
+  }
+  .vc-tool > button,
+  .vc-download,
+  .vc-reset {
+    flex: 1;
   }
 }

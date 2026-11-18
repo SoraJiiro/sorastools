@@ -691,6 +691,8 @@ router.post(
           "0",
           "-c",
           "copy",
+          "-avoid_negative_ts",
+          "make_zero",
           outputPath,
         ],
         "FFmpeg",
