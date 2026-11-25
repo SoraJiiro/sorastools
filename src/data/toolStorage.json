@@ -21,7 +21,7 @@
     "url": "/tools/color-picker",
     "status": "ready",
     "createdAt": "2025-07-15",
-    "updatedAt": "2026-10-04"
+    "updatedAt": "2026-11-15"
   },
   {
     "id": "background-remover",
@@ -44,7 +44,7 @@
     "url": "/tools/background-remover",
     "status": "ready",
     "createdAt": "2026-10-19",
-    "updatedAt": "2026-10-19"
+    "updatedAt": "2026-10-21"
   },
   {
     "id": "code-formatter",
@@ -71,7 +71,7 @@
     "url": "/tools/code-formatter",
     "status": "ready",
     "createdAt": "2026-09-03",
-    "updatedAt": "2026-09-29",
+    "updatedAt": "2026-10-07",
     "credit": "Sora [le seul et l'unique]"
   },
   {
@@ -122,7 +122,7 @@
     "url": "/tools/regex-tester",
     "status": "ready",
     "createdAt": "2025-07-22",
-    "updatedAt": "2025-07-22"
+    "updatedAt": "2026-09-28"
   },
   {
     "id": "md-previewer",
@@ -348,7 +348,7 @@
     "url": "/tools/js-minifier",
     "status": "ready",
     "createdAt": "2026-06-27",
-    "updatedAt": "2026-06-30"
+    "updatedAt": "2026-10-07"
   },
   {
     "id": "chart-editor",
@@ -377,7 +377,7 @@
     "url": "/tools/chart-editor",
     "status": "ready",
     "createdAt": "2026-09-28",
-    "updatedAt": "2026-09-28",
+    "updatedAt": "2026-11-25",
     "credit": "Sora [le seul et l'unique]"
   },
   {
@@ -458,7 +458,7 @@
     "url": "/tools/video-cutter",
     "status": "ready",
     "createdAt": "2026-11-13",
-    "updatedAt": "2026-11-13"
+    "updatedAt": "2026-11-18"
   },
   {
     "id": "qr-code-generator",
@@ -508,7 +508,7 @@
     "url": "/tools/password-generator",
     "status": "ready",
     "createdAt": "2026-10-02",
-    "updatedAt": "2026-10-03",
+    "updatedAt": "2026-10-04",
     "credit": "Max"
   },
   {

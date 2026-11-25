@@ -1,5 +1,9 @@
 User-agent: *
 Allow: /
 Disallow: /api/
+Disallow: /src/
+Disallow: /node_modules/
+Disallow: /.env
+Disallow: /*.env$
 
 Sitemap: https://sorastools.onrender.com/sitemap.xml

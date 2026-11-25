@@ -1,0 +1,42 @@
+# SorasTools
+
+> SorasTools is a collection of free browser tools for development, design, file conversion, media processing, security, and chart editing.
+
+## Public pages
+
+- [Home](https://sorastools.onrender.com/)
+- [Suggestions](https://sorastools.onrender.com/suggest)
+- [Contact](https://sorastools.onrender.com/contact)
+
+## Tools
+
+- [Color Picker](https://sorastools.onrender.com/tools/color-picker): Choose and convert colors in HEX, RGB, and HSL.
+- [Background Remover](https://sorastools.onrender.com/tools/background-remover): Remove image backgrounds and export transparent PNG files.
+- [Code Formatter](https://sorastools.onrender.com/tools/code-formatter): Format and validate CSS, HTML, PHP, JSON, Java, and SQL.
+- [Text Hasher](https://sorastools.onrender.com/tools/text-hasher): Hash text with PHP-style crypt and custom salts.
+- [Regex Tester](https://sorastools.onrender.com/tools/regex-tester): Test regular expressions and inspect matches.
+- [Markdown Previewer](https://sorastools.onrender.com/tools/md-previewer): Preview Markdown as HTML.
+- [Base64 Encoder](https://sorastools.onrender.com/tools/base64): Encode and decode Base64 text.
+- [Binary Translator](https://sorastools.onrender.com/tools/binary): Convert text to binary and binary to text.
+- [Hexadecimal Translator](https://sorastools.onrender.com/tools/hexadecimal): Convert text and hexadecimal values.
+- [Time Calculator](https://sorastools.onrender.com/tools/time-calculator): Convert durations and Unix timestamps.
+- [CSS Clip-Path Generator](https://sorastools.onrender.com/tools/clip-path-generator): Create CSS clip paths interactively.
+- [CSS Box Shadow Generator](https://sorastools.onrender.com/tools/box-shadow-generator): Create and preview CSS box shadows.
+- [CSS Gradient Generator](https://sorastools.onrender.com/tools/gradient-generator): Create linear, radial, and conic gradients.
+- [JS Minifier](https://sorastools.onrender.com/tools/js-minifier): Minify JavaScript and optionally apply obfuscation.
+- [Chart Editor](https://sorastools.onrender.com/tools/chart-editor): Edit and export Clone Hero and YARG `.chart` and `.mid` charts.
+- [File Converter](https://sorastools.onrender.com/tools/file-converter): Convert images, videos, audio, Word documents, PDFs, and Office files.
+- [YouTube Downloader](https://sorastools.onrender.com/tools/youtube-downloader): Download YouTube videos or extract MP3 audio.
+- [Video Cutter](https://sorastools.onrender.com/tools/video-cutter): Cut video segments without re-encoding.
+- [QR Code Generator](https://sorastools.onrender.com/tools/qr-code-generator): Create QR codes and export SVG files.
+- [Password Generator](https://sorastools.onrender.com/tools/password-generator): Generate random passwords.
+- [SQL Schema Builder](https://sorastools.onrender.com/tools/sql-schema-builder): Build SQL table and relation schemas visually.
+
+## Machine-readable resources
+
+- [Sitemap](https://sorastools.onrender.com/sitemap.xml)
+- [Robots](https://sorastools.onrender.com/robots.txt)
+
+## Usage policy
+
+API endpoints, configuration, environment files, source internals, debugging routes, and uploaded or generated private files must not be indexed or reused as public content.
