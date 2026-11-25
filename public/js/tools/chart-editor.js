@@ -1,3 +1,5 @@
+import { unzip } from "/vendor/fflate.browser.js";
+
 const q = (selector) => document.querySelector(selector);
 const canvas = q("[data-chart-canvas]");
 const context = canvas.getContext("2d");
@@ -6,6 +8,8 @@ const timeline = q("[data-chart-timeline]");
 const metaModal = q("[data-chart-meta-modal]");
 const metaForm = q("[data-chart-meta-form]");
 const STORAGE_KEY = "sorastools.chart-editor.save.v1";
+const AUDIO_CACHE_PREFIX = "chart-editor-audio-v1-";
+const AUDIO_ORIGIN = location.origin;
 const state = {
   notes: [],
   selected: [],
@@ -15,10 +19,15 @@ const state = {
   zoom: 2,
   audioUrl: "",
   audioFile: null,
+  audioTracks: [],
   undo: [],
+  redo: [],
   clipboard: [],
   playing: false,
   dirty: false,
+  selectionBox: null,
+  importedChartText: "",
+  importedMidiBuffer: null,
 };
 const laneColors = [
   "#39d353",
@@ -31,7 +40,6 @@ const laneColors = [
 let sustain = null;
 let drag = null;
 let playbackFrame = 0;
-let lastPlaybackDraw = 0;
 
 const isSelected = (note) => state.selected.includes(note);
 const noteColor = (note) =>
@@ -70,12 +78,95 @@ function readLocalSave() {
   }
 }
 
+function createCacheId() {
+  return (
+    globalThis.crypto?.randomUUID?.() ||
+    `${Date.now().toString(36)}-${Math.random().toString(36).slice(2)}`
+  );
+}
+
+async function saveAudioCache() {
+  const tracks = state.audioTracks.length
+    ? state.audioTracks
+    : state.audioFile
+      ? [{ file: state.audioFile }]
+      : [];
+
+  let saved = readLocalSave();
+  if (!saved) saved = {};
+  if (!tracks.length) {
+    if (saved.audioCacheName) {
+      try {
+        await caches.delete(saved.audioCacheName);
+      } catch (_) {}
+    }
+    return;
+  }
+
+  const cacheName =
+    saved.audioCacheName || `${AUDIO_CACHE_PREFIX}${createCacheId()}`;
+  try {
+    const cache = await caches.open(cacheName);
+    const metadata = [];
+    for (const [index, track] of tracks.entries()) {
+      const file = track.file;
+      const url = `${AUDIO_ORIGIN}/__chart-editor-audio__/${encodeURIComponent(cacheName)}/${index}`;
+      await cache.put(
+        url,
+        new Response(file, {
+          headers: { "content-type": file.type || "application/octet-stream" },
+        }),
+      );
+      metadata.push({
+        name: file.name,
+        type: file.type || "application/octet-stream",
+        index,
+      });
+    }
+
+    saved.audioCacheName = cacheName;
+    saved.audioTracks = metadata;
+    localStorage.setItem(STORAGE_KEY, JSON.stringify(saved));
+
+    for (const name of await caches.keys()) {
+      if (name.startsWith(AUDIO_CACHE_PREFIX) && name !== cacheName)
+        await caches.delete(name);
+    }
+  } catch (_) {}
+}
+
+async function restoreAudioCache(save) {
+  if (
+    !save?.audioCacheName ||
+    !Array.isArray(save.audioTracks) ||
+    !save.audioTracks.length
+  )
+    return;
+  try {
+    const cache = await caches.open(save.audioCacheName);
+    const files = [];
+    for (const track of save.audioTracks) {
+      const url = `${AUDIO_ORIGIN}/__chart-editor-audio__/${encodeURIComponent(save.audioCacheName)}/${track.index}`;
+      const response = await cache.match(url);
+      if (!response) throw new Error("Piste audio locale introuvable.");
+      files.push(
+        new File([await response.blob()], track.name, { type: track.type }),
+      );
+    }
+    setupAudioTracks(files);
+  } catch (_) {
+    message("Les pistes audio locales sont introuvables.");
+  }
+}
+
 function saveLocal() {
   try {
+    const previous = readLocalSave() || {};
     localStorage.setItem(
       STORAGE_KEY,
       JSON.stringify({
         version: 1,
+        ...previous,
         savedAt: Date.now(),
         notes: state.notes,
         chart: buildChart(),
@@ -101,7 +192,7 @@ function markDirty() {
   saveLocal();
 }
 
-function restoreLocal(save) {
+async function restoreLocal(save) {
   state.notes = save.notes.map((note) => ({ ...note }));
   state.selected = [];
   state.view = 0;
@@ -119,12 +210,14 @@ function restoreLocal(save) {
   q("[data-chart-resolution]").value = save.resolution || "192";
   q("[data-chart-difficulty]").value = save.difficulty || "ExpertSingle";
   state.dirty = false;
+  await restoreAudioCache(save);
   draw();
   message("Dernière chart locale chargée");
 }
 
 function saveUndo() {
   state.undo.push(JSON.stringify(state.notes));
+  state.redo = [];
   if (state.undo.length > 50) state.undo.shift();
 }
 
@@ -230,7 +323,7 @@ function draw() {
     const x = board.left + lane * board.laneWidth + board.laneWidth / 2;
     const y = yAt(note.tick, board);
     if (y < board.top - 50 || y > board.hit + 60) return;
-    if (state.playing && y >= board.hit + 2) return;
+    if (state.playing && y >= board.hit + 2 && note.length === 0) return;
     const hitProgress = state.playing
       ? Math.max(0, Math.min(1, (y - (board.hit - 34)) / 36))
       : 0;
@@ -312,9 +405,75 @@ function draw() {
     ),
   );
   q("[data-chart-note-count]").textContent = state.notes.length;
-  q("[data-chart-tick]").textContent =
-    state.selected[0]?.tick ?? secondsToTick(state.view);
   q('[data-chart-action="delete"]').disabled = !state.selected.length;
+  updateInspector();
+
+  if (state.selectionBox) {
+    const x = Math.min(state.selectionBox.startX, state.selectionBox.endX);
+    const y = Math.min(state.selectionBox.startY, state.selectionBox.endY);
+    const width = Math.abs(state.selectionBox.endX - state.selectionBox.startX);
+    const height = Math.abs(
+      state.selectionBox.endY - state.selectionBox.startY,
+    );
+    context.save();
+    context.fillStyle = "rgba(255,122,0,.12)";
+    context.strokeStyle = "#ff7a00";
+    context.lineWidth = 1.5;
+    context.setLineDash([6, 4]);
+    context.fillRect(x, y, width, height);
+    context.strokeRect(x, y, width, height);
+    context.restore();
+  }
+}
+
+let inspectorTickUpdate = 0;
+
+function updateInspector(force = false) {
+  const now = performance.now();
+  if (!force && now - inspectorTickUpdate < 100) return;
+  inspectorTickUpdate = now;
+
+  const note = state.selected[0];
+  const info = q("[data-chart-note-info]");
+  const tickInput = q("[data-chart-tick-jump]");
+  if (!note) {
+    info.innerHTML = "<p>Aucune note sélectionnée</p>";
+    if (document.activeElement !== tickInput)
+      tickInput.value = String(secondsToTick(state.view));
+    return;
+  }
+
+  const laneLabel =
+    note.lane === 7 ? "Open" : ["G", "R", "Y", "B", "O"][note.lane] || "—";
+  const typeLabels = {
+    normal: "Normale",
+    hopo: "HOPO",
+    forced: "Forced",
+    tap: "Tap",
+    open: "Open",
+    "forced-open": "Forced Open",
+  };
+  info.innerHTML = [
+    `<p>Type <strong>${typeLabels[note.modifier] || note.modifier}</strong></p>`,
+    `<p>Lane <strong>${laneLabel}</strong></p>`,
+    `<p>Tick <strong>${note.tick}</strong></p>`,
+    `<p>Durée <strong>${note.length}</strong></p>`,
+    `<p>Temps <strong>${timeLabel(tickToSeconds(note.tick))}</strong></p>`,
+  ].join("");
+  tickInput.value = String(note.tick);
+}
+
+function jumpToTick(tick) {
+  const safeTick = Math.max(0, Math.round(Number(tick) || 0));
+  const seconds = tickToSeconds(safeTick);
+  state.view = seconds;
+  if (Number.isFinite(player.duration))
+    player.currentTime = Math.min(seconds, player.duration);
+  seekAudioTracks(seconds);
+  q("[data-chart-tick-jump]").value = String(safeTick);
+  q("[data-chart-time]").textContent = timeLabel(seconds);
+  timeline.value = Math.min(1000, (seconds / chartDuration()) * 1000);
+  draw();
 }
 
 function tickAt(event) {
@@ -598,10 +757,15 @@ async function exportChart() {
     { name: "notes.chart", data: buildChart() },
     { name: "song.ini", data: buildSongIni() },
   ];
-  if (state.audioFile)
+  const exportTracks = state.audioTracks.length
+    ? state.audioTracks
+    : state.audioFile
+      ? [{ file: state.audioFile }]
+      : [];
+  for (const { file } of exportTracks)
     files.push({
-      name: state.audioFile.name,
-      data: new Uint8Array(await state.audioFile.arrayBuffer()),
+      name: file.name,
+      data: new Uint8Array(await file.arrayBuffer()),
     });
   const zip = zipStore(files);
   const url = URL.createObjectURL(new Blob([zip], { type: "application/zip" }));
@@ -613,6 +777,307 @@ async function exportChart() {
   state.dirty = false;
   saveLocal();
   message("Archive ZIP exportée");
+}
+
+const audioExtensions = new Set([
+  "aac",
+  "flac",
+  "m4a",
+  "mp3",
+  "ogg",
+  "opus",
+  "wav",
+]);
+
+function extension(name) {
+  return name.split(".").pop().toLowerCase();
+}
+
+function setupAudioTracks(files) {
+  state.audioTracks.forEach(({ element, url }) => {
+    element.pause();
+    if (element !== player) element.remove();
+    URL.revokeObjectURL(url);
+  });
+  state.audioTracks = [];
+  if (state.audioUrl) {
+    URL.revokeObjectURL(state.audioUrl);
+    state.audioUrl = "";
+  }
+
+  const tracks = files
+    .filter((file) => audioExtensions.has(extension(file.name)))
+    .map((file) => ({ file, name: file.name.replace(/\.[^.]+$/, "") }));
+  if (!tracks.length) {
+    q("[data-chart-audio]").hidden = false;
+    state.audioFile = null;
+    return;
+  }
+
+  const isSong = ({ name }) => /^song(?:$|[\s_.-])/i.test(name);
+  const solo = tracks.find(isSong);
+  const playingTracks = solo ? [solo] : tracks;
+
+  playingTracks.forEach(({ file, name }, index) => {
+    const url = URL.createObjectURL(file);
+    const element = index === 0 ? player : new Audio();
+    element.src = url;
+    element.preload = "metadata";
+    if (index > 0) {
+      element.hidden = true;
+      player.after(element);
+    }
+    state.audioTracks.push({ name, file, element, url });
+  });
+
+  state.audioFile = solo?.file || tracks[0].file;
+  state.audioUrl = state.audioTracks[0].url;
+  player.load();
+  q("[data-chart-audio]").hidden = true;
+  message(
+    solo
+      ? `Piste solo chargée : ${solo.file.name}`
+      : `${tracks.length} pistes audio superposées`,
+  );
+}
+
+function parseIni(content) {
+  const section = (name) =>
+    content.match(
+      new RegExp(`\\[${name}\\][\\s\\S]*?(?=\\n\\s*\\[|$)`, "i"),
+    )?.[0] || "";
+  const song = section("song");
+  const value = (name) => {
+    const match = song.match(
+      new RegExp(`^\\s*${name}\\s*=\\s*(.*?)\\s*$`, "im"),
+    );
+    return match?.[1]?.trim() || "";
+  };
+  return {
+    title: value("name"),
+    artist: value("artist"),
+    charter: value("charter"),
+    album: value("album"),
+    year: value("year"),
+    genre: value("genre"),
+    diffGuitar: value("diff_guitar"),
+    loadingPhrase: value("loading_phrase"),
+  };
+}
+
+function applyIni(ini) {
+  if (!ini) return;
+  if (ini.title) q("[data-chart-title]").value = ini.title;
+  if (ini.artist) q("[data-chart-artist]").value = ini.artist;
+  if (ini.charter) q("[data-chart-charter]").value = ini.charter;
+  if (ini.album) q("[data-chart-meta-album]").value = ini.album;
+  if (ini.year) q("[data-chart-meta-year]").value = ini.year;
+  if (ini.genre) q("[data-chart-meta-genre]").value = ini.genre;
+  if (ini.diffGuitar) q("[data-chart-meta-diff-guitar]").value = ini.diffGuitar;
+  if (ini.loadingPhrase)
+    q("[data-chart-meta-loading]").value = ini.loadingPhrase;
+}
+
+function importMidi(buffer) {
+  const bytes = new Uint8Array(buffer);
+  const text = (offset, length) =>
+    String.fromCharCode(...bytes.subarray(offset, offset + length));
+  const uint32 = (offset) =>
+    bytes[offset] * 0x1000000 +
+    (bytes[offset + 1] << 16) +
+    (bytes[offset + 2] << 8) +
+    bytes[offset + 3];
+
+  if (text(0, 4) !== "MThd" || uint32(4) < 6)
+    throw new Error("En-tête MIDI invalide.");
+  const headerLength = uint32(4);
+  const format = (bytes[8] << 8) | bytes[9];
+  const trackCount = (bytes[10] << 8) | bytes[11];
+  const division = (bytes[12] << 8) | bytes[13];
+  if (format > 1 || !trackCount || division & 0x8000 || !division)
+    throw new Error("Format MIDI non pris en charge (format 0/1 attendu).");
+
+  let offset = 8 + headerLength;
+  const tempos = [];
+  const tracks = [];
+  for (let trackIndex = 0; trackIndex < trackCount; trackIndex++) {
+    if (offset + 8 > bytes.length || text(offset, 4) !== "MTrk")
+      throw new Error("Piste MIDI invalide.");
+    const end = offset + 8 + uint32(offset + 4);
+    if (end > bytes.length) throw new Error("Piste MIDI tronquée.");
+    offset += 8;
+    let tick = 0;
+    let runningStatus = 0;
+    let name = "";
+    const starts = new Map();
+    const notes = [];
+
+    const readVlq = () => {
+      let value = 0;
+      for (let count = 0; count < 4; count++) {
+        if (offset >= end) throw new Error("Événement MIDI tronqué.");
+        const byte = bytes[offset++];
+        value = (value << 7) | (byte & 0x7f);
+        if (!(byte & 0x80)) return value;
+      }
+      throw new Error("Valeur MIDI invalide.");
+    };
+
+    while (offset < end) {
+      tick += readVlq();
+      let status = bytes[offset++];
+      if (status === 0xff) {
+        const type = bytes[offset++];
+        const length = readVlq();
+        if (offset + length > end) throw new Error("Méta-événement tronqué.");
+        if (type === 0x03) name = text(offset, length);
+        if (type === 0x51 && length === 3) {
+          const microseconds =
+            (bytes[offset] << 16) |
+            (bytes[offset + 1] << 8) |
+            bytes[offset + 2];
+          if (microseconds) tempos.push({ tick, microseconds });
+        }
+        offset += length;
+        continue;
+      }
+      if (status === 0xf0 || status === 0xf7) {
+        const length = readVlq();
+        offset += length;
+        runningStatus = 0;
+        continue;
+      }
+      if (status < 0x80) {
+        offset--;
+        status = runningStatus;
+      } else if (status < 0xf0) runningStatus = status;
+      const command = status & 0xf0;
+      const channel = status & 0x0f;
+      const dataLength = command === 0xc0 || command === 0xd0 ? 1 : 2;
+      if (offset + dataLength > end) throw new Error("Événement MIDI tronqué.");
+      const pitch = bytes[offset++];
+      const velocity = dataLength === 2 ? bytes[offset++] : 0;
+      if (command !== 0x80 && command !== 0x90) continue;
+      const key = `${channel}:${pitch}`;
+      if (command === 0x90 && velocity > 0) {
+        const pending = starts.get(key) || [];
+        pending.push(tick);
+        starts.set(key, pending);
+      } else {
+        const pending = starts.get(key);
+        if (!pending?.length) continue;
+        notes.push({ pitch, start: pending.shift(), end: tick });
+      }
+    }
+    tracks.push({ name, notes });
+    offset = end;
+  }
+
+  tempos.sort((a, b) => a.tick - b.tick);
+  if (!tempos.length) tempos.push({ tick: 0, microseconds: 500000 });
+  if (tempos[0].tick > 0) tempos.unshift({ tick: 0, microseconds: 500000 });
+  const bases = [96, 84, 72, 60];
+  const instrument = tracks
+    .filter(({ notes }) =>
+      bases.some((base) =>
+        notes.some(({ pitch }) => pitch >= base && pitch <= base + 4),
+      ),
+    )
+    .sort(
+      (a, b) =>
+        Number(!/PART GUITAR/i.test(a.name)) -
+        Number(!/PART GUITAR/i.test(b.name)),
+    )[0];
+  if (!instrument)
+    throw new Error(
+      "Aucune piste Guitar Hero à cinq lanes trouvée dans le MIDI.",
+    );
+
+  const difficulty = q("[data-chart-difficulty]").value;
+  const baseByDifficulty = {
+    ExpertSingle: 96,
+    HardSingle: 84,
+    MediumSingle: 72,
+    EasySingle: 60,
+  };
+  let base = baseByDifficulty[difficulty] || 96;
+  if (
+    !instrument.notes.some(({ pitch }) => pitch >= base && pitch <= base + 4)
+  ) {
+    base =
+      bases.find((candidate) =>
+        instrument.notes.some(
+          ({ pitch }) => pitch >= candidate && pitch <= candidate + 4,
+        ),
+      ) || base;
+  }
+
+  const taps = instrument.notes.filter(({ pitch }) => pitch === 104);
+  const forced = instrument.notes.filter(({ pitch }) => pitch === base + 6);
+  const hopos = instrument.notes.filter(({ pitch }) => pitch === base + 5);
+  const contains = (markers, tick) =>
+    markers.some((marker) => tick >= marker.start && tick < marker.end);
+  const parsed = instrument.notes
+    .filter(({ pitch }) => pitch >= base && pitch <= base + 4)
+    .map((note) => ({
+      tick: note.start,
+      lane: note.pitch - base,
+      length:
+        note.end - note.start > division / 3
+          ? Math.max(0, note.end - note.start)
+          : 0,
+      modifier: contains(taps, note.start)
+        ? "tap"
+        : contains(hopos, note.start)
+          ? "forced"
+          : contains(forced, note.start)
+            ? "forced"
+            : "normal",
+    }))
+    .sort((a, b) => a.tick - b.tick || a.lane - b.lane);
+
+  markImplicitHopos(parsed);
+  return {
+    notes: parsed,
+    resolution: division,
+    bpm: tempos[0].microseconds ? 60_000_000 / tempos[0].microseconds : 120,
+  };
+}
+
+function listChartDifficulties(text) {
+  const names = new Set();
+  for (const match of text.matchAll(
+    /^\s*\[(Easy|Medium|Hard|Expert)(?:Single)?\]\s*$/gim,
+  )) {
+    const name = match[1][0].toUpperCase() + match[1].slice(1).toLowerCase();
+    names.add(`${name}Single`);
+  }
+  return [...names];
+}
+
+function setAvailableDifficulties(difficulties, preferred) {
+  const select = q("[data-chart-difficulty]");
+  if (!difficulties.length) return;
+  select.innerHTML = difficulties
+    .map((value) => {
+      const label = value.replace("Single", "");
+      return `<option value="${value}">${label}</option>`;
+    })
+    .join("");
+  if (difficulties.includes(preferred)) select.value = preferred;
+}
+
+function loadImportedDifficulty() {
+  if (state.importedChartText) {
+    importChart(state.importedChartText);
+  } else if (state.importedMidiBuffer) {
+    const midi = importMidi(state.importedMidiBuffer);
+    q("[data-chart-resolution]").value = String(midi.resolution);
+    q("[data-chart-bpm]").value = String(Math.round(midi.bpm * 1000) / 1000);
+    state.notes = midi.notes;
+    state.selected = [];
+    draw();
+  }
 }
 
 function importChart(text) {
@@ -686,8 +1151,16 @@ function reset() {
   state.modifier = "normal";
   state.view = 0;
   state.undo = [];
+  state.redo = [];
   state.clipboard = [];
   state.audioFile = null;
+  state.importedChartText = "";
+  state.importedMidiBuffer = null;
+  setAvailableDifficulties(
+    ["ExpertSingle", "HardSingle", "MediumSingle", "EasySingle"],
+    "ExpertSingle",
+  );
+  setupAudioTracks([]);
   document
     .querySelectorAll("[data-chart-mod]")
     .forEach((item) =>
@@ -715,34 +1188,54 @@ function reset() {
 function resize() {
   draw();
 }
-function playbackLoop(timestamp) {
+function playbackLoop() {
   if (player.paused) {
     playbackFrame = 0;
     state.playing = false;
     return;
   }
-  if (timestamp - lastPlaybackDraw >= 16) {
-    state.view = player.currentTime;
-    q("[data-chart-time]").textContent = timeLabel(player.currentTime);
-    draw();
-    lastPlaybackDraw = timestamp;
-  }
+  state.view = player.currentTime;
+  q("[data-chart-time]").textContent = timeLabel(player.currentTime);
+  draw();
   playbackFrame = requestAnimationFrame(playbackLoop);
 }
+function updatePlayButton() {
+  const button = q('[data-chart-action="play"]');
+  const icon = button.querySelector("i");
+  const playing = !player.paused && !player.ended;
+  icon.className = playing ? "fa-solid fa-pause" : "fa-solid fa-play";
+  button.lastChild.textContent = playing ? "Pause" : "Lecture";
+  button.setAttribute("aria-label", playing ? "Mettre en pause" : "Lire");
+}
+
 function startPlaybackLoop() {
   state.playing = true;
-  if (!playbackFrame) {
-    lastPlaybackDraw = 0;
-    playbackFrame = requestAnimationFrame(playbackLoop);
-  }
+  updatePlayButton();
+  if (!playbackFrame) playbackFrame = requestAnimationFrame(playbackLoop);
 }
 function playPause() {
   if (player.paused)
     player
       .play()
-      .then(startPlaybackLoop)
+      .then(() => {
+        state.audioTracks.slice(1).forEach(({ element }) => {
+          element.currentTime = player.currentTime;
+          element.play().catch(() => {});
+        });
+        startPlaybackLoop();
+      })
       .catch(() => message("Importe un fichier audio pour lancer la lecture."));
-  else player.pause();
+  else {
+    player.pause();
+    state.audioTracks.slice(1).forEach(({ element }) => element.pause());
+    updatePlayButton();
+  }
+}
+function seekAudioTracks(seconds) {
+  state.audioTracks.forEach(({ element }) => {
+    if (Number.isFinite(element.duration))
+      element.currentTime = Math.min(seconds, element.duration);
+  });
 }
 
 q('[data-chart-action="new"]').addEventListener("click", () => {
@@ -753,11 +1246,149 @@ q('[data-chart-action="export"]').addEventListener("click", exportChart);
 q('[data-chart-action="import"]').addEventListener("click", () =>
   q("[data-chart-file]").click(),
 );
+q('[data-chart-action="import-folder"]').addEventListener("click", () =>
+  q("[data-chart-folder]").click(),
+);
+q("[data-chart-import-folder]").addEventListener("click", () =>
+  q("[data-chart-folder]").click(),
+);
 q("[data-chart-file]").addEventListener("change", async (event) => {
   const file = event.target.files[0];
   if (!file) return;
   try {
-    importChart(await file.text());
+    if (
+      file.name.toLowerCase().endsWith(".zip") ||
+      file.type === "application/zip"
+    ) {
+      const archive = new Uint8Array(await file.arrayBuffer());
+      const files = await new Promise((resolve, reject) => {
+        unzip(archive, (error, entries) =>
+          error ? reject(error) : resolve(entries),
+        );
+      });
+      const paths = Object.keys(files);
+      const chartPath = paths.find((path) =>
+        /(^|\/)(notes\.(chart)|[^/]+\.chart)$/i.test(path),
+      );
+      if (!chartPath) throw new Error("Archive sans fichier .chart.");
+      const chartText = new TextDecoder().decode(files[chartPath]);
+      importChart(chartText);
+      const iniPath = paths.find((path) => /(^|\/)(song\.ini)$/i.test(path));
+      if (iniPath) applyIni(parseIni(new TextDecoder().decode(files[iniPath])));
+      const audioFiles = paths
+        .filter((path) => /\.(aac|flac|m4a|mp3|ogg|opus|wav)$/i.test(path))
+        .map((path) => new File([files[path]], path.split("/").pop()));
+      if (audioFiles.length) {
+        setupAudioTracks(audioFiles);
+        saveAudioCache();
+      }
+      const difficulties = listChartDifficulties(chartText);
+      setAvailableDifficulties(
+        difficulties,
+        q("[data-chart-difficulty]").value,
+      );
+      state.importedChartText = chartText;
+      state.importedMidiBuffer = null;
+    } else if (/\.(mid|midi)$/i.test(file.name)) {
+      const buffer = await file.arrayBuffer();
+      state.importedMidiBuffer = buffer.slice(0);
+      state.importedChartText = "";
+      setAvailableDifficulties(
+        ["ExpertSingle", "HardSingle", "MediumSingle", "EasySingle"],
+        q("[data-chart-difficulty]").value,
+      );
+      const midi = importMidi(buffer);
+      q("[data-chart-resolution]").value = String(midi.resolution);
+      q("[data-chart-bpm]").value = String(Math.round(midi.bpm * 1000) / 1000);
+      state.notes = midi.notes;
+      state.selected = [];
+      state.dirty = false;
+      saveLocal();
+      draw();
+      message(`${midi.notes.length} notes MIDI importées`);
+    } else {
+      const text = await file.text();
+      state.importedChartText = text;
+      state.importedMidiBuffer = null;
+      const difficulties = listChartDifficulties(text);
+      setAvailableDifficulties(
+        difficulties,
+        q("[data-chart-difficulty]").value,
+      );
+      importChart(text);
+    }
+    openMetaModal();
+  } catch (error) {
+    message(error.message);
+  }
+  event.target.value = "";
+});
+q("[data-chart-folder]").addEventListener("change", async (event) => {
+  const files = [...event.target.files];
+  if (!files.length) return;
+  try {
+    const chartFiles = files.filter((file) =>
+      /\.(chart|mid|midi)$/i.test(file.name),
+    );
+    const namedCharts = chartFiles.filter((file) =>
+      /^notes\.(chart|mid|midi)$/i.test(file.name),
+    );
+    const candidates = namedCharts.length ? namedCharts : chartFiles;
+    if (!candidates.length)
+      throw new Error(
+        "Le dossier ne contient aucun fichier notes.chart ou notes.mid.",
+      );
+    const relative = (file) => file.webkitRelativePath || file.name;
+    const directory = (file) =>
+      relative(file).includes("/")
+        ? relative(file).slice(0, relative(file).lastIndexOf("/"))
+        : "";
+    const chartDirectories = new Set(candidates.map(directory));
+    if (chartDirectories.size !== 1)
+      throw new Error("Choisissez le dossier d’une seule chart.");
+    const chartFile =
+      candidates.find((file) => /\.chart$/i.test(file.name)) || candidates[0];
+    const chartDirectory = directory(chartFile);
+    const siblings = files.filter((file) => directory(file) === chartDirectory);
+
+    if (/\.chart$/i.test(chartFile.name)) {
+      const text = await chartFile.text();
+      state.importedChartText = text;
+      state.importedMidiBuffer = null;
+      const difficulties = listChartDifficulties(text);
+      setAvailableDifficulties(
+        difficulties,
+        q("[data-chart-difficulty]").value,
+      );
+      importChart(text);
+    } else {
+      const buffer = await chartFile.arrayBuffer();
+      state.importedMidiBuffer = buffer.slice(0);
+      state.importedChartText = "";
+      setAvailableDifficulties(
+        ["ExpertSingle", "HardSingle", "MediumSingle", "EasySingle"],
+        q("[data-chart-difficulty]").value,
+      );
+      const midi = importMidi(buffer);
+      q("[data-chart-resolution]").value = String(midi.resolution);
+      q("[data-chart-bpm]").value = String(Math.round(midi.bpm * 1000) / 1000);
+      state.notes = midi.notes;
+      state.selected = [];
+      state.dirty = false;
+      draw();
+      message(`${midi.notes.length} notes MIDI importées`);
+    }
+
+    const iniFile = siblings.find((file) =>
+      /(^|\/)song\.ini$/i.test(relative(file)),
+    );
+    if (iniFile) applyIni(parseIni(await iniFile.text()));
+    const audioFiles = siblings.filter((file) =>
+      audioExtensions.has(extension(file.name)),
+    );
+    setupAudioTracks(audioFiles);
+    markDirty();
+    saveAudioCache();
     openMetaModal();
   } catch (error) {
     message(error.message);
@@ -767,17 +1398,39 @@ q("[data-chart-file]").addEventListener("change", async (event) => {
 q("[data-chart-audio]").addEventListener("change", (event) => {
   const file = event.target.files[0];
   if (!file) return;
-  state.audioFile = file;
-  if (state.audioUrl) URL.revokeObjectURL(state.audioUrl);
-  state.audioUrl = URL.createObjectURL(file);
-  player.src = state.audioUrl;
+  setupAudioTracks([file]);
   markDirty();
-  message(`Audio chargé : ${file.name}`);
+  saveAudioCache();
 });
 q('[data-chart-action="play"]').addEventListener("click", playPause);
 q('[data-chart-action="stop"]').addEventListener("click", () => {
   player.pause();
-  state.view = player.currentTime;
+  state.audioTracks.slice(1).forEach(({ element }) => element.pause());
+  if (playbackFrame) cancelAnimationFrame(playbackFrame);
+  playbackFrame = 0;
+  player.currentTime = 0;
+  seekAudioTracks(0);
+  state.view = 0;
+  q("[data-chart-time]").textContent = timeLabel(0);
+  updatePlayButton();
+  draw();
+});
+q('[data-chart-action="undo"]').addEventListener("click", () => {
+  const last = state.undo.pop();
+  if (!last) return;
+  state.redo.push(JSON.stringify(state.notes));
+  state.notes = JSON.parse(last);
+  state.selected = [];
+  markDirty();
+  draw();
+});
+q('[data-chart-action="redo"]').addEventListener("click", () => {
+  const next = state.redo.pop();
+  if (!next) return;
+  state.undo.push(JSON.stringify(state.notes));
+  state.notes = JSON.parse(next);
+  state.selected = [];
+  markDirty();
   draw();
 });
 q('[data-chart-action="delete"]').addEventListener("click", () => {
@@ -833,6 +1486,11 @@ document.querySelectorAll("[data-chart-mod]").forEach((button) =>
       .forEach((item) => item.classList.toggle("is-active", item === button));
   }),
 );
+q("[data-chart-difficulty]").addEventListener("change", () => {
+  markDirty();
+  loadImportedDifficulty();
+});
+
 ["[data-chart-bpm]", "[data-chart-resolution]", "[data-chart-snap]"].forEach(
   (selector) =>
     q(selector).addEventListener("input", () => {
@@ -847,12 +1505,33 @@ q("[data-chart-zoom]").addEventListener("input", (event) => {
   state.zoom = Number(event.target.value);
   draw();
 });
+q("[data-chart-tick-jump]").addEventListener("change", (event) =>
+  jumpToTick(event.target.value),
+);
+q("[data-chart-tick-jump]").addEventListener("keydown", (event) => {
+  if (event.key === "Enter") {
+    event.preventDefault();
+    jumpToTick(event.target.value);
+  }
+});
+
 timeline.addEventListener("input", (event) => {
-  state.view = (Number(event.target.value) / 1000) * chartDuration();
+  const seconds = (Number(event.target.value) / 1000) * chartDuration();
+  state.view = seconds;
+  if (Number.isFinite(player.duration))
+    player.currentTime = Math.min(seconds, player.duration);
+  seekAudioTracks(seconds);
+  q("[data-chart-time]").textContent = timeLabel(seconds);
   draw();
 });
-player.addEventListener("play", startPlaybackLoop);
+player.addEventListener("play", () => {
+  updatePlayButton();
+  startPlaybackLoop();
+});
 player.addEventListener("pause", () => {
+  updatePlayButton();
+  if (playbackFrame) cancelAnimationFrame(playbackFrame);
+  playbackFrame = 0;
   state.playing = false;
   state.view = player.currentTime;
   q("[data-chart-time]").textContent = timeLabel(player.currentTime);
@@ -860,6 +1539,14 @@ player.addEventListener("pause", () => {
 });
 player.addEventListener("timeupdate", () => {
   q("[data-chart-time]").textContent = timeLabel(player.currentTime);
+});
+player.addEventListener("ended", () => {
+  updatePlayButton();
+  if (playbackFrame) cancelAnimationFrame(playbackFrame);
+  playbackFrame = 0;
+  state.playing = false;
+  state.view = player.duration || 0;
+  draw();
 });
 canvas.addEventListener("click", (event) => {
   if (state.tool === "mouse") return;
@@ -877,14 +1564,26 @@ canvas.addEventListener("click", (event) => {
 });
 canvas.addEventListener("contextmenu", (event) => event.preventDefault());
 canvas.addEventListener("pointerdown", (event) => {
+  const rect = canvas.getBoundingClientRect();
   const note = hitNote(event);
   if (event.button === 2) {
-    if (!note) return;
-    state.selected = [note];
-    sustain = { note, tick: note.tick };
-    saveUndo();
-    markDirty();
+    if (note) {
+      state.selected = [note];
+      sustain = { note, tick: note.tick };
+      saveUndo();
+      markDirty();
+    } else {
+      state.selectionBox = {
+        startX: event.clientX - rect.left,
+        startY: event.clientY - rect.top,
+        endX: event.clientX - rect.left,
+        endY: event.clientY - rect.top,
+        additive: event.ctrlKey || event.metaKey || event.shiftKey,
+        initial: [...state.selected],
+      };
+    }
     canvas.setPointerCapture(event.pointerId);
+    draw();
     return;
   }
   if (event.button === 0 && state.tool === "mouse" && note) {
@@ -910,6 +1609,28 @@ canvas.addEventListener("pointerdown", (event) => {
   }
 });
 canvas.addEventListener("pointermove", (event) => {
+  if (state.selectionBox) {
+    const rect = canvas.getBoundingClientRect();
+    state.selectionBox.endX = event.clientX - rect.left;
+    state.selectionBox.endY = event.clientY - rect.top;
+
+    const board = dimensions();
+    const left = Math.min(state.selectionBox.startX, state.selectionBox.endX);
+    const right = Math.max(state.selectionBox.startX, state.selectionBox.endX);
+    const top = Math.min(state.selectionBox.startY, state.selectionBox.endY);
+    const bottom = Math.max(state.selectionBox.startY, state.selectionBox.endY);
+    const inside = state.notes.filter((item) => {
+      const lane = noteLane(item);
+      const x = board.left + lane * board.laneWidth + board.laneWidth / 2;
+      const y = yAt(item.tick, board);
+      return x >= left && x <= right && y >= top && y <= bottom;
+    });
+    state.selected = state.selectionBox.additive
+      ? [...new Set([...state.selectionBox.initial, ...inside])]
+      : inside;
+    draw();
+    return;
+  }
   if (sustain) {
     sustain.note.length = Math.max(0, tickAt(event) - sustain.tick);
     draw();
@@ -929,6 +1650,8 @@ canvas.addEventListener("pointermove", (event) => {
 canvas.addEventListener("pointerup", () => {
   sustain = null;
   drag = null;
+  state.selectionBox = null;
+  draw();
 });
 canvas.addEventListener(
   "wheel",
@@ -936,7 +1659,7 @@ canvas.addEventListener(
     event.preventDefault();
     state.view = Math.max(
       0,
-      Math.min(chartDuration(), state.view + event.deltaY / (150 * state.zoom)),
+      Math.min(chartDuration(), state.view - event.deltaY / (150 * state.zoom)),
     );
     draw();
   },
@@ -976,13 +1699,10 @@ document.addEventListener("keydown", (event) => {
     draw();
   }
   if ((event.ctrlKey || event.metaKey) && event.key.toLowerCase() === "z") {
-    const last = state.undo.pop();
-    if (last) {
-      state.notes = JSON.parse(last);
-      state.selected = [];
-      markDirty();
-      draw();
-    }
+    q('[data-chart-action="undo"]').click();
+  }
+  if ((event.ctrlKey || event.metaKey) && event.key.toLowerCase() === "y") {
+    q('[data-chart-action="redo"]').click();
   }
   if (event.code === "Space") {
     event.preventDefault();

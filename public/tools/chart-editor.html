@@ -4,7 +4,8 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Chart Editor - SorasTools</title>
-    <link rel="canonical" href="https://sorastools.onrender.com/tools/chart-editor">
+    <link rel="canonical"
+      href="https://sorastools.onrender.com/tools/chart-editor">
     <meta name="description"
       content="Crée et édite des charts de rythme au format .chart.">
     <link rel="icon" type="image/png" href="/assets/logo.png">
@@ -30,31 +31,53 @@
     <main>
       <section class="section tool-section" id="chart-editor">
         <div class="section-heading"><p class="eyebrow">Musique</p><h1>Chart
-            Editor</h1><p>Chart au format Guitar Hero
-            <code>.chart</code></p></div>
+            Editor</h1><p>Modifie / crée des chartes Clone Hero / YARG au format
+            <code>.chart</code> et <code>.mid</code></p></div>
         <div class="chart-tool" id="tool-panel" data-chart-editor>
-          <div class="chart-toolbar">
-            <label class="chart-field"><span>Titre</span><input data-chart-title
-                value="Untitled"></label>
-            <label class="chart-field"><span>Artiste</span><input
-                data-chart-artist placeholder="Artiste"></label>
-            <label class="chart-field"><span>Charter</span><input
-                data-chart-charter value="SorasTools"></label>
-            <button class="chart-button" data-no-action-icon
-              data-chart-action="new"><i data-action-icon-el
-                class="fa-solid fa-file-circle-plus"
-                aria-hidden="true"></i>Nouveau</button>
-            <button class="chart-button" data-no-action-icon
-              data-chart-action="import"><i data-action-icon-el
-                class="fa-solid fa-folder-open" aria-hidden="true"></i>Ouvrir
-              .chart</button>
-            <button class="chart-button chart-primary" data-no-action-icon
-              data-chart-action="export"><i data-action-icon-el
-                class="fa-solid fa-file-zipper" aria-hidden="true"></i>Exporter
-              ZIP</button>
-            <input data-chart-file type="file" accept=".chart,text/plain"
-              hidden>
-          </div>
+          <header class="chart-toolbar">
+            <div class="chart-document">
+              <label
+                class="chart-field chart-title-field"><span>Titre</span><input
+                  data-chart-title value="Untitled"></label>
+              <label class="chart-field"><span>Artiste</span><input
+                  data-chart-artist placeholder="Artiste"></label>
+              <label class="chart-field"><span>Charter</span><input
+                  data-chart-charter value="SorasTools"></label>
+            </div>
+            <div class="chart-actions">
+              <button class="chart-icon-button" data-no-action-icon
+                data-chart-action="undo" aria-label="Annuler"
+                title="Annuler (Ctrl+Z)"><i data-action-icon-el
+                  class="fa-solid fa-rotate-left"
+                  aria-hidden="true"></i></button>
+              <button class="chart-icon-button" data-no-action-icon
+                data-chart-action="redo" aria-label="Rétablir"
+                title="Rétablir (Ctrl+Y)"><i data-action-icon-el
+                  class="fa-solid fa-rotate-right"
+                  aria-hidden="true"></i></button>
+              <button class="chart-button" data-no-action-icon
+                data-chart-action="new"><i data-action-icon-el
+                  class="fa-solid fa-file-circle-plus"
+                  aria-hidden="true"></i>Nouveau</button>
+              <button class="chart-button" data-no-action-icon
+                data-chart-action="import"><i data-action-icon-el
+                  class="fa-solid fa-folder-open"
+                  aria-hidden="true"></i>Fichier</button>
+              <button class="chart-button" data-no-action-icon
+                data-chart-action="import-folder"><i data-action-icon-el
+                  class="fa-solid fa-folder-tree"
+                  aria-hidden="true"></i>Dossier</button>
+              <button class="chart-button chart-primary" data-no-action-icon
+                data-chart-action="export"><i data-action-icon-el
+                  class="fa-solid fa-file-zipper"
+                  aria-hidden="true"></i>Exporter</button>
+              <input data-chart-file type="file"
+                accept=".chart,.mid,.midi,.zip,text/plain,application/zip"
+                hidden>
+              <input data-chart-folder type="file" webkitdirectory directory
+                multiple hidden>
+            </div>
+          </header>
           <div class="chart-config">
             <label class="chart-field"><span>Difficulté</span><select
                 data-chart-difficulty><option
@@ -70,17 +93,18 @@
                 data-chart-snap><option value="4">1/4</option><option value="8"
                   selected>1/8</option><option value="16">1/16</option><option
                   value="32">1/32</option></select></label>
-            <div class="chart-mode" role="group"
-              aria-label="Outil actif"><button class="is-active"
-                data-no-action-icon data-chart-tool="note"><i
-                  data-action-icon-el class="fa-solid fa-note-sticky"
-                  aria-hidden="true"></i>Placer</button><button
-                data-no-action-icon data-chart-tool="mouse"><i
+            <div class="chart-mode" role="group" aria-label="Outil actif">
+              <button class="is-active" data-no-action-icon
+                data-chart-tool="note"><i data-action-icon-el
+                  class="fa-solid fa-note-sticky"
+                  aria-hidden="true"></i>Placer</button>
+              <button data-no-action-icon data-chart-tool="mouse"><i
                   data-action-icon-el class="fa-solid fa-arrow-pointer"
-                  aria-hidden="true"></i>Souris</button><button
-                data-no-action-icon data-chart-tool="erase"><i
+                  aria-hidden="true"></i>Sélectionner</button>
+              <button data-no-action-icon data-chart-tool="erase"><i
                   data-action-icon-el class="fa-solid fa-eraser"
-                  aria-hidden="true"></i>Effacer</button></div>
+                  aria-hidden="true"></i>Effacer</button>
+            </div>
           </div>
           <div class="chart-editor-grid">
             <aside class="chart-sidebar">
@@ -129,8 +153,15 @@
                 max="1000" value="0" aria-label="Timeline de la chart"></div>
             <aside
               class="chart-sidebar chart-inspector"><h2>Chart</h2><p><strong
-                  data-chart-note-count>0</strong> notes</p><p>Tick <strong
-                  data-chart-tick>0</strong></p><button class="chart-button"
+                  data-chart-note-count>0</strong> notes</p>
+              <label class="chart-field chart-tick-jump"><span>Atteindre le
+                  tick</span><input
+                  data-chart-tick-jump type="number" min="0" step="1"
+                  value="0"></label>
+              <div class="chart-note-info" data-chart-note-info>
+                <p>Aucune note sélectionnée</p>
+              </div>
+              <button class="chart-button"
                 data-no-action-icon data-chart-action="delete" disabled><i
                   data-action-icon-el class="fa-solid fa-trash"
                   aria-hidden="true"></i>Supprimer la note</button><output
@@ -150,7 +181,12 @@
           <div class="chart-meta-actions"><button type="button"
               class="chart-button" data-chart-new>Nouvelle chart</button><button
               type="button" class="chart-button chart-primary"
-              data-chart-restore>Charger la dernière</button></div>
+              data-chart-restore>Charger la dernière</button><button
+              type="button" class="chart-button" data-chart-import-folder><i
+                data-action-icon-el class="fa-solid fa-folder-tree"
+                aria-hidden="true"></i>Importer un dossier</button></div>
+          <input data-chart-folder type="file" webkitdirectory directory
+            multiple hidden>
         </div>
         <div data-chart-meta-fields>
           <label class="chart-field"><span>Titre</span><input

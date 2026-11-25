@@ -354,7 +354,7 @@
     "id": "chart-editor",
     "name": "Chart Editor",
     "category": "Jeu / Musique",
-    "description": "Crée et exporte des charts Clone Hero au format .chart, avec audio, timeline et notes synchronisées.",
+    "description": "Crée, modifie et exporte des charts Clone Hero au format .chart et .mid",
     "keywords": [
       "clone hero",
       "chart",
@@ -368,7 +368,10 @@
       "notes",
       "export",
       "rythme",
-      "guitar hero"
+      "guitar hero",
+      "midi",
+      ".chart",
+      ".mid"
     ],
     "icon": "<i class='fa-solid fa-guitar'></i>",
     "url": "/tools/chart-editor",
